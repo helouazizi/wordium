@@ -4,3 +4,15 @@ spring:
 
 server:
   port: 3000
+
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://localhost:8761/eureka
+
+  instance:
+    prefer-ip-address: true
+    ip-address: host.docker.internal
+    hostname: host.docker.internal
