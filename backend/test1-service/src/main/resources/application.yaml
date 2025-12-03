@@ -1,0 +1,6 @@
+spring:
+  application:
+    name: test1-service
+
+server:
+  port: 3001

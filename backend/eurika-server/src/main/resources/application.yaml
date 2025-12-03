@@ -1,0 +1,13 @@
+server:
+  port: 8761  # Port where Eureka Server will run
+
+spring:
+  application:
+    name: eureka-server
+
+eureka:
+  client:
+    register-with-eureka: false  # Eureka server does not register itself
+    fetch-registry: false         # Eureka server does not fetch registry
+  instance:
+    hostname: localhost
