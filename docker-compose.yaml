@@ -1,5 +1,25 @@
 
 services:
+  eureka-server:
+    build: ./backend/eurika-server/
+    container_name: eureka-server
+    ports:
+      - "${EUREKA_PORT}:${EUREKA_PORT}"
+    networks:
+      - backend
+  
+  api-gateway:
+    build: ./backend/api-gatway/
+    container_name: api-gateway
+    environment:
+      - EUREKA_URL=http://eureka-server:${EUREKA_PORT}/eureka
+    ports:
+      - "${API_GATWAY_PORT}:${API_GATWAY_PORT}"
+    depends_on:
+      - eureka-server
+    networks:
+      - backend
+
   auth_db:
     image: postgres:latest
     container_name: psql_auth_db
@@ -7,8 +27,8 @@ services:
       - ./database/auth/.env  
     ports:
       - "${AUTH_DB_PORT}:${POSTGRES_PORT}"
-    volumes:
-      - auth_db_data:/var/lib/postgresql
+    # volumes:
+    #   - auth_db_data:/var/lib/postgresql
   # users_db:
   #   image: postgres:latest
   #   container_name: psql_users_db
@@ -19,6 +39,9 @@ services:
   #   volumes:
   #     - users_db_data:/var/lib/postgresql
 
-volumes:
-  users_db_data:
-  auth_db_data:
+# volumes:
+  # users_db_data:
+  # auth_db_data:
+networks:
+  backend:
+    driver: bridge
