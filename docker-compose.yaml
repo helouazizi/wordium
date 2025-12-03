@@ -1,0 +1,24 @@
+
+services:
+  auth_db:
+    image: postgres:latest
+    container_name: psql_auth_db
+    env_file:
+      - ./database/auth/.env  
+    ports:
+      - "${AUTH_DB_PORT}:${POSTGRES_PORT}"
+    volumes:
+      - auth_db_data:/var/lib/postgresql
+  # users_db:
+  #   image: postgres:latest
+  #   container_name: psql_users_db
+  #   env_file:
+  #     - ./database/users/.env  
+  #   ports:
+  #     - "${USERS_DB_PORT}:${POSTGRES_PORT}"
+  #   volumes:
+  #     - users_db_data:/var/lib/postgresql
+
+volumes:
+  users_db_data:
+  auth_db_data:
