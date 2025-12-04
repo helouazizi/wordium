@@ -19,13 +19,13 @@ services:
       - "host.docker.internal:host-gateway"
 
 
-  # auth_db:
-  #   image: postgres:latest
-  #   container_name: psql_auth_db
-  #   env_file:
-  #     - ./database/auth/.env  
-  #   ports:
-  #     - "${AUTH_DB_PORT}:${POSTGRES_PORT}"
+  auth_db:
+    image: postgres:latest
+    container_name: psql_auth_db
+    env_file:
+      - ./database/auth/.env  
+    ports:
+      - "${AUTH_DB_PORT}:${POSTGRES_PORT}"
     # volumes:
     #   - auth_db_data:/var/lib/postgresql
 

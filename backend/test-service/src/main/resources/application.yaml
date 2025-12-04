@@ -3,7 +3,7 @@ spring:
     name: test-service
 
 server:
-  port: 3000
+  port: 9000
 
 eureka:
   client:
