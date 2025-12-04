@@ -15,8 +15,8 @@ spring:
       routes:
         # Route for test-service
         - id: test-service
-          uri: lb://test-service 
-          # uri: http://host.docker.internal:3000
+          # uri: lb://test-service 
+          uri: http://host.docker.internal:3000
           predicates:
             - Path=/test-service/**
           filters:

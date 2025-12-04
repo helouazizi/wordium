@@ -5,17 +5,19 @@ services:
     container_name: eureka-server
     ports:
       - "${EUREKA_PORT}:${EUREKA_PORT}"
-    # networks:
-    #   - backend
   
-  # api-gateway:
-  #   build: ./backend/api-gatway/
-  #   container_name: api-gateway
-  #   network_mode: "host"       # <-- host networking for direct access to localhost
-  #   environment:
-  #     - EUREKA_URL=http://localhost:${EUREKA_PORT}/eureka
-  #   depends_on:
-  #     - eureka-server
+  api-gateway:
+    build: ./backend/api-gatway/
+    container_name: api-gateway
+    environment:
+      - EUREKA_URL=http://eureka-server:${EUREKA_PORT}/eureka
+    ports:
+      - "${API_GATWAY_PORT}:${API_GATWAY_PORT}"
+    depends_on:
+      - eureka-server
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
 
   # auth_db:
   #   image: postgres:latest
