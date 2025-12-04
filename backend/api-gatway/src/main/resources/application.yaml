@@ -15,8 +15,8 @@ spring:
       routes:
         # Route for test-service
         - id: test-service
-          # uri: lb://test-service 
-          uri: http://host.docker.internal:3000
+          uri: lb://test-service 
+          # uri: http://host.docker.internal:3000
           predicates:
             - Path=/test-service/**
           filters:
@@ -27,16 +27,16 @@ spring:
             #     fallbackUri: forward:/fallback
 
         # Route for test1-service
-        - id: test1-service
-          uri: lb://test1-service
-          predicates:
-            - Path=/test1-service/**
-          filters:
-            - StripPrefix=1
-            - name: CircuitBreaker
-              args:
-                name: test1ServiceCB
-                fallbackUri: forward:/fallback
+        # - id: test1-service
+        #   uri: lb://test1-service
+        #   predicates:
+        #     - Path=/test1-service/**
+        #   filters:
+        #     - StripPrefix=1
+        #     - name: CircuitBreaker
+        #       args:
+        #         name: test1ServiceCB
+        #         fallbackUri: forward:/fallback
 
         # Fallback route
         # - id: fallback-route
