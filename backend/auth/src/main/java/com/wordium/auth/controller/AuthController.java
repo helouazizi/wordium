@@ -11,6 +11,8 @@ import com.wordium.auth.model.User;
 import com.wordium.auth.security.JwtUtil;
 import com.wordium.auth.service.UserService;
 
+import jakarta.validation.Valid;
+
 @RestController
 @RequestMapping("/users")
 public class AuthController {
@@ -26,7 +28,7 @@ public class AuthController {
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<?> signup(@RequestBody User user) {
+    public ResponseEntity<?> signup(@Valid @RequestBody User user) {
         userService.registerUser(user);
         return ResponseEntity.ok("User registered successfully");
     }
@@ -49,34 +51,4 @@ public class AuthController {
             return token;
         }
     }
-
-    // // Get all users
-    // @GetMapping
-    // public List<User> getAllUsers() {
-    // return userService.getAllUsers();
-    // }
-
-    // // get user by id
-    // @GetMapping("/{id}")
-    // public User getUserbyId(@PathVariable Long id) {
-    // return userService.getUserById(id);
-    // }
-
-    // // Create a new user
-    // @PostMapping
-    // public ResponseEntity<?> createUser(@RequestBody User user) {
-    // User saved = userService.createUser(user);
-    // return ResponseEntity.ok(saved);
-    // }
-
-    // // get user by id
-    // @PutMapping("/{id}")
-    // public User updateUser(@PathVariable Long id, @RequestBody User user) {
-    // return userService.updateUser(id, user);
-    // }
-
-    // @DeleteMapping("/{id}")
-    // public void deleteUser(@PathVariable Long id) {
-    // userService.deleteUser(id);
-    // }
 }

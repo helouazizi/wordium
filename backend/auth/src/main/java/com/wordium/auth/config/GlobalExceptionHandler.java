@@ -3,6 +3,8 @@ package com.wordium.auth.config;
 import java.time.Instant;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -68,6 +70,24 @@ public class GlobalExceptionHandler {
                 e.getMessage(),
                 Instant.now());
         return ResponseEntity.status(500).body(error);
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ApiError> handleValidationErrors(MethodArgumentNotValidException e) {
+        StringBuilder errors = new StringBuilder();
+        for (FieldError fieldError : e.getBindingResult().getFieldErrors()) {
+            errors.append(fieldError.getField())
+                    .append(": ")
+                    .append(fieldError.getDefaultMessage())
+                    .append("; ");
+        }
+
+        ApiError error = new ApiError(
+                400,
+                "Validation Failed",
+                errors.toString(),
+                Instant.now());
+        return ResponseEntity.status(400).body(error);
     }
 
 }

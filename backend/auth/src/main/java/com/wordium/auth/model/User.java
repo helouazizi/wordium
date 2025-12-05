@@ -8,6 +8,7 @@ import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
 @Entity
 @Table(name = "users", uniqueConstraints = @UniqueConstraint(columnNames = "email"))
@@ -18,13 +19,15 @@ public class User {
     private Long id;
 
     @NotBlank(message = "Name is required")
+    @Size(min = 3, message = "Name must be at least 3 characters")
     private String name;
 
-    @Email(message = "Email must be valid")
     @NotBlank(message = "Email is required")
+    @Email(message = "Email must be valid")
     private String email;
 
     @NotBlank(message = "Password is required")
+    @Size(min = 6, message = "Password must be at least 6 characters")
     private String password;
 
     // Constructors
@@ -35,6 +38,7 @@ public class User {
         this.name = name;
         this.email = email;
     }
+    
 
     // Getters & Setters
     public Long getId() {
