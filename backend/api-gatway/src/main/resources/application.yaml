@@ -7,15 +7,11 @@ spring:
 
   cloud:
     gateway:
-      # Enable Eureka-based dynamic routing
-      # discovery:
-      #   locator:
-      #     enabled: true
-          # lower-case-service-id: true  # optional: convert service IDs to lowercase
       routes:
         # Route for test1-service
         - id: auth
-          uri: http://host.docker.internal:3000
+          uri: http://host.docker.internal:3000  
+          # uri: lb://auth
           predicates:
             - Path=/auth/**
           filters:
@@ -27,6 +23,7 @@ spring:
             - Path=/test-service/**
           filters:
             - StripPrefix=1
+            # - JwtAuthFilter
 
 eureka:
   client: 
