@@ -17,6 +17,15 @@ services:
       - eureka-server
     extra_hosts:
       - "host.docker.internal:host-gateway"
+  test-service:
+    build: ./backend/test-service/
+    container_name: test-service
+    environment:
+      - EUREKA_URL=http://eureka-server:${EUREKA_PORT}/eureka
+    depends_on:
+      - eureka-server
+    # ports:
+    #   - "${SERVICE_PORT}:${SERVICE_PORT}"
 
 
   auth_db:
