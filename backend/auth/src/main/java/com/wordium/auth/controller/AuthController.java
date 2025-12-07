@@ -2,55 +2,51 @@ package com.wordium.auth.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.wordium.auth.dto.LoginRequest;
+import com.wordium.auth.dto.LoginResponse;
 import com.wordium.auth.dto.RegisterRequest;
-import com.wordium.auth.model.User;
-import com.wordium.auth.security.JwtUtil;
+import com.wordium.auth.dto.UserResponse;
 import com.wordium.auth.service.AuthService;
 
 import jakarta.validation.Valid;
 
 @RestController
-// @Data
 @RequestMapping("/users")
 public class AuthController {
 
     @Autowired
-    private final AuthService userService;
-    @Autowired
-    private final JwtUtil jwtUtil;
+    private final AuthService authService;
 
-    public AuthController(AuthService userService, JwtUtil jwtUtil) {
-        this.jwtUtil = jwtUtil;
-        this.userService = userService;
+    public AuthController(AuthService authService) {
+        this.authService = authService;
     }
 
     @PostMapping("/signup")
     public ResponseEntity<?> signup(@Valid @RequestBody RegisterRequest req) {
-        userService.registerUser(req);
+        authService.registerUser(req);
         return ResponseEntity.ok("User registered successfully");
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody User user) throws IllegalArgumentException {
-        User validatedUser = userService.validateUser(user.getEmail(), user.getPassword());
-        String token = jwtUtil.generateToken(validatedUser.getEmail());
-        return ResponseEntity.ok(new JwtResponse(token));
+    public ResponseEntity<?> login(@RequestBody LoginRequest req) {
+        String token = authService.validateUser(req);
+        return ResponseEntity.ok(new LoginResponse(token));
     }
 
-    static class JwtResponse {
-        private final String token;
+    @GetMapping("/by-email")
+    public ResponseEntity<?> getFakeUser(@RequestParam String email) {
+        return ResponseEntity.ok(new UserResponse(12301L, email));
+    }
 
-        public JwtResponse(String token) {
-            this.token = token;
-        }
-
-        public String getToken() {
-            return token;
-        }
+    @PostMapping("/fake-post")
+    public ResponseEntity<?> fakePost(@RequestBody RegisterRequest req) {
+        return ResponseEntity.ok(new UserResponse(12301L, req.getEmail()));
     }
 }

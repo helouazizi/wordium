@@ -3,7 +3,7 @@ package com.wordium.auth.service;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
-import com.wordium.auth.dto.CreateUserRequest;
+import com.wordium.auth.dto.UserRequest;
 import com.wordium.auth.dto.UserResponse;
 
 @Service
@@ -11,28 +11,29 @@ public class UsersServiceClient {
 
     private final WebClient webClient;
 
-    // @Value("${users.service.url}")
-    public UsersServiceClient(String baseUrl) {
+    public UsersServiceClient() {
         this.webClient = WebClient.builder()
-                .baseUrl(baseUrl)
+                .baseUrl("http://localhost:8080")
                 .build();
     }
 
-    public UserResponse checkEmail(CreateUserRequest req) {
+    public UserResponse createUser(UserRequest req) {
         return webClient.post()
-                .uri("/users/check_email")
+                .uri("/auth/users/fake-post")
                 .bodyValue(req)
                 .retrieve()
                 .bodyToMono(UserResponse.class)
                 .block(); // synchronous
     }
 
-    public UserResponse createUser(CreateUserRequest req) {
-        return webClient.post()
-                .uri("/users")
-                .bodyValue(req)
+    public UserResponse getByEmail(String email) {
+        return webClient.get()
+                .uri(uriBuilder -> uriBuilder
+                        .path("/auth/users/by-email")
+                        .queryParam("email", email)
+                        .build())
                 .retrieve()
                 .bodyToMono(UserResponse.class)
-                .block(); // synchronous
+                .block();
     }
 }

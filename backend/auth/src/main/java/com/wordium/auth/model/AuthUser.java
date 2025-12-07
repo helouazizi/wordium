@@ -13,20 +13,18 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 import jakarta.validation.constraints.NotBlank;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
 @Entity
-@Getter
-@Setter
-@Table(name = "auth_user")
+@Data
+@Table(name = "auth_users")
 public class AuthUser {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank(message = "Password is required")
+    @NotBlank(message = "Passwordhash is required")
     private String passwordHash;
 
     @Column(unique = true, nullable = false)
@@ -35,5 +33,20 @@ public class AuthUser {
     @CreationTimestamp
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt;
-}
 
+    public void setPasswordHash(String passwordHash) {
+        this.passwordHash = passwordHash;
+    }
+
+    public String getPasswordHash() {
+        return passwordHash;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+}

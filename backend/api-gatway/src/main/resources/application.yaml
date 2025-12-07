@@ -10,7 +10,7 @@ spring:
       routes:
         # Route for test1-service
         - id: auth
-          uri: http://host.docker.internal:3000  
+          uri: http://10.1.17.1:3000  
           # uri: lb://auth
           predicates:
             - Path=/auth/**

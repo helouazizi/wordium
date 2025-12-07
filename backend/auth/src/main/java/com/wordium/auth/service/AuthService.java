@@ -2,58 +2,67 @@ package com.wordium.auth.service;
 
 import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.reactive.function.server.ServerResponse;
 
-import com.wordium.auth.dto.CreateUserRequest;
+import com.wordium.auth.dto.UserRequest;
+import com.wordium.auth.dto.LoginRequest;
 import com.wordium.auth.dto.RegisterRequest;
 import com.wordium.auth.dto.UserResponse;
+import com.wordium.auth.exceptions.ConflictException;
 import com.wordium.auth.model.AuthUser;
-import com.wordium.auth.model.User;
 import com.wordium.auth.repo.AuthRepository;
+import com.wordium.auth.security.JwtUtil;
 
 @Service
 public class AuthService {
 
-    @Autowired
     private final AuthRepository authRepository;
-
+    private final UsersServiceClient usersServiceClient;
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+    private final JwtUtil jwtUtil;
 
-    public AuthService(AuthRepository authRepository) {
+    public AuthService(AuthRepository authRepository, UsersServiceClient usersServiceClient, JwtUtil jwtUtil) {
         this.authRepository = authRepository;
+        this.usersServiceClient = usersServiceClient;
+        this.jwtUtil = jwtUtil;
     }
 
     public void registerUser(RegisterRequest req) {
-        UsersServiceClient usersServiceClient = new UsersServiceClient("http://localhost:8080");
-        CreateUserRequest userRequest = new CreateUserRequest(req.getEmail(), req.getFullName());
+        UserRequest userRequest = new UserRequest(req.getEmail(), req.getFullName());
 
-        // checkemail existance or username if needed
-        UserResponse userResponse1 = usersServiceClient.checkEmail(userRequest);
+        // UserResponse existingUser = usersServiceClient.getByEmail(req.getEmail());
+        // if (existingUser != null) {
+        //     throw new ConflictException("Email already exists");
+        // }
 
-        // create user safty
-        UserResponse userResponse2 = usersServiceClient.createUser(userRequest);
+        UserResponse userResponse = usersServiceClient.createUser(userRequest);
 
         AuthUser authUser = new AuthUser();
-        authUser.setUserId(userResponse2.id());
-        authUser.setPassword(passwordEncoder.encode(req.getPassword()));
+        authUser.setUserId(userResponse.id());
+        authUser.setPasswordHash(passwordEncoder.encode(req.getPassword()));
 
         authRepository.save(authUser);
     }
 
-    public User validateUser(String email, String rawPassword) throws IllegalArgumentException {
-        Optional<User> userOpt = userRepository.findByEmail(email);
-        if (userOpt.isEmpty())
-            throw new IllegalArgumentException("User not found");
+    public String validateUser(LoginRequest req) {
 
-        User user = userOpt.get();
+        UserResponse user = usersServiceClient.getByEmail(req.getEmail());
 
-        if (!passwordEncoder.matches(rawPassword, user.getPassword())) {
-            throw new IllegalArgumentException("Invalid credentials");
+        if (user == null) {
+            throw new IllegalArgumentException("Invalid email or password");
         }
 
-        return user;
+        Optional<AuthUser> authUserOpt = authRepository.findByUserId(user.id());
+        AuthUser authUser = authUserOpt.orElseThrow(() -> new IllegalArgumentException("Invalid email or password"));
+
+        if (!passwordEncoder.matches(req.getPassword(), authUser.getPasswordHash())) {
+            throw new IllegalArgumentException("Invalid email or password");
+        }
+
+        String token = jwtUtil.generateToken(user.email());
+
+        return token;
     }
+
 }
