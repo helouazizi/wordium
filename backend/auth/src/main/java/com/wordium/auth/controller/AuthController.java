@@ -7,29 +7,31 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.wordium.auth.dto.RegisterRequest;
 import com.wordium.auth.model.User;
 import com.wordium.auth.security.JwtUtil;
-import com.wordium.auth.service.UserService;
+import com.wordium.auth.service.AuthService;
 
 import jakarta.validation.Valid;
 
 @RestController
+// @Data
 @RequestMapping("/users")
 public class AuthController {
 
     @Autowired
-    private final UserService userService;
+    private final AuthService userService;
     @Autowired
     private final JwtUtil jwtUtil;
 
-    public AuthController(UserService userService, JwtUtil jwtUtil) {
+    public AuthController(AuthService userService, JwtUtil jwtUtil) {
         this.jwtUtil = jwtUtil;
         this.userService = userService;
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<?> signup(@Valid @RequestBody User user) {
-        userService.registerUser(user);
+    public ResponseEntity<?> signup(@Valid @RequestBody RegisterRequest req) {
+        userService.registerUser(req);
         return ResponseEntity.ok("User registered successfully");
     }
 
