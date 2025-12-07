@@ -2,7 +2,7 @@ spring:
   application:
     name: auth
   datasource:
-    url: jdbc:postgresql://${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}
+    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT}/${POSTGRES_DB}
     username: ${POSTGRES_USER}
     password: ${POSTGRES_PASSWORD}
     driver-class-name: org.postgresql.Driver
@@ -21,7 +21,7 @@ server:
 
 eureka:
   client:
-    register-with-eureka: false # dev mode only 
-    fetch-registry: false
-    # service-url:
-    #   defaultZone: http://localhost:8761/eureka
+    register-with-eureka: true  
+    fetch-registry: true
+    service-url:
+      defaultZone: ${EUREKA_URL:http://localhost:8761/eureka}

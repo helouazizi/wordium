@@ -10,8 +10,8 @@ spring:
       routes:
         # Route for test1-service
         - id: auth
-          uri: http://10.1.17.1:3000  
-          # uri: lb://auth
+          # uri: http://10.1.17.1:3000  
+          uri: lb://auth
           predicates:
             - Path=/auth/**
           filters:

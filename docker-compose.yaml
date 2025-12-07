@@ -24,8 +24,6 @@ services:
       - EUREKA_URL=http://eureka-server:${EUREKA_PORT}/eureka
     depends_on:
       - eureka-server
-    # ports:
-    #   - "${SERVICE_PORT}:${SERVICE_PORT}"
 
 
   auth_db:
@@ -37,6 +35,25 @@ services:
       - "${AUTH_DB_PORT}:${POSTGRES_PORT}"
     # volumes:
     #   - auth_db_data:/var/lib/postgresql
+  users_db:
+    image: postgres:latest
+    container_name: psql_users_db
+    env_file:
+      - ./database/users/.env  
+    ports:
+      - "${USERS_DB_PORT}:${POSTGRES_PORT}"
+    # volumes:
+    #   - users_db_data:/var/lib/postgresql
+
+  auth-service:
+    build: ./backend/auth/
+    container_name: auth-service
+    environment:
+      - EUREKA_URL=http://eureka-server:${EUREKA_PORT}/eureka
+      - POSTGRES_HOST=${POSTGRES_HOST}
+    depends_on:
+      - eureka-server
+      - auth_db
 
 # volumes:
   # users_db_data:

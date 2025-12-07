@@ -31,10 +31,10 @@ public class AuthService {
     public void registerUser(RegisterRequest req) {
         UserRequest userRequest = new UserRequest(req.getEmail(), req.getFullName());
 
-        // UserResponse existingUser = usersServiceClient.getByEmail(req.getEmail());
-        // if (existingUser != null) {
-        //     throw new ConflictException("Email already exists");
-        // }
+        UserResponse existingUser = usersServiceClient.getByEmail(req.getEmail());
+        if (existingUser != null) {
+            throw new ConflictException("Email already exists");
+        }
 
         UserResponse userResponse = usersServiceClient.createUser(userRequest);
 

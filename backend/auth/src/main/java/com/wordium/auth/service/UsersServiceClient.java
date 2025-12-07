@@ -1,5 +1,6 @@
 package com.wordium.auth.service;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
@@ -11,9 +12,9 @@ public class UsersServiceClient {
 
     private final WebClient webClient;
 
-    public UsersServiceClient() {
+    public UsersServiceClient(@Value("${GATEWAY_API:http://localhost:8080}") String gatewayApi) {
         this.webClient = WebClient.builder()
-                .baseUrl("http://localhost:8080")
+                .baseUrl(gatewayApi)
                 .build();
     }
 
