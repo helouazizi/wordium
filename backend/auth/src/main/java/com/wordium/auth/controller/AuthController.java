@@ -42,11 +42,11 @@ public class AuthController {
 
     @GetMapping("/by-email")
     public ResponseEntity<?> getFakeUser(@RequestParam String email) {
-        return ResponseEntity.ok(new UserResponse(12301L, email));
+        return ResponseEntity.ok(new UserResponse(1201L, email));
     }
 
     @PostMapping("/fake-post")
     public ResponseEntity<?> fakePost(@RequestBody RegisterRequest req) {
-        return ResponseEntity.ok(new UserResponse(12301L, req.getEmail()));
+        return ResponseEntity.ok(new UserResponse(1201L, req.getEmail()));
     }
 }
