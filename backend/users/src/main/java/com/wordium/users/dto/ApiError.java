@@ -1,4 +1,4 @@
-package com.wordium.auth.dto;
+package com.wordium.users.dto;
 
 import java.time.Instant;
 import java.util.List;
@@ -8,6 +8,7 @@ public class ApiError {
         private int status;
         private String error;
         private String message;
+        private Instant timestamp;
 
         private List<FieldValidationError> fieldErrors; // optional for form fields
 
@@ -23,7 +24,9 @@ public class ApiError {
                 this.message = message;
         }
 
-    
+        public void setTimestamp(Instant timestamp) {
+                this.timestamp = timestamp;
+        }
 
         public int getStatus() {
                 return status;
@@ -37,7 +40,9 @@ public class ApiError {
                 return error;
         }
 
-
+        public Instant getTimestamp() {
+                return timestamp;
+        }
 
         public ApiError(int status, String error, String message, Instant timestamp) {
                 this.status = status;
@@ -45,11 +50,12 @@ public class ApiError {
                 this.message = message;
         }
 
-        public ApiError(int status, String error, String message,
+        public ApiError(int status, String error, String message, Instant timestamp,
                         List<FieldValidationError> fieldErrors) {
                 this.status = status;
                 this.error = error;
                 this.message = message;
+                this.timestamp = timestamp;
                 this.fieldErrors = fieldErrors;
         }
 

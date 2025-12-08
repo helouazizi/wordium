@@ -1,16 +1,10 @@
 package com.wordium.auth.dto;
 
+
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
-public class RegisterRequest extends LoginRequest {
 
-    @NotBlank(message = "Full name is required")
-    private String fullName;
 
-    public void setFullName(String fullName) {
-        this.fullName = fullName;
-    }
-    public String getFullName() {
-        return fullName;
-    }
-}
+public record RegisterRequest(LoginRequest login,
+        @NotBlank(message = "Username is required") @Size(min = 3, max = 30, message = "username must be betwen 3 -> 30 caracter") String username) {}

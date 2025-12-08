@@ -5,6 +5,7 @@ WORKDIR /app
 
 # Copy the built Spring Boot JAR
 COPY target/*.jar app.jar
+COPY .env ./
 
 EXPOSE 8080
 

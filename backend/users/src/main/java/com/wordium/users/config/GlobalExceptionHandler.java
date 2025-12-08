@@ -1,23 +1,30 @@
-package com.wordium.auth.config;
+package com.wordium.users.config;
 
 import java.time.Instant;
 import java.util.List;
 
+// import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import com.wordium.auth.dto.ApiError;
-import com.wordium.auth.exceptions.BadRequestException;
-import com.wordium.auth.exceptions.ConflictException;
-import com.wordium.auth.exceptions.NotFoundException;
-import com.wordium.auth.exceptions.ServerException;
-import com.wordium.auth.exceptions.UnauthorizedException;
-import com.wordium.auth.exceptions.WebServiceException;
+import com.wordium.users.dto.ApiError;
+import com.wordium.users.exceptions.BadRequestException;
+import com.wordium.users.exceptions.ConflictException;
+// import com.wordium.users.exceptions.DatabaseException;
+import com.wordium.users.exceptions.NotFoundException;
+import com.wordium.users.exceptions.UnauthorizedException;
+import com.wordium.users.exceptions.ServerException;
 
-@RestControllerAdvice
+@ControllerAdvice
 public class GlobalExceptionHandler {
+
+    // @ExceptionHandler(DatabaseException.class)
+    // public ResponseEntity<String> handleDatabaseException(DatabaseException ex) {
+    // return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+    // .body("users service :" + ex.getMessage());
+    // }
 
     @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<ApiError> handleNotFound(NotFoundException e) {
@@ -62,15 +69,9 @@ public class GlobalExceptionHandler {
                 400,
                 "Validation Failed",
                 "One or more fields are invalid",
+                Instant.now(),
                 fieldErrors);
 
         return ResponseEntity.status(400).body(error);
     }
-
-    @ExceptionHandler(WebServiceException.class)
-    public ResponseEntity<String> handleUsersServiceException(WebServiceException e) {
-        return ResponseEntity.status(e.getStatus()).body(e.getBody());
-    }
-    
-
 }

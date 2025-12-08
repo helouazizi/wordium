@@ -8,12 +8,18 @@ spring:
   cloud:
     gateway:
       routes:
-        # Route for test1-service
-        - id: auth
-          # uri: http://10.1.17.1:3000  
-          uri: lb://auth
+        - id: auth-service
+          uri: http://host.docker.internal:3000  
+          # uri: lb://auth-service
           predicates:
-            - Path=/auth/**
+            - Path=/auth-service/**
+          filters:
+            - StripPrefix=1
+        - id: users-service
+          uri: http://host.docker.internal:3001  
+          # uri: lb://users-service
+          predicates:
+            - Path=/users-service/**
           filters:
             - StripPrefix=1
 

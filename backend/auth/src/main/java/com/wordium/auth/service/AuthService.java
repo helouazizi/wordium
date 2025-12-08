@@ -5,11 +5,9 @@ import java.util.Optional;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.wordium.auth.dto.AuthRequest;
 import com.wordium.auth.dto.UserRequest;
-import com.wordium.auth.dto.LoginRequest;
-import com.wordium.auth.dto.RegisterRequest;
 import com.wordium.auth.dto.UserResponse;
-import com.wordium.auth.exceptions.ConflictException;
 import com.wordium.auth.model.AuthUser;
 import com.wordium.auth.repo.AuthRepository;
 import com.wordium.auth.security.JwtUtil;
@@ -28,26 +26,21 @@ public class AuthService {
         this.jwtUtil = jwtUtil;
     }
 
-    public void registerUser(RegisterRequest req) {
-        UserRequest userRequest = new UserRequest(req.getEmail(), req.getFullName());
-
-        UserResponse existingUser = usersServiceClient.getByEmail(req.getEmail());
-        if (existingUser != null) {
-            throw new ConflictException("Email already exists");
-        }
+    public void registerUser(AuthRequest req) {
+        UserRequest userRequest = new UserRequest(req.email(), req.username());
 
         UserResponse userResponse = usersServiceClient.createUser(userRequest);
 
         AuthUser authUser = new AuthUser();
         authUser.setUserId(userResponse.id());
-        authUser.setPasswordHash(passwordEncoder.encode(req.getPassword()));
+        authUser.setPasswordHash(passwordEncoder.encode(req.password()));
 
         authRepository.save(authUser);
     }
 
-    public String validateUser(LoginRequest req) {
+    public String validateUser(AuthRequest req) {
 
-        UserResponse user = usersServiceClient.getByEmail(req.getEmail());
+        UserResponse user = usersServiceClient.getByEmail(req);
 
         if (user == null) {
             throw new IllegalArgumentException("Invalid email or password");
@@ -56,7 +49,7 @@ public class AuthService {
         Optional<AuthUser> authUserOpt = authRepository.findByUserId(user.id());
         AuthUser authUser = authUserOpt.orElseThrow(() -> new IllegalArgumentException("Invalid email or password"));
 
-        if (!passwordEncoder.matches(req.getPassword(), authUser.getPasswordHash())) {
+        if (!passwordEncoder.matches(req.password(), authUser.getPasswordHash())) {
             throw new IllegalArgumentException("Invalid email or password");
         }
 
