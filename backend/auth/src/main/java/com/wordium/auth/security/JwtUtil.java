@@ -5,6 +5,7 @@ import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 
@@ -20,12 +21,23 @@ public class JwtUtil {
         this.key = Keys.hmacShaKeyFor(SECRET.getBytes());
     }
 
-    public String generateToken(String email) {
+    public String generateToken(Long id, String role) {
         return Jwts.builder()
-                .setSubject(email)
+                .setSubject(id.toString())
+                .claim("role", role)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION))
                 .signWith(key)
                 .compact();
     }
+
+    // public Long extractUserId(String token) {
+    // Claims claims = Jwts.parserBuilder()
+    // .setSigningKey(key) // same key used to sign
+    // .build()
+    // .parseClaimsJws(token)
+    // .getBody();
+
+    // return Long.valueOf(claims.getSubject());
+    // }
 }

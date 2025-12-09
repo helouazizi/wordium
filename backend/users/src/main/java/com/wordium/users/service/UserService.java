@@ -26,11 +26,14 @@ public class UserService {
         User user = new User();
         user.setEmail(req.email());
         user.setUsername(req.username());
+        user.setBio(req.bio());
+        user.setDisplayName(req.displayName());
+        user.setLocation(req.location());
         userRepo.save(user);
 
         return new UserResponse(
                 user.getId(),
-                user.getEmail());
+                user.getRole());
 
     }
 
@@ -40,7 +43,7 @@ public class UserService {
 
             return new UserResponse(
                     user.getId(),
-                    user.getEmail());
+                    user.getRole());
 
         } catch (Exception e) {
             throw new DatabaseException("Failed to create user", e);

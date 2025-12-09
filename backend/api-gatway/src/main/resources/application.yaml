@@ -9,14 +9,16 @@ spring:
     gateway:
       routes:
         - id: auth-service
-          uri: http://host.docker.internal:3000  
-          # uri: lb://auth-service
+          uri: http://10.1.17.1:3000
+          # uri: http://host.docker.internal:3000  
+          # uri: lb://auth-service 10.1.17.1
           predicates:
             - Path=/auth-service/**
           filters:
             - StripPrefix=1
         - id: users-service
-          uri: http://host.docker.internal:3001  
+          uri: http://10.1.17.1:3001
+          # uri: http://host.docker.internal:3001  
           # uri: lb://users-service
           predicates:
             - Path=/users-service/**

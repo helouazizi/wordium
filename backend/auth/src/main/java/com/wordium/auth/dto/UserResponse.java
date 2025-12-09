@@ -1,4 +1,4 @@
 package com.wordium.auth.dto;
 
-public record UserResponse(Long id, String email) {
+public record UserResponse(Long id, String role) {
 }

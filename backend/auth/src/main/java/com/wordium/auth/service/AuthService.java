@@ -27,7 +27,8 @@ public class AuthService {
     }
 
     public void registerUser(AuthRequest req) {
-        UserRequest userRequest = new UserRequest(req.email(), req.username());
+        UserRequest userRequest = new UserRequest(req.email(), req.username(), req.displayName(), req.bio(),
+                req.location(), req.avatarUrl());
 
         UserResponse userResponse = usersServiceClient.createUser(userRequest);
 
@@ -53,7 +54,7 @@ public class AuthService {
             throw new IllegalArgumentException("Invalid email or password");
         }
 
-        String token = jwtUtil.generateToken(user.email());
+        String token = jwtUtil.generateToken(user.id(),user.role());
 
         return token;
     }
