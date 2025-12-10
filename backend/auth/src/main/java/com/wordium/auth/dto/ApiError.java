@@ -1,89 +1,19 @@
 package com.wordium.auth.dto;
 
-import java.time.Instant;
 import java.util.List;
 
-public class ApiError {
-
-        private int status;
-        private String error;
-        private String message;
-
-        private List<FieldValidationError> fieldErrors; // optional for form fields
-
-        public void setStatus(int status) {
-                this.status = status;
+public record ApiError(
+        int status,
+        String error,
+        String message,
+        List<FieldValidationError> fieldErrors
+) {
+        public ApiError(int status, String error, String message) {
+                this(status, error, message, null);
         }
 
-        public void setError(String error) {
-                this.error = error;
-        }
-
-        public void setMessage(String message) {
-                this.message = message;
-        }
-
-    
-
-        public int getStatus() {
-                return status;
-        }
-
-        public String getMessage() {
-                return message;
-        }
-
-        public String getError() {
-                return error;
-        }
-
-
-
-        public ApiError(int status, String error, String message, Instant timestamp) {
-                this.status = status;
-                this.error = error;
-                this.message = message;
-        }
-
-        public ApiError(int status, String error, String message,
-                        List<FieldValidationError> fieldErrors) {
-                this.status = status;
-                this.error = error;
-                this.message = message;
-                this.fieldErrors = fieldErrors;
-        }
-
-        public static class FieldValidationError {
-                private String field;
-                private String message;
-
-                public FieldValidationError(String field, String message) {
-                        this.field = field;
-                        this.message = message;
-                }
-
-                public String getField() {
-                        return field;
-                }
-
-                public String getMessage() {
-                        return message;
-                }
-
-                public void setField(String field) {
-                        this.field = field;
-                }
-
-                public void setMessage(String message) {
-                        this.message = message;
-                }
-        }
-
-        public List<FieldValidationError> getFieldErrors() {
-                return fieldErrors;
-        }
-
-        public void setFieldErrors(List<FieldValidationError> fieldErrors) {
-                this.fieldErrors = fieldErrors;
-        }
+        public record FieldValidationError(
+                String field,
+                String message
+        ) {}
 }

@@ -10,7 +10,7 @@ spring:
       routes:
         - id: auth-service
           uri: http://10.1.17.1:3000
-          # uri: http://host.docker.internal:3000  
+          # uri: http://host.docker.internal:3000
           # uri: lb://auth-service 10.1.17.1
           predicates:
             - Path=/auth-service/**
@@ -18,7 +18,7 @@ spring:
             - StripPrefix=1
         - id: users-service
           uri: http://10.1.17.1:3001
-          # uri: http://host.docker.internal:3001  
+          # uri: http://host.docker.internal:3001
           # uri: lb://users-service
           predicates:
             - Path=/users-service/**
@@ -26,7 +26,7 @@ spring:
             - StripPrefix=1
 
         - id: test-service
-          uri: lb://test-service 
+          uri: lb://test-service
           predicates:
             - Path=/test-service/**
           filters:
@@ -34,8 +34,18 @@ spring:
             # - JwtAuthFilter
 
 eureka:
-  client: 
+  client:
     service-url:
       defaultZone: ${EUREKA_URL:http://localhost:8761/eureka}
     register-with-eureka: true
     fetch-registry: true
+
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html  
+    urls:
+      - url: http://10.1.17.1:3000/v1/api-docs
+        name: Auth Service
+      # - url: http://10.1.17.1:3001/v1/api-docs
+      #   name: Users Service

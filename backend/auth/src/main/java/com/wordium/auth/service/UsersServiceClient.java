@@ -8,7 +8,7 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 import com.wordium.auth.dto.AuthRequest;
 import com.wordium.auth.dto.UserRequest;
 import com.wordium.auth.dto.UserResponse;
-import com.wordium.auth.exceptions.WebServiceException;
+import com.wordium.auth.exceptions.ExternalServiceException;
 
 @Service
 public class UsersServiceClient {
@@ -36,9 +36,12 @@ public class UsersServiceClient {
                     .bodyToMono(UserResponse.class)
                     .block();
         } catch (WebClientResponseException e) {
-            throw new WebServiceException(e.getStatusCode().value(), e.getResponseBodyAsString());
+            throw new ExternalServiceException(
+                    e.getStatusCode().value(),
+                    "User Service Error",
+                    e.getResponseBodyAsString(),
+                    null);
         }
-
     }
 
     public UserResponse getByEmail(AuthRequest req) {
@@ -50,10 +53,12 @@ public class UsersServiceClient {
                     .retrieve()
                     .bodyToMono(UserResponse.class)
                     .block();
-
         } catch (WebClientResponseException e) {
-            throw new WebServiceException(e.getStatusCode().value(), e.getResponseBodyAsString());
+            throw new ExternalServiceException(
+                    e.getStatusCode().value(),
+                    "User Service Error",
+                    e.getResponseBodyAsString(),
+                    null);
         }
-
     }
 }

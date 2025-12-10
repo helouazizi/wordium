@@ -1,0 +1,54 @@
+3️⃣ Load Balancing
+
+When multiple instances of a service exist, you need to distribute requests evenly.
+
+Can be done via:
+
+Client-side load balancing: e.g., Spring Cloud + Ribbon
+
+Server-side load balancing: e.g., Nginx, HAProxy
+
+
+4️⃣ Centralized Configuration
+Each service may have its own config, but managing them individually is hard.
+
+Solution: Spring Cloud Config or Consul
+
+Keep all config in one place
+
+Update without redeploying services
+
+
+5️⃣ Logging & Monitoring
+Microservices are distributed → problems are harder to debug.
+
+Use:
+
+Centralized logging: ELK stack (Elasticsearch, Logstash, Kibana)
+
+Monitoring: Prometheus + Grafana
+
+Tracing: Sleuth + Zipkin (see request flow across services)
+
+6️⃣ Resilience / Fault Tolerance
+Services can fail. You need to avoid cascading failures.
+
+Patterns:
+
+Circuit Breaker (Resilience4j)
+
+Retry (automatic retries on failure)
+
+Fallbacks (return default value if a service is down)
+
+
+7️⃣ Messaging / Event-driven Architecture
+For services to communicate asynchronously.
+
+Use message brokers:
+
+RabbitMQ
+
+Kafka
+
+Example: Order service publishes an event → Inventory service consumes it.

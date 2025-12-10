@@ -26,7 +26,7 @@ public class AuthService {
         this.jwtUtil = jwtUtil;
     }
 
-    public void registerUser(AuthRequest req) {
+    public String registerUser(AuthRequest req) {
         UserRequest userRequest = new UserRequest(req.email(), req.username(), req.displayName(), req.bio(),
                 req.location(), req.avatarUrl());
 
@@ -37,6 +37,9 @@ public class AuthService {
         authUser.setPasswordHash(passwordEncoder.encode(req.password()));
 
         authRepository.save(authUser);
+                String token = jwtUtil.generateToken(userResponse.id(),userResponse.role());
+
+        return token;
     }
 
     public String validateUser(AuthRequest req) {
