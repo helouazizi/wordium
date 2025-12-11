@@ -25,19 +25,16 @@ public class JwtAuthFilter implements GlobalFilter, Ordered {
         System.out.println("[Gateway Filter] Incoming path: " + path);
 
         // Allow auth endpoints without token
-        if (path.startsWith("/auth-service/")) {
+        if (path.startsWith("/api/v1/auth")) {
             System.out.println("[Gateway Filter] Auth route detected, skipping auth check");
             return chain.filter(exchange);
         }
 
         // validate internal connections
-        // validate internal connections
         if (isInternalUsersRoute(path)) {
             String internalToken = exchange.getRequest().getHeaders().getFirst("Internal-Service-Token");
 
             System.out.println("[Gateway Filter] Internal token received: " + internalToken);
-
-            // simple equality check
             if (internalToken == null || !internalToken.equals(jwtUtil.getServiceTokenKey())) {
                 System.out.println("[Gateway Filter] Invalid internal token");
                 return unauthorized(exchange);
@@ -85,7 +82,7 @@ public class JwtAuthFilter implements GlobalFilter, Ordered {
     }
 
     private boolean isInternalUsersRoute(String path) {
-        return path.startsWith("/users-service/users")
-                || path.startsWith("/users-service/users/by-email");
+        return path.startsWith("/api/v1/users")
+                || path.startsWith("/api/v1/users/by-email");
     }
 }

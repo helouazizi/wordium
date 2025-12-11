@@ -29,7 +29,7 @@ public class UsersServiceClient {
     public UserResponse createUser(UserRequest req) {
         try {
             return webClient.post()
-                    .uri("/users-service/users/")
+                    .uri("/api/v1/users/")
                     .header("Internal-Service-Token", serviceToken)
                     .bodyValue(req)
                     .retrieve()
@@ -47,7 +47,7 @@ public class UsersServiceClient {
     public UserResponse getByEmail(AuthRequest req) {
         try {
             return webClient.post()
-                    .uri("/users-service/users/by-email")
+                    .uri("/api/v1/users/by-email")
                     .header("Internal-Service-Token", serviceToken)
                     .bodyValue(req)
                     .retrieve()

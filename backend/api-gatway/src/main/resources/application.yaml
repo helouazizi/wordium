@@ -8,30 +8,47 @@ spring:
   cloud:
     gateway:
       routes:
+        # AUTH SERVICE
         - id: auth-service
-          uri: http://10.1.17.1:3000
-          # uri: http://host.docker.internal:3000
-          # uri: lb://auth-service 10.1.17.1
+          uri: http://host.docker.internal:3000
           predicates:
-            - Path=/auth-service/**
+            - Path=/api/v1/auth/**
           filters:
-            - StripPrefix=1
-        - id: users-service
-          uri: http://10.1.17.1:3001
-          # uri: http://host.docker.internal:3001
-          # uri: lb://users-service
-          predicates:
-            - Path=/users-service/**
-          filters:
-            - StripPrefix=1
+            - StripPrefix=2
 
+        # AUTH SERVICE API-DOCS
+        - id: auth-service-docs
+          uri: http://host.docker.internal:3000
+          predicates:
+            - Path=/api/v1/auth/v3/api-docs/**
+          filters:
+            - StripPrefix=3
+
+
+        # USERS SERVICE
+        - id: users-service
+          uri: http://host.docker.internal:3001
+          predicates:
+            - Path=/api/v1/users/**
+          filters:
+            - StripPrefix=2
+
+        # USERS SERVICE API-DOCS
+        - id: users-service-docs
+          uri: http://host.docker.internal:3001
+          predicates:
+            - Path=/api/v1/users/v3/api-docs/**
+          filters:
+            - StripPrefix=3
+
+
+        # TEST SERVICE
         - id: test-service
           uri: lb://test-service
           predicates:
-            - Path=/test-service/**
+            - Path=/api/v1/test/**
           filters:
-            - StripPrefix=1
-            # - JwtAuthFilter
+            - StripPrefix=2
 
 eureka:
   client:
@@ -40,12 +57,11 @@ eureka:
     register-with-eureka: true
     fetch-registry: true
 
-
 springdoc:
   swagger-ui:
-    path: /swagger-ui.html  
+    path: /swagger-ui.html
     urls:
-      - url: http://10.1.17.1:3000/v1/api-docs
-        name: Auth Service
-      # - url: http://10.1.17.1:3001/v1/api-docs
-      #   name: Users Service
+      - name: auth-service
+        url: /api/v1/auth/v3/api-docs
+      - name: users-service
+        url: /api/v1/users/v3/api-docs

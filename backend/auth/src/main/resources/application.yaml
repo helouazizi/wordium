@@ -8,7 +8,7 @@ spring:
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
-      ddl-auto: update # options: validate, update, create, create-drop
+      ddl-auto: update
     show-sql: true
     properties:
       hibernate:
@@ -30,10 +30,11 @@ eureka:
 
 springdoc:
   api-docs:
-    path: /v1/api-docs
+    path: /auth/v3/api-docs
   swagger-ui:
-    path: /swagger-ui.html
+    path: /auth/swagger-ui.html
   info:
     title: Auth Service API
     version: 1.0
     description: Authentication microservice API
+
