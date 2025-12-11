@@ -64,7 +64,7 @@ public class AuthController {
             ),
             @ApiResponse(
                     responseCode = "400",
-                    description = "Invalid credentials or bad request",
+                    description = "Invalid credentials",
                     content = @Content(schema = @Schema(implementation = ApiError.class))
             )
     })

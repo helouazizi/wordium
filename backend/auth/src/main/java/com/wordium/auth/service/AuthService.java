@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import com.wordium.auth.dto.AuthRequest;
 import com.wordium.auth.dto.UserRequest;
 import com.wordium.auth.dto.UserResponse;
+import com.wordium.auth.exceptions.BadRequestException;
 import com.wordium.auth.model.AuthUser;
 import com.wordium.auth.repo.AuthRepository;
 import com.wordium.auth.security.JwtUtil;
@@ -46,15 +47,12 @@ public class AuthService {
 
         UserResponse user = usersServiceClient.getByEmail(req);
 
-        if (user == null) {
-            throw new IllegalArgumentException("Invalid email or password");
-        }
 
         Optional<AuthUser> authUserOpt = authRepository.findByUserId(user.id());
-        AuthUser authUser = authUserOpt.orElseThrow(() -> new IllegalArgumentException("Invalid email or password"));
+        AuthUser authUser = authUserOpt.orElseThrow(() -> new BadRequestException("Invalid credentials"));
 
         if (!passwordEncoder.matches(req.password(), authUser.getPasswordHash())) {
-            throw new IllegalArgumentException("Invalid email or password");
+            throw new BadRequestException("Invalid credentials");
         }
 
         String token = jwtUtil.generateToken(user.id(),user.role());

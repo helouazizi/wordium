@@ -4,9 +4,8 @@ import org.springframework.stereotype.Service;
 
 import com.wordium.users.dto.UserRequest;
 import com.wordium.users.dto.UserResponse;
+import com.wordium.users.exceptions.BadRequestException;
 import com.wordium.users.exceptions.ConflictException;
-import com.wordium.users.exceptions.NotFoundException;
-import com.wordium.users.exceptions.ServerException;
 import com.wordium.users.model.User;
 import com.wordium.users.repo.UserRepo;
 
@@ -39,14 +38,14 @@ public class UserService {
 
     public UserResponse getUserByEmail(String email) {
         try {
-            User user = userRepo.findByEmail(email).orElseThrow(() -> new NotFoundException("Email not found"));
+            User user = userRepo.findByEmail(email).orElseThrow(() -> new BadRequestException("Invalid Credentials"));
 
             return new UserResponse(
                     user.getId(),
                     user.getRole(), user.getEmail());
 
         } catch (Exception e) {
-            throw new ServerException("Users service : Failed to create user", e);
+            throw new BadRequestException("Invalid Credentials");
         }
 
     }

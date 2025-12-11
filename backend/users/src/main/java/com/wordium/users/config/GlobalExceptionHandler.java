@@ -20,31 +20,31 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<ApiError> handleNotFound(NotFoundException e) {
-        ApiError error = new ApiError(404, "Not Found", e.getMessage());
+        ApiError error = new ApiError(404, "Not Found", e.getMessage(),null);
         return ResponseEntity.status(404).body(error);
     }
 
     @ExceptionHandler(ConflictException.class)
     public ResponseEntity<ApiError> handleConflict(ConflictException e) {
-        ApiError error = new ApiError(409, "Conflict", e.getMessage());
+        ApiError error = new ApiError(409, "Conflict", e.getMessage(),null);
         return ResponseEntity.status(409).body(error);
     }
 
     @ExceptionHandler(UnauthorizedException.class)
     public ResponseEntity<ApiError> handleUnauthorized(UnauthorizedException e) {
-        ApiError error = new ApiError(401, "Unauthorized", e.getMessage());
+        ApiError error = new ApiError(401, "Unauthorized", e.getMessage(),null);
         return ResponseEntity.status(401).body(error);
     }
 
     @ExceptionHandler(BadRequestException.class)
     public ResponseEntity<ApiError> handleBadRequest(BadRequestException e) {
-        ApiError error = new ApiError(400, "Bad Request", e.getMessage());
+        ApiError error = new ApiError(400, "Bad Request", e.getMessage(),null);
         return ResponseEntity.status(400).body(error);
     }
 
     @ExceptionHandler(ServerException.class)
     public ResponseEntity<ApiError> handleServerError(ServerException e) {
-        ApiError error = new ApiError(500, "Internal Server Error", e.getMessage());
+        ApiError error = new ApiError(500, "Internal Server Error", e.getMessage(),null);
         return ResponseEntity.status(500).body(error);
     }
 
