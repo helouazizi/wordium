@@ -2,11 +2,11 @@ package com.wordium.users.service;
 
 import org.springframework.stereotype.Service;
 
-import com.wordium.users.dto.CreateUserRequest;
+import com.wordium.users.dto.UserRequest;
 import com.wordium.users.dto.UserResponse;
 import com.wordium.users.exceptions.ConflictException;
-import com.wordium.users.exceptions.DatabaseException;
 import com.wordium.users.exceptions.NotFoundException;
+import com.wordium.users.exceptions.ServerException;
 import com.wordium.users.model.User;
 import com.wordium.users.repo.UserRepo;
 
@@ -19,7 +19,7 @@ public class UserService {
         this.userRepo = userRepo;
     }
 
-    public UserResponse createUser(CreateUserRequest req) {
+    public UserResponse createUser(UserRequest req) {
         if (userRepo.findByEmail(req.email()).isPresent()) {
             throw new ConflictException("Email or username already taken");
         }
@@ -33,7 +33,7 @@ public class UserService {
 
         return new UserResponse(
                 user.getId(),
-                user.getRole());
+                user.getRole(), null);
 
     }
 
@@ -43,10 +43,10 @@ public class UserService {
 
             return new UserResponse(
                     user.getId(),
-                    user.getRole());
+                    user.getRole(), user.getEmail());
 
         } catch (Exception e) {
-            throw new DatabaseException("Failed to create user", e);
+            throw new ServerException("Users service : Failed to create user", e);
         }
 
     }
