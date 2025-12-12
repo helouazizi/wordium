@@ -22,11 +22,9 @@ public class JwtAuthFilter implements GlobalFilter, Ordered {
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
 
         String path = exchange.getRequest().getURI().getPath();
-        System.out.println("[Gateway Filter] Incoming path: " + path);
 
         // Allow auth endpoints without token
         if (path.startsWith("/api/v1/auth") || path.contains("/v3/api-docs")) {
-            System.out.println("[Gateway Filter] Auth route detected, skipping auth check");
             return chain.filter(exchange);
         }
 
@@ -34,55 +32,53 @@ public class JwtAuthFilter implements GlobalFilter, Ordered {
         if (isInternalUsersRoute(path)) {
             String internalToken = exchange.getRequest().getHeaders().getFirst("Internal-Service-Token");
 
-            System.out.println("[Gateway Filter] Internal token received: " + internalToken);
             if (internalToken == null || !internalToken.equals(jwtUtil.getServiceTokenKey())) {
-                System.out.println("[Gateway Filter] Invalid internal token");
                 return unauthorized(exchange);
             }
 
-            System.out.println("[Gateway Filter] Internal token valid");
             return chain.filter(exchange);
         }
 
         var req = exchange.getRequest();
         if (!req.getHeaders().containsKey("Authorization")) {
-            System.out.println("[Gateway Filter] Missing Authorization header, returning 401");
             return unauthorized(exchange);
         }
 
         String authHeader = req.getHeaders().getFirst("Authorization");
-        System.out.println("[Gateway Filter] Authorization header: " + authHeader);
 
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            System.out.println("[Gateway Filter] Invalid Authorization header, returning 401");
             return unauthorized(exchange);
         }
 
         String token = authHeader.substring(7);
         try {
             jwtUtil.validateUserToken(token);
-            System.out.println("[Gateway Filter] User token validated successfully!");
         } catch (Exception e) {
-            System.out.println("[Gateway Filter] Invalid user token: " + e.getMessage());
             return unauthorized(exchange);
         }
 
-        return chain.filter(exchange);
+        JwtUtil.UserInfo  userinfo = jwtUtil.extractUserInfo(token);
+        var changedRequest = exchange.mutate()
+              .request(builder -> builder
+                        .header("User-Id", userinfo.userId())
+                        .header("User-Role", userinfo.role()))
+                .build();
+
+        return chain.filter(changedRequest);
     }
 
     private Mono<Void> unauthorized(ServerWebExchange exchange) {
         exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
-        System.out.println("[Gateway Filter] Returning 401 Unauthorized");
         return exchange.getResponse().setComplete();
     }
 
     @Override
     public int getOrder() {
-        return -1; // ensures filter runs early
+        return -1; 
     }
 
     private boolean isInternalUsersRoute(String path) {
-        return path.startsWith("/api/v1/users")
+        return path.startsWith("/api/v1/users/create")
                 || path.startsWith("/api/v1/users/by-email");
     }
 }

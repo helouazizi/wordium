@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -56,6 +57,19 @@ public class UserController {
     @PostMapping("/by-email")
     public ResponseEntity<UserResponse> getUserByEmail(@Valid @RequestBody UserRequest req) {
         UserResponse user = userService.getUserByEmail(req.email());
+        return ResponseEntity.ok(user);
+    }
+
+    @Operation(summary = "Get user profile", description = "Fetch a user profile using id ")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "User fetched successfully", content = @Content(schema = @Schema(implementation = UserResponse.class))),
+            @ApiResponse(responseCode = "404", description = "User not found", content = @Content(schema = @Schema(implementation = ApiError.class))),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = ApiError.class))),
+            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(implementation = ApiError.class))),
+    })
+    @PostMapping("/profile")
+    public ResponseEntity<UserResponse> getUserProfile(@RequestHeader("User-Id") Long userId) {
+        UserResponse user = userService.getUserProfile(userId);
         return ResponseEntity.ok(user);
     }
 

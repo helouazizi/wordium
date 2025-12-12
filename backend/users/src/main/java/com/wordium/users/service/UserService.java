@@ -6,6 +6,8 @@ import com.wordium.users.dto.UserRequest;
 import com.wordium.users.dto.UserResponse;
 import com.wordium.users.exceptions.BadRequestException;
 import com.wordium.users.exceptions.ConflictException;
+import com.wordium.users.exceptions.NotFoundException;
+import com.wordium.users.exceptions.ServerException;
 import com.wordium.users.model.User;
 import com.wordium.users.repo.UserRepo;
 
@@ -32,7 +34,7 @@ public class UserService {
 
         return new UserResponse(
                 user.getId(),
-                user.getRole(), null);
+                user.getRole(), null, null, null, null, null, null);
 
     }
 
@@ -42,10 +44,25 @@ public class UserService {
 
             return new UserResponse(
                     user.getId(),
-                    user.getRole(), user.getEmail());
+                    user.getRole(), user.getEmail(), null, null, null, null, null);
 
         } catch (Exception e) {
-            throw new BadRequestException("Invalid Credentials");
+            throw new ServerException("Internal Server Error");
+        }
+
+    }
+
+    public UserResponse getUserProfile(Long userId) {
+        try {
+            User user = userRepo.findById(userId).orElseThrow(() -> new NotFoundException("User Not Found"));
+
+            return new UserResponse(
+                    user.getId(),
+                    user.getRole(), user.getEmail(), user.getUsername(), user.getDisplayName(), user.getBio(),
+                    user.getAvatar(), user.getLocation());
+
+        } catch (Exception e) {
+            throw new ServerException("Internal Server Error");
         }
 
     }

@@ -30,6 +30,7 @@ public class User {
     private String displayName;
     private String bio;
     private String location;
+    private String avatar;
 
     @CreationTimestamp
     @Temporal(TemporalType.TIMESTAMP)
@@ -93,5 +94,8 @@ public class User {
 
     public String getLocation() {
         return location;
+    }
+    public String getAvatar() {
+        return avatar;
     }
 }
