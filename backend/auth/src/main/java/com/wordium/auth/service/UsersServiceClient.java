@@ -5,7 +5,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import com.wordium.auth.dto.AuthRequest;
-import com.wordium.auth.dto.UserRequest;
+import com.wordium.auth.dto.SignUpRequest;
+import com.wordium.auth.dto.SuccessResponse;
 import com.wordium.auth.dto.UserResponse;
 import com.wordium.auth.util.ServiceCaller;
 
@@ -29,8 +30,8 @@ public class UsersServiceClient {
         this.serviceCaller = serviceCaller;
     }
 
-    public UserResponse createUser(UserRequest req) {
-        Mono<UserResponse> responseMono = webClient.post()
+    public UserResponse createUser(SignUpRequest req) {
+        Mono<SuccessResponse<UserResponse>> responseMono = webClient.post()
                 .uri("/api/v1/users/create")
                 .header("Internal-Service-Token", serviceToken)
                 .bodyValue(req)

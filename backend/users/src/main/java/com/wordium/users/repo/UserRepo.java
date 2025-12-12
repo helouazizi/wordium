@@ -5,12 +5,12 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import com.wordium.users.model.User;
+import com.wordium.users.model.Users;
 
 @Repository
-public interface UserRepo extends JpaRepository<User, Long> {
-    Optional<User> findByEmail(String email);
+public interface UserRepo extends JpaRepository<Users, Long> {
+    Optional<Users> findByEmail(String email);
     
     @Override
-    Optional<User> findById(Long id);
+    Optional<Users> findById(Long id);
 }

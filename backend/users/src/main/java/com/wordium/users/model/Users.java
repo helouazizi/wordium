@@ -15,7 +15,7 @@ import jakarta.persistence.TemporalType;
 
 @Entity
 @Table(name = "users")
-public class User {
+public class Users {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -95,7 +95,9 @@ public class User {
     public String getLocation() {
         return location;
     }
+
     public String getAvatar() {
         return avatar;
     }
 }
+

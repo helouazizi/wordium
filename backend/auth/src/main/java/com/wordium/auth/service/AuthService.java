@@ -6,6 +6,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.wordium.auth.dto.AuthRequest;
+import com.wordium.auth.dto.SignUpRequest;
 import com.wordium.auth.dto.UserRequest;
 import com.wordium.auth.dto.UserResponse;
 import com.wordium.auth.exceptions.BadRequestException;
@@ -28,10 +29,9 @@ public class AuthService {
     }
 
     public String registerUser(AuthRequest req) {
-        UserRequest userRequest = new UserRequest(req.email(), req.username(), req.displayName(), req.bio(),
-                req.location(), req.avatarUrl());
+        SignUpRequest signUpRequest = new SignUpRequest(req.email(), null, req.username(), req.bio(), req.avatarUrl(), req.location());
 
-        UserResponse userResponse = usersServiceClient.createUser(userRequest);
+        UserResponse userResponse = usersServiceClient.createUser(signUpRequest);
 
         AuthUser authUser = new AuthUser();
         authUser.setUserId(userResponse.id());

@@ -1,13 +1,15 @@
 package com.wordium.users.config;
 
-import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
-import com.wordium.users.dto.ApiError;
+import com.wordium.users.dto.FailResponse;
 import com.wordium.users.exceptions.BadRequestException;
 import com.wordium.users.exceptions.ConflictException;
 import com.wordium.users.exceptions.NotFoundException;
@@ -17,52 +19,52 @@ import com.wordium.users.exceptions.UnauthorizedException;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
-
     @ExceptionHandler(NotFoundException.class)
-    public ResponseEntity<ApiError> handleNotFound(NotFoundException e) {
-        ApiError error = new ApiError(404, "Not Found", e.getMessage(),null);
+    public ResponseEntity<FailResponse> handleNotFound(NotFoundException e) {
+        FailResponse error = new FailResponse(404, "Not Found", e.getMessage());
         return ResponseEntity.status(404).body(error);
     }
 
     @ExceptionHandler(ConflictException.class)
-    public ResponseEntity<ApiError> handleConflict(ConflictException e) {
-        ApiError error = new ApiError(409, "Conflict", e.getMessage(),null);
+    public ResponseEntity<FailResponse> handleConflict(ConflictException e) {
+        FailResponse error = new FailResponse(409, "Conflict", e.getMessage());
         return ResponseEntity.status(409).body(error);
     }
 
     @ExceptionHandler(UnauthorizedException.class)
-    public ResponseEntity<ApiError> handleUnauthorized(UnauthorizedException e) {
-        ApiError error = new ApiError(401, "Unauthorized", e.getMessage(),null);
+    public ResponseEntity<FailResponse> handleUnauthorized(UnauthorizedException e) {
+        FailResponse error = new FailResponse(401, "Unauthorized", e.getMessage());
         return ResponseEntity.status(401).body(error);
     }
 
     @ExceptionHandler(BadRequestException.class)
-    public ResponseEntity<ApiError> handleBadRequest(BadRequestException e) {
-        ApiError error = new ApiError(400, "Bad Request", e.getMessage(),null);
+    public ResponseEntity<FailResponse> handleBadRequest(BadRequestException e) {
+        FailResponse error = new FailResponse(400, "Bad Request", e.getMessage());
         return ResponseEntity.status(400).body(error);
     }
 
     @ExceptionHandler(ServerException.class)
-    public ResponseEntity<ApiError> handleServerError(ServerException e) {
-        ApiError error = new ApiError(500, "Internal Server Error", e.getMessage(),null);
+    public ResponseEntity<FailResponse> handleServerError(ServerException e) {
+        FailResponse error = new FailResponse(500, "Internal Server Error", e.getMessage());
         return ResponseEntity.status(500).body(error);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ApiError> handleValidationErrors(MethodArgumentNotValidException e) {
-
-        List<ApiError.FieldValidationError> fieldErrors = e.getBindingResult()
+    public ResponseEntity<FailResponse> handleInputsErrors(MethodArgumentNotValidException e) {
+        Map<String, String> errors = e.getBindingResult()
                 .getFieldErrors()
                 .stream()
-                .map(err -> new ApiError.FieldValidationError(err.getField(), err.getDefaultMessage()))
-                .toList();
+                .collect(Collectors.toMap(
+                        err -> err.getField(), 
+                        err -> err.getDefaultMessage(), 
+                        (existing, replacement) -> existing // handle duplicate keys
+                ));
 
-        ApiError error = new ApiError(
+        FailResponse response = new FailResponse(
                 400,
-                "Validation Failed",
-                "One or more fields are invalid",
-                fieldErrors);
+                "Validation failed",
+                errors);
 
-        return ResponseEntity.status(400).body(error);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 }
