@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -15,6 +16,14 @@ import com.wordium.users.exceptions.NotFoundException;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
+
+    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+    public ProblemDetail handleMethodNotAllowed(HttpRequestMethodNotSupportedException e) {
+        ProblemDetail pd = ProblemDetail.forStatus(HttpStatus.METHOD_NOT_ALLOWED);
+        pd.setTitle("Method Not Allowed");
+        pd.setDetail("HTTP method " + e.getMethod() + " is not supported for this endpoint");
+        return pd;
+    }
 
     @ExceptionHandler(NotFoundException.class)
     public ProblemDetail handleNotFound(NotFoundException e) {

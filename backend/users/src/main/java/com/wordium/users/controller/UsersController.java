@@ -5,6 +5,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -14,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.wordium.users.dto.SignUpRequest;
 import com.wordium.users.dto.SignUpResponse;
+import com.wordium.users.dto.UpdateProfileRequest;
 import com.wordium.users.dto.UsersResponse;
 import com.wordium.users.service.UsersService;
 
@@ -51,6 +54,7 @@ public class UsersController {
         return ResponseEntity.ok(user);
     }
 
+    @GetMapping("/me")
     @Operation(summary = "Get session profile", description = "Fetch a session profile using id from header ")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "User fetched successfully", content = @Content(schema = @Schema(implementation = UsersResponse.class))),
@@ -58,8 +62,36 @@ public class UsersController {
             @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = ProblemDetail.class))),
             @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(implementation = ProblemDetail.class))),
     })
-    @GetMapping("/me")
-    public ResponseEntity<UsersResponse> getUserProfile(@RequestHeader("User-Id") Long userId) {
+
+    public ResponseEntity<UsersResponse> getSessionProfile(@RequestHeader("User-Id") Long userId) {
+        UsersResponse user = userService.getUserProfile(userId);
+        return ResponseEntity.ok(user);
+    }
+
+    @PatchMapping("/me")
+    @Operation(summary = "Update User profile", description = "Update User profile using id from header ")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "User profile updated successfully", content = @Content(schema = @Schema(implementation = UsersResponse.class))),
+            @ApiResponse(responseCode = "404", description = "User not found", content = @Content(schema = @Schema(implementation = ProblemDetail.class))),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = ProblemDetail.class))),
+            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(implementation = ProblemDetail.class))),
+    })
+    public ResponseEntity<UsersResponse> upadteProfile(@RequestHeader("User-Id") Long userId,
+            @Valid @RequestBody UpdateProfileRequest req) {
+        UsersResponse user = userService.updateUserProfile(userId, req);
+        return ResponseEntity.ok(user);
+    }
+
+    @GetMapping("/{userId}")
+    @Operation(summary = "Get User profile", description = "Fetch a user profile using id as param")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "User fetched successfully", content = @Content(schema = @Schema(implementation = UsersResponse.class))),
+            @ApiResponse(responseCode = "404", description = "User not found", content = @Content(schema = @Schema(implementation = ProblemDetail.class))),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = ProblemDetail.class))),
+            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(implementation = ProblemDetail.class))),
+    })
+
+    public ResponseEntity<UsersResponse> getUserProfile(@PathVariable Long userId) {
         UsersResponse user = userService.getUserProfile(userId);
         return ResponseEntity.ok(user);
     }

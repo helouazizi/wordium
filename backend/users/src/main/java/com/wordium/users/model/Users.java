@@ -21,7 +21,7 @@ public class Users {
     private Long id;
 
     private String role = "user";
-    @Column(nullable = false)
+    @Column(unique = true, nullable = false)
     private String email;
 
     @Column(unique = true, nullable = false)
@@ -29,7 +29,7 @@ public class Users {
 
     private String bio;
     private String location;
-    private String avatar;
+    private String avatarUrl;
 
     @CreationTimestamp
     @Temporal(TemporalType.TIMESTAMP)
@@ -87,8 +87,10 @@ public class Users {
         return location;
     }
 
-    public String getAvatar() {
-        return avatar;
+    public void setAvatarUrl(String avatarUrl) {
+        this.avatarUrl = avatarUrl;
+    }
+    public String getAvatarUrl() {
+        return avatarUrl;
     }
 }
-
