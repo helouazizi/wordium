@@ -1,68 +1,66 @@
 package com.wordium.users.config;
 
 import java.util.List;
+import java.util.Map;
 
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ProblemDetail;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
-import com.wordium.users.dto.ApiError;
 import com.wordium.users.exceptions.BadRequestException;
 import com.wordium.users.exceptions.ConflictException;
 import com.wordium.users.exceptions.NotFoundException;
-import com.wordium.users.exceptions.ServerException;
-import com.wordium.users.exceptions.UnauthorizedException;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
-
     @ExceptionHandler(NotFoundException.class)
-    public ResponseEntity<ApiError> handleNotFound(NotFoundException e) {
-        ApiError error = new ApiError(404, "Not Found", e.getMessage(),null);
-        return ResponseEntity.status(404).body(error);
+    public ProblemDetail handleNotFound(NotFoundException e) {
+        ProblemDetail pd = ProblemDetail.forStatus(HttpStatus.NOT_FOUND);
+        pd.setTitle("Resource Not Found");
+        pd.setDetail(e.getMessage());
+        return pd;
     }
 
     @ExceptionHandler(ConflictException.class)
-    public ResponseEntity<ApiError> handleConflict(ConflictException e) {
-        ApiError error = new ApiError(409, "Conflict", e.getMessage(),null);
-        return ResponseEntity.status(409).body(error);
-    }
-
-    @ExceptionHandler(UnauthorizedException.class)
-    public ResponseEntity<ApiError> handleUnauthorized(UnauthorizedException e) {
-        ApiError error = new ApiError(401, "Unauthorized", e.getMessage(),null);
-        return ResponseEntity.status(401).body(error);
+    public ProblemDetail handleConflict(ConflictException e) {
+        ProblemDetail pd = ProblemDetail.forStatus(HttpStatus.CONFLICT);
+        pd.setTitle("Conflict");
+        pd.setDetail(e.getMessage());
+        return pd;
     }
 
     @ExceptionHandler(BadRequestException.class)
-    public ResponseEntity<ApiError> handleBadRequest(BadRequestException e) {
-        ApiError error = new ApiError(400, "Bad Request", e.getMessage(),null);
-        return ResponseEntity.status(400).body(error);
-    }
-
-    @ExceptionHandler(ServerException.class)
-    public ResponseEntity<ApiError> handleServerError(ServerException e) {
-        ApiError error = new ApiError(500, "Internal Server Error", e.getMessage(),null);
-        return ResponseEntity.status(500).body(error);
+    public ProblemDetail handleBadRequest(BadRequestException e) {
+        ProblemDetail pd = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
+        pd.setTitle("Bad Request");
+        pd.setDetail(e.getMessage());
+        return pd;
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ApiError> handleValidationErrors(MethodArgumentNotValidException e) {
+    public ProblemDetail handleValidationErrors(MethodArgumentNotValidException e) {
+        ProblemDetail pd = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
+        pd.setTitle("Validation Failed");
+        pd.setDetail("One or more fields are invalid");
 
-        List<ApiError.FieldValidationError> fieldErrors = e.getBindingResult()
-                .getFieldErrors()
-                .stream()
-                .map(err -> new ApiError.FieldValidationError(err.getField(), err.getDefaultMessage()))
+        List<Map<String, String>> fieldErrors = e.getBindingResult().getFieldErrors().stream()
+                .map(err -> Map.of(
+                        "field", err.getField(),
+                        "message", err.getDefaultMessage() != null ? err.getDefaultMessage() : "Invalid value"))
                 .toList();
 
-        ApiError error = new ApiError(
-                400,
-                "Validation Failed",
-                "One or more fields are invalid",
-                fieldErrors);
+        pd.setProperty("fieldErrors", fieldErrors);
+        return pd;
+    }
 
-        return ResponseEntity.status(400).body(error);
+    @ExceptionHandler(Exception.class)
+    public ProblemDetail handleUnexpected(Exception e) {
+        ProblemDetail pd = ProblemDetail.forStatus(HttpStatus.INTERNAL_SERVER_ERROR);
+        pd.setTitle("Internal Server Error");
+        pd.setDetail("An unexpected error occurred");
+        return pd;
     }
 }

@@ -4,8 +4,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
-import com.wordium.auth.dto.AuthRequest;
-import com.wordium.auth.dto.UserRequest;
+import com.wordium.auth.dto.SignUpRequest;
 import com.wordium.auth.dto.UserResponse;
 import com.wordium.auth.util.ServiceCaller;
 
@@ -29,7 +28,7 @@ public class UsersServiceClient {
         this.serviceCaller = serviceCaller;
     }
 
-    public UserResponse createUser(UserRequest req) {
+    public UserResponse createUser(SignUpRequest req) {
         Mono<UserResponse> responseMono = webClient.post()
                 .uri("/api/v1/users/create")
                 .header("Internal-Service-Token", serviceToken)
@@ -40,13 +39,25 @@ public class UsersServiceClient {
 
     }
 
-    public UserResponse getByEmail(AuthRequest req) {
-        Mono<UserResponse> responseMono = webClient.post()
-                .uri("/api/v1/users/by-email")
+    public UserResponse validateUser(String email, String username) {
+        Mono<UserResponse> responseMono = webClient.get()
+                .uri(uriBuilder -> {
+                    uriBuilder.path("/api/v1/users/lookup");
+
+                    if (email != null && !email.isBlank()) {
+                        uriBuilder.queryParam("email", email);
+                    }
+                    if (username != null && !username.isBlank()) {
+                        uriBuilder.queryParam("username", username);
+                    }
+
+                    return uriBuilder.build();
+                })
                 .header("Internal-Service-Token", serviceToken)
-                .bodyValue(req)
                 .retrieve()
                 .bodyToMono(UserResponse.class);
+
         return serviceCaller.callService(responseMono);
     }
+
 }

@@ -1,109 +1,74 @@
 package com.wordium.auth.config;
 
 import java.util.List;
+import java.util.Map;
 
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ProblemDetail;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import com.wordium.auth.dto.ApiError;
 import com.wordium.auth.exceptions.BadRequestException;
 import com.wordium.auth.exceptions.ConflictException;
-import com.wordium.auth.exceptions.ExternalServiceException;
+import com.wordium.auth.exceptions.ExternalServiceProblemException;
 import com.wordium.auth.exceptions.NotFoundException;
-import com.wordium.auth.exceptions.ServerException;
-import com.wordium.auth.exceptions.UnauthorizedException;
 
-@RestControllerAdvice
+@ControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(NotFoundException.class)
-    public ResponseEntity<ApiError> handleNotFound(NotFoundException e) {
-        ApiError error = new ApiError(
-                404,
-                "Not Found",
-                e.getMessage()
-        );
-        return ResponseEntity.status(404).body(error);
-    }
+        @ExceptionHandler(ExternalServiceProblemException.class)
+        public ProblemDetail handleExternalProblem(ExternalServiceProblemException e) {
+                return e.getProblemDetail(); // forwarded EXACTLY
+        }
 
-    @ExceptionHandler(ConflictException.class)
-    public ResponseEntity<ApiError> handleConflict(ConflictException e) {
-        ApiError error = new ApiError(
-                409,
-                "Conflict",
-                e.getMessage()
-        );
-        return ResponseEntity.status(409).body(error);
-    }
+        @ExceptionHandler(NotFoundException.class)
+        public ProblemDetail handleNotFound(NotFoundException e) {
+                ProblemDetail pd = ProblemDetail.forStatus(HttpStatus.NOT_FOUND);
+                pd.setTitle("Resource Not Found");
+                pd.setDetail(e.getMessage());
+                return pd;
+        }
 
-    @ExceptionHandler(UnauthorizedException.class)
-    public ResponseEntity<ApiError> handleUnauthorized(UnauthorizedException e) {
-        ApiError error = new ApiError(
-                401,
-                "Unauthorized",
-                e.getMessage()
-        );
-        return ResponseEntity.status(401).body(error);
-    }
+        @ExceptionHandler(ConflictException.class)
+        public ProblemDetail handleConflict(ConflictException e) {
+                ProblemDetail pd = ProblemDetail.forStatus(HttpStatus.CONFLICT);
+                pd.setTitle("Conflict");
+                pd.setDetail(e.getMessage());
+                return pd;
+        }
 
-    @ExceptionHandler(BadRequestException.class)
-    public ResponseEntity<ApiError> handleBadRequest(BadRequestException e) {
-        ApiError error = new ApiError(
-                400,
-                "Bad Request",
-                e.getMessage()
-        );
-        return ResponseEntity.status(400).body(error);
-    }
+        @ExceptionHandler(BadRequestException.class)
+        public ProblemDetail handleBadRequest(BadRequestException e) {
+                ProblemDetail pd = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
+                pd.setTitle("Bad Request");
+                pd.setDetail(e.getMessage());
+                return pd;
+        }
 
-    @ExceptionHandler(ServerException.class)
-    public ResponseEntity<ApiError> handleServerError(ServerException e) {
-        ApiError error = new ApiError(
-                500,
-                "Internal Server Error",
-                e.getMessage()
-        );
-        return ResponseEntity.status(500).body(error);
-    }
+        @ExceptionHandler(MethodArgumentNotValidException.class)
+        public ProblemDetail handleValidationErrors(MethodArgumentNotValidException e) {
+                ProblemDetail pd = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
+                pd.setTitle("Validation Failed");
+                pd.setDetail("One or more fields are invalid");
 
+                List<Map<String, String>> fieldErrors = e.getBindingResult().getFieldErrors().stream()
+                                .map(err -> Map.of(
+                                                "field", err.getField(),
+                                                "message",
+                                                err.getDefaultMessage() != null ? err.getDefaultMessage()
+                                                                : "Invalid value"))
+                                .toList();
 
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ApiError> handleValidationErrors(MethodArgumentNotValidException e) {
+                pd.setProperty("fieldErrors", fieldErrors);
+                return pd;
+        }
 
-        List<ApiError.FieldValidationError> fieldErrors = e.getBindingResult()
-                .getFieldErrors()
-                .stream()
-                .map(err -> new ApiError.FieldValidationError(
-                        err.getField(),
-                        err.getDefaultMessage()))
-                .toList();
-
-        ApiError error = new ApiError(
-                400,
-                "Validation Failed",
-                "One or more fields are invalid",
-                fieldErrors
-        );
-
-        return ResponseEntity.status(400).body(error);
-    }
-
-    /**
-     * Handles errors forwarded from the Users Service
-     * (e.g., 422 Unprocessable Entity)
-     */
-    @ExceptionHandler(ExternalServiceException.class)
-    public ResponseEntity<ApiError> handleExternalServiceException(ExternalServiceException e) {
-
-        ApiError error = new ApiError(
-                e.getStatus(),
-                e.getError(),
-                e.getMessage(),
-                e.getFieldErrors() // can be null
-        );
-
-        return ResponseEntity.status(e.getStatus()).body(error);
-    }
+        @ExceptionHandler(Exception.class)
+        public ProblemDetail handleUnexpected(Exception e) {
+                ProblemDetail pd = ProblemDetail.forStatus(HttpStatus.INTERNAL_SERVER_ERROR);
+                pd.setTitle("Internal Server Error");
+                pd.setDetail("An unexpected error occurred");
+                return pd;
+        }
 }

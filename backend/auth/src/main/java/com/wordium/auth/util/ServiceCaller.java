@@ -1,12 +1,11 @@
 package com.wordium.auth.util;
 
+import org.springframework.http.ProblemDetail;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.wordium.auth.dto.ApiError;
-import com.wordium.auth.exceptions.ExternalServiceException;
+import com.wordium.auth.exceptions.ExternalServiceProblemException;
 
 import reactor.core.publisher.Mono;
 
@@ -23,21 +22,21 @@ public class ServiceCaller {
         try {
             return mono.block();
         } catch (WebClientResponseException e) {
-            try {
-                ApiError error = objectMapper.readValue(e.getResponseBodyAsString(), ApiError.class);
-                System.err.println(error);
-                throw new ExternalServiceException(
-                        error.status(),
-                        error.error(),
-                        error.message(),
-                        error.fieldErrors());
-            } catch (JsonProcessingException ex) {
-                throw new ExternalServiceException(
-                        e.getStatusCode().value(),
-                        "External Service Error",
-                        e.getResponseBodyAsString(),
-                        null);
-            }
+            throw mapProblemDetail(e);
+        }
+    }
+
+    private RuntimeException mapProblemDetail(WebClientResponseException e) {
+        try {
+            ProblemDetail problemDetail = objectMapper.readValue(e.getResponseBodyAsString(), ProblemDetail.class);
+
+            return new ExternalServiceProblemException(problemDetail);
+
+        } catch (Exception ex) {
+            ProblemDetail fallback = ProblemDetail.forStatus(e.getStatusCode());
+            fallback.setTitle("External Service Error");
+            fallback.setDetail(e.getResponseBodyAsString());
+            return new ExternalServiceProblemException(fallback);
         }
     }
 }

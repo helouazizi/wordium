@@ -5,8 +5,8 @@ import java.util.Optional;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.wordium.auth.dto.AuthRequest;
-import com.wordium.auth.dto.UserRequest;
+import com.wordium.auth.dto.LoginRequest;
+import com.wordium.auth.dto.SignUpRequest;
 import com.wordium.auth.dto.UserResponse;
 import com.wordium.auth.exceptions.BadRequestException;
 import com.wordium.auth.model.AuthUser;
@@ -27,8 +27,8 @@ public class AuthService {
         this.jwtUtil = jwtUtil;
     }
 
-    public String registerUser(AuthRequest req) {
-        UserRequest userRequest = new UserRequest(req.email(), req.username(), req.displayName(), req.bio(),
+    public String registerUser(SignUpRequest req) {
+        SignUpRequest userRequest = new SignUpRequest(req.email(), req.username(), "11111111", req.bio(),
                 req.location(), req.avatarUrl());
 
         UserResponse userResponse = usersServiceClient.createUser(userRequest);
@@ -38,15 +38,14 @@ public class AuthService {
         authUser.setPasswordHash(passwordEncoder.encode(req.password()));
 
         authRepository.save(authUser);
-                String token = jwtUtil.generateToken(userResponse.id(),userResponse.role());
+        String token = jwtUtil.generateToken(userResponse.id(), userResponse.role());
 
         return token;
     }
 
-    public String validateUser(AuthRequest req) {
+    public String validateUser(LoginRequest req) {
 
-        UserResponse user = usersServiceClient.getByEmail(req);
-
+        UserResponse user = usersServiceClient.validateUser(req.email(),req.username());
 
         Optional<AuthUser> authUserOpt = authRepository.findByUserId(user.id());
         AuthUser authUser = authUserOpt.orElseThrow(() -> new BadRequestException("Invalid credentials"));
@@ -55,7 +54,7 @@ public class AuthService {
             throw new BadRequestException("Invalid credentials");
         }
 
-        String token = jwtUtil.generateToken(user.id(),user.role());
+        String token = jwtUtil.generateToken(user.id(), user.role());
 
         return token;
     }

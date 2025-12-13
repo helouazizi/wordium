@@ -15,19 +15,18 @@ import jakarta.persistence.TemporalType;
 
 @Entity
 @Table(name = "users")
-public class User {
+public class Users {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String role = "user";
-    @Column(unique = true, nullable = false)
+    @Column(nullable = false)
     private String email;
 
-    @Column(nullable = false)
+    @Column(unique = true, nullable = false)
     private String username;
 
-    private String displayName;
     private String bio;
     private String location;
     private String avatar;
@@ -80,14 +79,6 @@ public class User {
         this.location = location;
     }
 
-    public void setDisplayName(String displayName) {
-        this.displayName = displayName;
-    }
-
-    public String getDisplayName() {
-        return displayName;
-    }
-
     public String getBio() {
         return bio;
     }
@@ -95,6 +86,7 @@ public class User {
     public String getLocation() {
         return location;
     }
+
     public String getAvatar() {
         return avatar;
     }

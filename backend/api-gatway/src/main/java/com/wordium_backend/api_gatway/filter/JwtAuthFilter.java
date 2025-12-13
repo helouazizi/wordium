@@ -79,6 +79,6 @@ public class JwtAuthFilter implements GlobalFilter, Ordered {
 
     private boolean isInternalUsersRoute(String path) {
         return path.startsWith("/api/v1/users/create")
-                || path.startsWith("/api/v1/users/by-email");
+                || path.startsWith("/api/v1/users/lookup");
     }
 }
