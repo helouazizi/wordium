@@ -31,7 +31,7 @@ public class AuthService {
         SignUpRequest userRequest = new SignUpRequest(req.email(), req.username(), "11111111", req.bio(),
                 req.location(), req.avatarUrl());
 
-        UserResponse userResponse = usersServiceClient.createUser(userRequest);
+        UserResponse userResponse = usersServiceClient.createUser(signUpRequest);
 
         AuthUser authUser = new AuthUser();
         authUser.setUserId(userResponse.id());
