@@ -1,0 +1,6 @@
+@ kafka
+
+1️⃣ Add notification table
+2️⃣ Add WebSocket push
+3️⃣ Add event versioning
+4️⃣ Add retry & dead-letter topic
