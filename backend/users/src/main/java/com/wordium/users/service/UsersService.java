@@ -1,7 +1,12 @@
 package com.wordium.users.service;
 
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import org.springframework.stereotype.Service;
 
+import com.wordium.users.dto.BatchUsersRequest;
 import com.wordium.users.dto.SignUpRequest;
 import com.wordium.users.dto.SignUpResponse;
 import com.wordium.users.dto.UpdateProfileRequest;
@@ -11,8 +16,6 @@ import com.wordium.users.exceptions.ConflictException;
 import com.wordium.users.exceptions.NotFoundException;
 import com.wordium.users.model.Users;
 import com.wordium.users.repo.UsersRepo;
-
-import jakarta.transaction.Transactional;
 
 @Service
 public class UsersService {
@@ -68,7 +71,25 @@ public class UsersService {
 
     }
 
-    @Transactional
+    public List<UsersResponse> getUsers(BatchUsersRequest req) {
+        Set<Long> ids = new HashSet<>(req.usersIds());
+        List<Users> users = usersRepo.findAllByIdIn(ids);
+
+        if (ids.isEmpty()) {
+            return List.of();
+        }
+        return users.stream()
+                .map(user -> new UsersResponse(
+                user.getId(), // id
+                user.getRole(), // role
+                user.getEmail(), // email
+                user.getUsername(), // username
+                user.getBio(), // bio
+                user.getAvatarUrl(), // avatar
+                user.getLocation() // location
+        )).toList();
+    }
+
     public UsersResponse updateUserProfile(Long userId, UpdateProfileRequest req) {
         Users user = usersRepo.findById(userId)
                 .orElseThrow(() -> new NotFoundException("User not found"));
@@ -87,12 +108,15 @@ public class UsersService {
             user.setUsername(req.username());
         }
 
-        if (req.bio() != null)
+        if (req.bio() != null) {
             user.setBio(req.bio());
-        if (req.location() != null)
+        }
+        if (req.location() != null) {
             user.setLocation(req.location());
-        if (req.avatarUrl() != null)
+        }
+        if (req.avatarUrl() != null) {
             user.setAvatarUrl(req.avatarUrl());
+        }
 
         try {
             usersRepo.save(user);

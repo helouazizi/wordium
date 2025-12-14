@@ -1,0 +1,24 @@
+4️⃣ How everything fits together (big picture)
+Users Service
+   │
+   ├─ emits FOLLOW event → Kafka
+   │
+Notification Service
+   ├─ consumes Kafka
+   ├─ saves notification
+   ├─ pushes WebSocket (if online)
+   │
+Redis
+   ├─ caches user profiles
+   │
+Frontend
+   ├─ REST: load history
+   ├─ WS: receive live notifications
+
+5️⃣ Final recommendations (very important)
+
+✅ Use REST + WebSocket
+✅ Enrich notifications server-side
+✅ Use Redis + batch resolving
+✅ Keep Kafka events ID-only
+✅ Make frontend dumb and fast

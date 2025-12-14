@@ -1,5 +1,7 @@
 package com.wordium.users.repo;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -15,4 +17,5 @@ public interface UsersRepo extends JpaRepository<Users, Long> {
 
     @Override
     Optional<Users> findById(Long id);
+     List<Users> findAllByIdIn(Collection<Long> ids);
 }

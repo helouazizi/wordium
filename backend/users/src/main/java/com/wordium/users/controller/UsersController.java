@@ -1,5 +1,7 @@
 package com.wordium.users.controller;
 
+import java.util.List;
+
 import org.apache.hc.core5.http.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ProblemDetail;
@@ -14,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.wordium.users.dto.BatchUsersRequest;
 import com.wordium.users.dto.SignUpRequest;
 import com.wordium.users.dto.SignUpResponse;
 import com.wordium.users.dto.UpdateProfileRequest;
@@ -54,14 +57,20 @@ public class UsersController {
         return ResponseEntity.ok(user);
     }
 
+    @Hidden
+    @GetMapping("/batch")
+    public ResponseEntity<List<UsersResponse>> getUsersProfiles(@RequestBody BatchUsersRequest req) {
+        List<UsersResponse> users = userService.getUsers(req);
+        return ResponseEntity.ok(users);
+    }
+
     @GetMapping("/me")
     @Operation(summary = "Get session profile", description = "Fetch a session profile using id from header ")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "User fetched successfully", content = @Content(schema = @Schema(implementation = UsersResponse.class))),
-            @ApiResponse(responseCode = "404", description = "User not found", content = @Content(schema = @Schema(implementation = ProblemDetail.class))),
-            @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = ProblemDetail.class))),
-            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(implementation = ProblemDetail.class))),
-    })
+        @ApiResponse(responseCode = "200", description = "User fetched successfully", content = @Content(schema = @Schema(implementation = UsersResponse.class))),
+        @ApiResponse(responseCode = "404", description = "User not found", content = @Content(schema = @Schema(implementation = ProblemDetail.class))),
+        @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = ProblemDetail.class))),
+        @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(implementation = ProblemDetail.class))),})
 
     public ResponseEntity<UsersResponse> getSessionProfile(@RequestHeader("User-Id") Long userId) {
         UsersResponse user = userService.getUserProfile(userId);
@@ -71,11 +80,10 @@ public class UsersController {
     @PatchMapping("/me")
     @Operation(summary = "Update User profile", description = "Update User profile using id from header ")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "User profile updated successfully", content = @Content(schema = @Schema(implementation = UsersResponse.class))),
-            @ApiResponse(responseCode = "404", description = "User not found", content = @Content(schema = @Schema(implementation = ProblemDetail.class))),
-            @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = ProblemDetail.class))),
-            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(implementation = ProblemDetail.class))),
-    })
+        @ApiResponse(responseCode = "200", description = "User profile updated successfully", content = @Content(schema = @Schema(implementation = UsersResponse.class))),
+        @ApiResponse(responseCode = "404", description = "User not found", content = @Content(schema = @Schema(implementation = ProblemDetail.class))),
+        @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = ProblemDetail.class))),
+        @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(implementation = ProblemDetail.class))),})
     public ResponseEntity<UsersResponse> upadteProfile(@RequestHeader("User-Id") Long userId,
             @Valid @RequestBody UpdateProfileRequest req) {
         UsersResponse user = userService.updateUserProfile(userId, req);
@@ -85,11 +93,10 @@ public class UsersController {
     @GetMapping("/{userId}")
     @Operation(summary = "Get User profile", description = "Fetch a user profile using id as param")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "User fetched successfully", content = @Content(schema = @Schema(implementation = UsersResponse.class))),
-            @ApiResponse(responseCode = "404", description = "User not found", content = @Content(schema = @Schema(implementation = ProblemDetail.class))),
-            @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = ProblemDetail.class))),
-            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(implementation = ProblemDetail.class))),
-    })
+        @ApiResponse(responseCode = "200", description = "User fetched successfully", content = @Content(schema = @Schema(implementation = UsersResponse.class))),
+        @ApiResponse(responseCode = "404", description = "User not found", content = @Content(schema = @Schema(implementation = ProblemDetail.class))),
+        @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = ProblemDetail.class))),
+        @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(implementation = ProblemDetail.class))),})
 
     public ResponseEntity<UsersResponse> getUserProfile(@PathVariable Long userId) {
         UsersResponse user = userService.getUserProfile(userId);

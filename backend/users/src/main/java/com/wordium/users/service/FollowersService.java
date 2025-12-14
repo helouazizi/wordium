@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 
 import com.wordium.users.dto.UsersResponse;
+import com.wordium.users.events.FollowEvent;
 import com.wordium.users.exceptions.BadRequestException;
 import com.wordium.users.exceptions.NotFoundException;
 import com.wordium.users.model.Followers;
@@ -20,10 +21,12 @@ public class FollowersService {
 
     private final FollowersRepo followersRepo;
     private final UsersRepo usersRepo;
+    private final FollowEventProducer producer;
 
-    public FollowersService(FollowersRepo followersRepo, UsersRepo usersRepo) {
+    public FollowersService(FollowersRepo followersRepo, UsersRepo usersRepo, FollowEventProducer producer) {
         this.followersRepo = followersRepo;
         this.usersRepo = usersRepo;
+        this.producer = producer;
     }
 
     @Transactional
@@ -43,6 +46,9 @@ public class FollowersService {
 
         Followers follow = new Followers(follower.getId(), followed.getId());
         followersRepo.save(follow);
+
+        // notify using kafka 
+        producer.sendFollowEvent(new FollowEvent(follow.getFollowerId().toString(), follow.getFollowedId().toString(), "FOLLOW"));
     }
 
     @Transactional
@@ -50,6 +56,9 @@ public class FollowersService {
         Followers follow = followersRepo.findByFollowerIdAndFollowedId(userId, targetUserId)
                 .orElseThrow(() -> new BadRequestException("You are Not following this user"));
         followersRepo.delete(follow);
+
+        // notify using kafka 
+        producer.sendFollowEvent(new FollowEvent(follow.getFollowerId().toString(), follow.getFollowedId().toString(), "UNFOLLOW"));
     }
 
     public List<UsersResponse> getFollowers(Long userId) {
@@ -59,10 +68,10 @@ public class FollowersService {
 
         return followers.stream()
                 .map(f -> usersRepo.findById(f.getFollowerId())
-                        .map(u -> new UsersResponse(u.getId(), u.getRole(), u.getEmail(),
-                                u.getUsername(), u.getBio(), u.getAvatarUrl(),
-                                u.getLocation()))
-                        .orElse(null))
+                .map(u -> new UsersResponse(u.getId(), u.getRole(), u.getEmail(),
+                u.getUsername(), u.getBio(), u.getAvatarUrl(),
+                u.getLocation()))
+                .orElse(null))
                 .filter(r -> r != null)
                 .collect(Collectors.toList());
     }
