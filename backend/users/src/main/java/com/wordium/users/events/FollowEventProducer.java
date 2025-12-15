@@ -1,11 +1,11 @@
-package com.wordium.users.service;
+package com.wordium.users.events;
 
 import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
-import com.wordium.users.events.FollowEvent;
+import com.wordium.users.dto.FollowEvent;
 
-@Service
+@Component
 public class FollowEventProducer {
 
     private static final String TOPIC = "user.follow.events";
@@ -19,8 +19,11 @@ public class FollowEventProducer {
     public void sendFollowEvent(FollowEvent event) {
         kafkaTemplate.send(
                 TOPIC,
-                event.getFollowerId(), // key → keeps ordering per user
-                event
+                new FollowEvent(
+                        event.type(),
+                        event.actorId(),
+                        event.receiverId(),
+                        event.referenceId())
         );
     }
 }

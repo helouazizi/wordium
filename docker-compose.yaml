@@ -80,7 +80,7 @@ services:
     env_file:
       - ./database/notifications/.env  
     ports:
-      - "${NOTIFICATIONS_DB_PORT}:${NOTIFICATIONS_DB_PORT}"
+      - "${NOTIFICATIONS_DB_PORT}:${POSTGRES_PORT}"
 
   # services 
   test-service:
