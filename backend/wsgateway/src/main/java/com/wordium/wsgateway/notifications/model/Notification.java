@@ -1,4 +1,4 @@
-package com.wordium.notifications.models;
+package com.wordium.wsgateway.notifications.model;
 
 import java.time.Instant;
 

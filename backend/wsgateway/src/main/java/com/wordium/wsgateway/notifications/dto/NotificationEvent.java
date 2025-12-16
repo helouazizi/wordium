@@ -1,4 +1,4 @@
-package com.wordium.notifications.dto;
+package com.wordium.wsgateway.notifications.dto;
 
 public record NotificationEvent(
         String type,

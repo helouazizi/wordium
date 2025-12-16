@@ -1,6 +1,6 @@
 spring:
   application:
-    name: notifications
+    name: wsgateway
   datasource:
     url: jdbc:postgresql://${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}
     username: ${POSTGRES_USER}
@@ -20,7 +20,7 @@ spring:
     bootstrap-servers: ${KAFKA_HOST}:${KAFKA_PORT}
 
     consumer:
-      group-id: notifications-service
+      group-id: ws-gateway
       auto-offset-reset: earliest
       enable-auto-commit: true
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
@@ -28,9 +28,12 @@ spring:
 
       properties:
         spring.json.use.type.headers: false
-        spring.json.value.default.type: com.wordium.notifications.dto.NotificationEvent
+        spring.json.value.default.type: com.wordium.wsgateway.notifications.dto.NotificationEvent
         spring.json.trusted.packages: "*"
-
+  data:
+    redis:
+      host: ${REDIS_HOST}
+      port: ${REDIS_PORT}
 server:
   port: 3002
   address: 0.0.0.0
@@ -44,10 +47,10 @@ eureka:
 
 springdoc:
   api-docs:
-    path: /notifications/v3/api-docs
+    path: /wsgateway/v3/api-docs
   swagger-ui:
-    path: /notifications/swagger-ui.html
+    path: /wsgateway/swagger-ui.html
   info:
-    title: Notifications Service API
+    title: wsgateway Service API
     version: 1.0
-    description: Notifications microservice API
+    description: wsgateway microservice API

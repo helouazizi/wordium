@@ -1,13 +1,13 @@
-package com.wordium.notifications;
+package com.wordium.wsgateway;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class NotificationsApplication {
+public class WsgatewayApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(NotificationsApplication.class, args);
+		SpringApplication.run(WsgatewayApplication.class, args);
 	}
 
 }
