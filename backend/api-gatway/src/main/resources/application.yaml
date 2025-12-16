@@ -42,6 +42,14 @@ spring:
           filters:
             - StripPrefix=3
 
+        # WS-GATEWAY SERVICE
+        - id: wsgateway
+          uri: http://${HOST}:3002
+          # uri: lb://wsgateway
+          predicates:
+            - Path=/api/v1/wsgateway/**
+          filters:
+            - StripPrefix=2
 
         # TEST SERVICE
         - id: test-service

@@ -41,9 +41,10 @@ public class NotificationsService {
     //     return cacheService.getLatest(userId)
     //             .orElseGet(() -> repository.findLatest(userId));
     // }
-
     public void markAsRead(Long notificationId, Long userId) {
-        repository.markAsRead(notificationId, userId);
+        int updated = repository.markAsRead(notificationId, userId);
+
         cacheService.decrementUnread(userId);
+        System.out.println("Updated rows: " + updated);
     }
 }
