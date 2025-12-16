@@ -1,10 +1,10 @@
-package  com.wordium.notifications.services;
+package com.wordium.notifications.services;
 
 import org.springframework.stereotype.Service;
 
+import com.wordium.notifications.dto.NotificationEvent;
+import com.wordium.notifications.models.Notification;
 import com.wordium.notifications.repo.NotificationsRepo;
-
-
 
 @Service
 public class NotificationsService {
@@ -15,23 +15,18 @@ public class NotificationsService {
         this.repository = repository;
     }
 
-    // public Notification create(String title, String message, Long userId) {
-    //     return repository.save(new Notification(title, message, userId));
-    // }
+    public Notification createFromEvent(NotificationEvent event) {
 
-    // public List<Notification> getUserNotifications(Long userId) {
-    //     return repository.findByUserId(userId);
-    // }
+        Notification notification = new Notification(
+                event.receiverId(),
+                event.actorId(),
+                event.type(),
+                event.referenceId()
+        );
 
-    // public List<Notification> getUnreadNotifications(Long userId) {
-    //     return repository.findByUserIdAndReadFalse(userId);
-    // }
+        return repository.save(notification);
+    }
 
-    // public void markAsRead(Long id) {
-    //     Notification notification = repository.findById(id)
-    //             .orElseThrow(() -> new RuntimeException("Notification not found"));
+    
 
-    //     notification.setRead(true);
-    //     repository.save(notification);
-    // }
 }

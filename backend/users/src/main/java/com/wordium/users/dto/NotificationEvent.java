@@ -1,6 +1,5 @@
-package com.wordium.notifications.dto;
-
-public record FollowEvent(
+package com.wordium.users.dto;
+public record NotificationEvent(
         String type,
         Long actorId,
         Long receiverId,

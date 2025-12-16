@@ -3,23 +3,23 @@ package com.wordium.users.events;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 
-import com.wordium.users.dto.FollowEvent;
+import com.wordium.users.dto.NotificationEvent;
 
 @Component
 public class FollowEventProducer {
 
-    private static final String TOPIC = "user.follow.events";
+    private static final String TOPIC = "notifications.events";
 
-    private final KafkaTemplate<String, FollowEvent> kafkaTemplate;
+    private final KafkaTemplate<String, NotificationEvent> kafkaTemplate;
 
-    public FollowEventProducer(KafkaTemplate<String, FollowEvent> kafkaTemplate) {
+    public FollowEventProducer(KafkaTemplate<String, NotificationEvent> kafkaTemplate) {
         this.kafkaTemplate = kafkaTemplate;
     }
 
-    public void sendFollowEvent(FollowEvent event) {
+    public void sendFollowEvent(NotificationEvent event) {
         kafkaTemplate.send(
                 TOPIC,
-                new FollowEvent(
+                new NotificationEvent(
                         event.type(),
                         event.actorId(),
                         event.receiverId(),

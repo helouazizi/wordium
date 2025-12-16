@@ -5,7 +5,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
-import com.wordium.users.dto.FollowEvent;
+import com.wordium.users.dto.NotificationEvent;
 import com.wordium.users.dto.UsersResponse;
 import com.wordium.users.events.FollowEventProducer;
 import com.wordium.users.exceptions.BadRequestException;
@@ -49,7 +49,7 @@ public class FollowersService {
         followersRepo.save(follow);
 
         // notify using kafka 
-        producer.sendFollowEvent(new FollowEvent( "FOLLOW",follow.getFollowerId(), follow.getFollowedId(),null));
+        producer.sendFollowEvent(new NotificationEvent( "FOLLOW",follow.getFollowerId(), follow.getFollowedId(),null));
     }
 
     @Transactional
@@ -59,7 +59,7 @@ public class FollowersService {
         followersRepo.delete(follow);
 
         // notify using kafka 
-        producer.sendFollowEvent(new FollowEvent("UNFOLLOW",follow.getFollowerId(), follow.getFollowedId(),null));
+        producer.sendFollowEvent(new NotificationEvent("UNFOLLOW",follow.getFollowerId(), follow.getFollowedId(),null));
     }
 
     public List<UsersResponse> getFollowers(Long userId) {
