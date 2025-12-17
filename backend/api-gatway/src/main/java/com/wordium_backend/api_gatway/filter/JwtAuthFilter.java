@@ -24,7 +24,7 @@ public class JwtAuthFilter implements GlobalFilter, Ordered {
         String path = exchange.getRequest().getURI().getPath();
 
         // Allow auth endpoints without token
-        if (path.startsWith("/api/v1/auth") || path.contains("/v3/api-docs")) {
+        if (path.startsWith("/api/v1/auth") || path.startsWith("/api/v1/wsgateway/ws") || path.contains("/v3/api-docs")) {
             return chain.filter(exchange);
         }
 

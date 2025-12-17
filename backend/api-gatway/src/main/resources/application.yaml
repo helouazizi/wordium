@@ -43,7 +43,15 @@ spring:
             - StripPrefix=3
 
         # WS-GATEWAY SERVICE
-        - id: wsgateway
+        
+        - id: wsgateway-ws
+          uri: ws://${HOST}:3002 
+          # uri: lb://wsgateway
+          predicates:
+            - Path=/api/v1/wsgateway/ws/**
+          filters:
+            - StripPrefix=2
+        - id: wsgateway-rest
           uri: http://${HOST}:3002
           # uri: lb://wsgateway
           predicates:
@@ -74,3 +82,8 @@ springdoc:
         url: /api/v1/auth/v3/api-docs
       - name: users-service
         url: /api/v1/users/v3/api-docs
+logging:
+  level:
+    reactor.netty.http.server: DEBUG
+    org.springframework.cloud.gateway.handler: DEBUG
+    org.springframework.web.reactive.socket.server: DEBUG

@@ -30,17 +30,11 @@ public class NotificationsService {
 
         Notification saved = repository.save(notification);
         cacheService.cache(saved);
-        // socketService.push(saved);
+        socketService.push(saved);
         return saved;
     }
 
-//     public long getUnreadCount(Long userId) {
-//     return cacheService.getUnreadCount(userId);
-// }
-    // public List<Notification> getLatest(Long userId) {
-    //     return cacheService.getLatest(userId)
-    //             .orElseGet(() -> repository.findLatest(userId));
-    // }
+
     public void markAsRead(Long notificationId, Long userId) {
         int updated = repository.markAsRead(notificationId, userId);
 
