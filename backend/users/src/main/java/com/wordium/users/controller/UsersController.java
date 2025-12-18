@@ -43,14 +43,14 @@ public class UsersController {
     }
 
     @Hidden
-    @PostMapping("/create")
+    @PostMapping("/internal/create")
     public ResponseEntity<SignUpResponse> createUser(@Valid @RequestBody SignUpRequest req) {
         SignUpResponse createdUser = userService.createUser(req);
         return ResponseEntity.status(HttpStatus.SC_CREATED).body(createdUser);
     }
 
     @Hidden
-    @GetMapping("/lookup")
+    @GetMapping("/internal/lookup")
     public ResponseEntity<SignUpResponse> lookupUser(@RequestParam(required = false) String email,
             @RequestParam(required = false) String username) {
         SignUpResponse user = userService.findByEmailOrUsername(email, username);
@@ -58,7 +58,7 @@ public class UsersController {
     }
 
     @Hidden
-    @GetMapping("/batch")
+    @PostMapping("/internal/batch")
     public ResponseEntity<List<UsersResponse>> getUsersProfiles(@RequestBody BatchUsersRequest req) {
         List<UsersResponse> users = userService.getUsers(req);
         return ResponseEntity.ok(users);

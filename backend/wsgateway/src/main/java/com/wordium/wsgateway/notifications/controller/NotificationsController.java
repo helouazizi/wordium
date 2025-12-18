@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.wordium.wsgateway.notifications.model.Notification;
+import com.wordium.wsgateway.common.dto.NotificationResponse;
 import com.wordium.wsgateway.notifications.service.NotificationsService;
 
 @RestController
@@ -23,7 +23,7 @@ public class NotificationsController {
     }
 
     @GetMapping("/notifications")
-    public List<Notification> getMyNotifications(
+    public List<NotificationResponse> getMyNotifications(
             @RequestHeader("User-Id") Long userId
     ) {
         return service.getUserNotifications(userId);

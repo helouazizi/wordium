@@ -30,7 +30,7 @@ public class UsersServiceClient {
 
     public UserResponse createUser(SignUpRequest req) {
         Mono<UserResponse> responseMono = webClient.post()
-                .uri("/api/v1/users/create")
+                .uri("/api/v1/users/internal/create")
                 .header("Internal-Service-Token", serviceToken)
                 .bodyValue(req)
                 .retrieve()
@@ -42,7 +42,7 @@ public class UsersServiceClient {
     public UserResponse validateUser(String email, String username) {
         Mono<UserResponse> responseMono = webClient.get()
                 .uri(uriBuilder -> {
-                    uriBuilder.path("/api/v1/users/lookup");
+                    uriBuilder.path("/api/v1/users/internal/lookup");
 
                     if (email != null && !email.isBlank()) {
                         uriBuilder.queryParam("email", email);

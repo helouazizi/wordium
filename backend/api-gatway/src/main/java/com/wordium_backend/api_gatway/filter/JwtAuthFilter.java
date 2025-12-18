@@ -29,7 +29,7 @@ public class JwtAuthFilter implements GlobalFilter, Ordered {
         }
 
         // validate internal connections
-        if (isInternalUsersRoute(path)) {
+        if (path.contains("internal")) {
             String internalToken = exchange.getRequest().getHeaders().getFirst("Internal-Service-Token");
 
             if (internalToken == null || !internalToken.equals(jwtUtil.getServiceTokenKey())) {
@@ -57,11 +57,11 @@ public class JwtAuthFilter implements GlobalFilter, Ordered {
             return unauthorized(exchange);
         }
 
-        JwtUtil.UserInfo  userinfo = jwtUtil.extractUserInfo(token);
+        JwtUtil.UserInfo userinfo = jwtUtil.extractUserInfo(token);
         var changedRequest = exchange.mutate()
-              .request(builder -> builder
-                        .header("User-Id", userinfo.userId())
-                        .header("User-Role", userinfo.role()))
+                .request(builder -> builder
+                .header("User-Id", userinfo.userId())
+                .header("User-Role", userinfo.role()))
                 .build();
 
         return chain.filter(changedRequest);
@@ -74,11 +74,7 @@ public class JwtAuthFilter implements GlobalFilter, Ordered {
 
     @Override
     public int getOrder() {
-        return -1; 
+        return -1;
     }
 
-    private boolean isInternalUsersRoute(String path) {
-        return path.startsWith("/api/v1/users/create")
-                || path.startsWith("/api/v1/users/lookup");
-    }
 }
