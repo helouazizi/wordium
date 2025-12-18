@@ -10,13 +10,10 @@ import com.wordium.wsgateway.notifications.repo.NotificationsRepo;
 public class NotificationsService {
 
     private final NotificationsRepo repository;
-    private final NotificationCacheService cacheService;
-    private final NotificationSocketService socketService;
 
-    public NotificationsService(NotificationsRepo repository, NotificationCacheService cacheService, NotificationSocketService socketService) {
+    public NotificationsService(NotificationsRepo repository) {
         this.repository = repository;
-        this.cacheService = cacheService;
-        this.socketService = socketService;
+
     }
 
     public Notification createFromEvent(NotificationEvent event) {
@@ -29,16 +26,13 @@ public class NotificationsService {
         );
 
         Notification saved = repository.save(notification);
-        cacheService.cache(saved);
-        socketService.push(saved);
+
         return saved;
     }
-
 
     public void markAsRead(Long notificationId, Long userId) {
         int updated = repository.markAsRead(notificationId, userId);
 
-        cacheService.decrementUnread(userId);
         System.out.println("Updated rows: " + updated);
     }
 }
