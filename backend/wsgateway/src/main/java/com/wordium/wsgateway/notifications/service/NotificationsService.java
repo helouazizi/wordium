@@ -1,5 +1,6 @@
 package com.wordium.wsgateway.notifications.service;
 
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import com.wordium.wsgateway.notifications.dto.NotificationEvent;
@@ -11,9 +12,11 @@ public class NotificationsService {
 
     private final NotificationsRepo repository;
 
-    public NotificationsService(NotificationsRepo repository) {
-        this.repository = repository;
+    private final SimpMessagingTemplate messagingTemplate;
 
+    public NotificationsService(NotificationsRepo repository, SimpMessagingTemplate messagingTemplate) {
+        this.repository = repository;
+        this.messagingTemplate = messagingTemplate;
     }
 
     public Notification createFromEvent(NotificationEvent event) {
@@ -26,7 +29,10 @@ public class NotificationsService {
         );
 
         Notification saved = repository.save(notification);
-
+        // we need to push to front now  how to use ws here 
+        // Push notification to user over WebSocket
+        String destination = "/topic/notifications." + event.receiverId();
+        messagingTemplate.convertAndSend(destination, event);
         return saved;
     }
 
