@@ -1,5 +1,7 @@
 package com.wordium.wsgateway.notifications.repo;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -10,6 +12,8 @@ import io.lettuce.core.dynamic.annotation.Param;
 import jakarta.transaction.Transactional;
 
 public interface NotificationsRepo extends JpaRepository<Notification, Long> {
+
+    List<Notification> findByReceiverUserIdOrderByCreatedAtDesc(Long receiverId);
 
     @Modifying
     @Transactional

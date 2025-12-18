@@ -13,7 +13,7 @@ import com.wordium.wsgateway.notifications.model.Notification;
 import com.wordium.wsgateway.notifications.service.NotificationsService;
 
 @RestController
-@RequestMapping("/wsgateway") 
+@RequestMapping("/wsgateway")
 public class NotificationsController {
 
     private final NotificationsService service;
@@ -26,7 +26,7 @@ public class NotificationsController {
     public List<Notification> getMyNotifications(
             @RequestHeader("User-Id") Long userId
     ) {
-        return null;
+        return service.getUserNotifications(userId);
     }
 
     @GetMapping("/notifications/unread-count")
