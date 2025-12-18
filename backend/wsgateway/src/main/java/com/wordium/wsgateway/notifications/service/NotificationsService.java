@@ -31,8 +31,9 @@ public class NotificationsService {
         Notification saved = repository.save(notification);
         // we need to push to front now  how to use ws here 
         // Push notification to user over WebSocket
-        String destination = "/topic/notifications." + event.receiverId();
-        messagingTemplate.convertAndSend(destination, event);
+        String destination = "/topic/test"; // temporary for testing
+        messagingTemplate.convertAndSend(destination, "New notification for user " + event.receiverId());
+
         return saved;
     }
 
