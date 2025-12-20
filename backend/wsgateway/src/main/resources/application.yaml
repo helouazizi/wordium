@@ -54,3 +54,14 @@ springdoc:
     title: wsgateway Service API
     version: 1.0
     description: wsgateway microservice API
+
+# application.yml
+logging:
+  level:
+    org.springframework.messaging: TRACE
+    org.springframework.web.socket: TRACE
+    org.springframework.messaging.simp: TRACE
+    org.springframework.messaging.simp.stomp: TRACE
+    org.springframework.messaging.simp.user: TRACE
+    org.springframework.messaging.simp.broker: TRACE
+    com.wordium.wsgateway: DEBUG # your package, optional

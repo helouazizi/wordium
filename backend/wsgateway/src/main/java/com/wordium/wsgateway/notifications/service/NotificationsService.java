@@ -7,7 +7,6 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import com.wordium.wsgateway.common.client.UsersClientImpl;
@@ -22,13 +21,10 @@ public class NotificationsService {
 
     private final NotificationsRepo repository;
 
-    private final SimpMessagingTemplate messagingTemplate;
-
     private final UsersClientImpl usersClientImpl;
 
-    public NotificationsService(NotificationsRepo repository, SimpMessagingTemplate messagingTemplate, UsersClientImpl usersClientImpl) {
+    public NotificationsService(NotificationsRepo repository, UsersClientImpl usersClientImpl) {
         this.repository = repository;
-        this.messagingTemplate = messagingTemplate;
         this.usersClientImpl = usersClientImpl;
     }
 
@@ -42,10 +38,6 @@ public class NotificationsService {
         );
 
         Notification saved = repository.save(notification);
-        // we need to push to front now  how to use ws here 
-        // Push notification to user over WebSocket
-        String destination = "/topic/test"; // temporary for testing
-        messagingTemplate.convertAndSend(destination, "New notification " + event.receiverId());
 
         return saved;
     }

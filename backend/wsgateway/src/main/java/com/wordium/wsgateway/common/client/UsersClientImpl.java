@@ -34,12 +34,6 @@ public class UsersClientImpl implements UsersClient {
         if (userIds == null || userIds.isEmpty()) {
             return List.of();
         }
-
-        // String ids = userIds.stream()
-        //         .map(String::valueOf)
-        //         .collect(java.util.stream.Collectors.joining(","));
-      
-
         BatchUsersRequest request = new BatchUsersRequest(userIds.stream().toList());
 
         return webClient.post()
