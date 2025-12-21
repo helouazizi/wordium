@@ -11,7 +11,9 @@ import org.springframework.stereotype.Service;
 
 import com.wordium.wsgateway.common.client.UsersClientImpl;
 import com.wordium.wsgateway.common.dto.NotificationResponse;
+import com.wordium.wsgateway.common.dto.NotificationsResponse;
 import com.wordium.wsgateway.common.dto.UserProfile;
+import com.wordium.wsgateway.common.exceptions.NotFoundException;
 import com.wordium.wsgateway.notifications.dto.NotificationEvent;
 import com.wordium.wsgateway.notifications.model.Notification;
 import com.wordium.wsgateway.notifications.repo.NotificationsRepo;
@@ -34,21 +36,21 @@ public class NotificationsService {
                 event.receiverId(),
                 event.actorId(),
                 event.type(),
-                event.referenceId()
-        );
+                event.referenceId());
 
         Notification saved = repository.save(notification);
-
+        // later use redis and ws if needded
+        System.out.println("even recived "+event.receiverId() + "++++++++++++++++");
         return saved;
     }
 
-    public List<NotificationResponse> getUserNotifications(Long userId) {
+    public NotificationsResponse getUserNotifications(Long userId) {
         List<Notification> notifications = repository.findByReceiverUserIdOrderByCreatedAtDesc(userId);
         Set<Long> actorIds = notifications.stream()
                 .map(Notification::getActorUserId)
                 .filter(Objects::nonNull)
                 .collect(Collectors.toSet());
-        // now need to get users profile from users 
+        // now need to get users profile from users
         List<UserProfile> profiles = usersClientImpl.getUsersByIds(actorIds);
 
         Map<Long, UserProfile> userProfileMap = profiles.stream()
@@ -56,20 +58,30 @@ public class NotificationsService {
 
         List<NotificationResponse> responses = notifications.stream()
                 .map(notification -> new NotificationResponse(
-                notification.getId(),
-                notification.getType(),
-                userProfileMap.get(notification.getActorUserId()),
-                notification.isRead(),
-                notification.getCreatedAt()
-        ))
+                        notification.getId(),
+                        notification.getType(),
+                        userProfileMap.get(notification.getActorUserId()),
+                        notification.isRead(),
+                        notification.getCreatedAt()))
                 .toList();
+        long unread = repository.countByReceiverUserIdAndIsReadFalse(userId);
+        long total = repository.countByReceiverUserId(userId);
 
-        return responses;
+        // save to cach i f neded
+
+        return new NotificationsResponse(responses, unread, total);
     }
 
     public void markAsRead(Long notificationId, Long userId) {
         int updated = repository.markAsRead(notificationId, userId);
+        if (updated == 0) {
+            throw new NotFoundException("Notification with ID " + notificationId + " not found");
+        }
+    }
 
-        System.out.println("Updated rows: " + updated);
+    public Long unreadCount(Long userId) {
+        Long unread = repository.countByReceiverUserIdAndIsReadFalse(userId);
+
+        return unread;
     }
 }

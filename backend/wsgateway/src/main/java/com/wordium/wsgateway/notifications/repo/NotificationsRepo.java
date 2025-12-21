@@ -14,6 +14,9 @@ import jakarta.transaction.Transactional;
 public interface NotificationsRepo extends JpaRepository<Notification, Long> {
 
     List<Notification> findByReceiverUserIdOrderByCreatedAtDesc(Long receiverId);
+    long countByReceiverUserIdAndIsReadFalse(Long receiverUserId);
+    long countByReceiverUserId(Long receiverUserId);
+
 
     @Modifying
     @Transactional

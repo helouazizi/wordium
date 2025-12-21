@@ -10,22 +10,27 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 import com.wordium.wsgateway.common.dto.BatchUsersRequest;
 import com.wordium.wsgateway.common.dto.UserProfile;
+import com.wordium.wsgateway.util.ServiceCaller;
+
+import reactor.core.publisher.Mono;
 
 @Component
 public class UsersClientImpl implements UsersClient {
 
     private final WebClient webClient;
     private final String serviceToken;
+    private final ServiceCaller serviceCaller;
 
     public UsersClientImpl(
             @Value("${GATEWAY_API:http://localhost:8080}") String gatewayApi,
-            @Value("${INTERNAL_SERVICE_SECRET}") String serviceToken) {
+            @Value("${INTERNAL_SERVICE_SECRET}") String serviceToken, ServiceCaller serviceCaller) {
 
         this.webClient = WebClient.builder()
                 .baseUrl(gatewayApi)
                 .build();
 
         this.serviceToken = serviceToken;
+        this.serviceCaller = serviceCaller;
     }
 
     @Override
@@ -36,14 +41,15 @@ public class UsersClientImpl implements UsersClient {
         }
         BatchUsersRequest request = new BatchUsersRequest(userIds.stream().toList());
 
-        return webClient.post()
+        Mono<List<UserProfile>> responseMono = webClient.post()
                 .uri("/api/v1/users/internal/batch")
                 .header("Internal-Service-Token", serviceToken)
                 .bodyValue(request)
                 .retrieve()
                 .bodyToMono(new ParameterizedTypeReference<List<UserProfile>>() {
-                })
-                .block();
+                });
+
+        return serviceCaller.callService(responseMono);
     }
 
 }

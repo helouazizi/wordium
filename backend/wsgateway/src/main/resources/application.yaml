@@ -40,10 +40,10 @@ server:
 
 eureka:
   client:
-    register-with-eureka: false
-    fetch-registry: false
-    # service-url:
-    #   defaultZone: ${EUREKA_URL:http://localhost:8761/eureka}
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: ${EUREKA_URL:http://localhost:8761/eureka}
 
 springdoc:
   api-docs:
@@ -55,13 +55,4 @@ springdoc:
     version: 1.0
     description: wsgateway microservice API
 
-# application.yml
-logging:
-  level:
-    org.springframework.messaging: TRACE
-    org.springframework.web.socket: TRACE
-    org.springframework.messaging.simp: TRACE
-    org.springframework.messaging.simp.stomp: TRACE
-    org.springframework.messaging.simp.user: TRACE
-    org.springframework.messaging.simp.broker: TRACE
-    com.wordium.wsgateway: DEBUG # your package, optional
+
