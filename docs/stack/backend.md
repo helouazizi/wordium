@@ -163,6 +163,34 @@ Possible admin features:
 - Ban / unban users
 - Delete posts
 - Analytics (total users, posts, most reported users, etc.)
+## Admin API Routes
+
+### Users Management
+| Method | Endpoint                     | Description |
+|--------|------------------------------|-------------|
+| GET    | `/admin/users`               | List all users (supports optional filters, e.g., banned, active) |
+| GET    | `/admin/users/{id}`          | Get user details by ID |
+| PATCH  | `/admin/users/{id}/ban`      | Ban a user |
+| PATCH  | `/admin/users/{id}/unban`    | Unban a user |
+| PATCH  | `/admin/users/{id}/role`     | Change user role (e.g., admin, moderator) |
+| DELETE | `/admin/users/{id}`          | Delete a user (optional) |
+
+### Posts Management
+| Method | Endpoint                     | Description |
+|--------|------------------------------|-------------|
+| GET    | `/admin/posts`               | List all posts (supports optional filters, e.g., reported) |
+| GET    | `/admin/posts/{id}`          | Get post by ID |
+| DELETE | `/admin/posts/{id}`          | Delete a post |
+| PATCH  | `/admin/posts/{id}/flag`     | Flag or unflag a post |
+
+### Reports / Moderation
+| Method | Endpoint                         | Description |
+|--------|----------------------------------|-------------|
+| GET    | `/admin/reports`                 | List all reports (filter by user, post, content type) |
+| GET    | `/admin/reports/{id}`            | Get report details by ID |
+| PATCH  | `/admin/reports/{id}/resolve`    | Mark a report as resolved |
+| DELETE | `/admin/reports/{id}`            | Delete a report |
+
 
 ---
 

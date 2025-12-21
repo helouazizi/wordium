@@ -1,4 +1,4 @@
-package com.wordium.users.service;
+package com.wordium.users.services.users;
 
 import java.util.HashSet;
 import java.util.List;
@@ -14,7 +14,7 @@ import com.wordium.users.dto.UsersResponse;
 import com.wordium.users.exceptions.BadRequestException;
 import com.wordium.users.exceptions.ConflictException;
 import com.wordium.users.exceptions.NotFoundException;
-import com.wordium.users.model.Users;
+import com.wordium.users.models.Users;
 import com.wordium.users.repo.UsersRepo;
 
 @Service

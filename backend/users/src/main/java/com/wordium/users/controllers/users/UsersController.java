@@ -1,4 +1,4 @@
-package com.wordium.users.controller;
+package com.wordium.users.controllers.users;
 
 import java.util.List;
 
@@ -21,7 +21,7 @@ import com.wordium.users.dto.SignUpRequest;
 import com.wordium.users.dto.SignUpResponse;
 import com.wordium.users.dto.UpdateProfileRequest;
 import com.wordium.users.dto.UsersResponse;
-import com.wordium.users.service.UsersService;
+import com.wordium.users.services.users.UsersService;
 
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;

@@ -6,7 +6,7 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import com.wordium.users.model.Followers;
+import com.wordium.users.models.Followers;
 
 @Repository
 public interface FollowersRepo extends JpaRepository<Followers, Long> {

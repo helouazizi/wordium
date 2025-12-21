@@ -1,4 +1,4 @@
-package com.wordium.users.controller;
+package com.wordium.users.controllers.followers;
 
 import java.util.List;
 
@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.wordium.users.dto.FollowResponse;
 import com.wordium.users.dto.UsersResponse;
-import com.wordium.users.service.FollowersService;
+import com.wordium.users.services.followers.FollowersService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;

@@ -1,4 +1,4 @@
-package com.wordium.users.model;
+package com.wordium.users.models;
 
 import java.util.Date;
 

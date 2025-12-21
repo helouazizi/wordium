@@ -1,4 +1,4 @@
-package com.wordium.users.service;
+package com.wordium.users.services.followers;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -10,8 +10,8 @@ import com.wordium.users.dto.UsersResponse;
 import com.wordium.users.events.FollowEventProducer;
 import com.wordium.users.exceptions.BadRequestException;
 import com.wordium.users.exceptions.NotFoundException;
-import com.wordium.users.model.Followers;
-import com.wordium.users.model.Users;
+import com.wordium.users.models.Followers;
+import com.wordium.users.models.Users;
 import com.wordium.users.repo.FollowersRepo;
 import com.wordium.users.repo.UsersRepo;
 
