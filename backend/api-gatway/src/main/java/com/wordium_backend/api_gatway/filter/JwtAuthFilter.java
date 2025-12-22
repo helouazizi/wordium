@@ -24,7 +24,8 @@ public class JwtAuthFilter implements GlobalFilter, Ordered {
         String path = exchange.getRequest().getURI().getPath();
 
         // Allow auth endpoints without token
-        if (path.startsWith("/api/v1/auth") || path.startsWith("/api/v1/wsgateway/ws") || path.contains("/v3/api-docs")) {
+        if (path.startsWith("/api/v1/auth") || path.startsWith("/api/v1/wsgateway/ws")
+                || path.contains("/v3/api-docs")) {
             return chain.filter(exchange);
         }
 
@@ -58,10 +59,15 @@ public class JwtAuthFilter implements GlobalFilter, Ordered {
         }
 
         JwtUtil.UserInfo userinfo = jwtUtil.extractUserInfo(token);
+        
+        // protect admin routes
+        if (path.contains("admin") && !userinfo.role().equals("ADMIN")) {
+            return unauthorized(exchange);
+        }
         var changedRequest = exchange.mutate()
                 .request(builder -> builder
-                .header("User-Id", userinfo.userId())
-                .header("User-Role", userinfo.role()))
+                        .header("User-Id", userinfo.userId())
+                        .header("User-Role", userinfo.role()))
                 .build();
 
         return chain.filter(changedRequest);

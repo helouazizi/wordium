@@ -43,7 +43,6 @@ spring:
             - StripPrefix=3
 
         # WS-GATEWAY SERVICE
-        
         - id: wsgateway-ws
           uri: ws://${HOST}:3002 
           # uri: lb://wsgateway
@@ -58,6 +57,14 @@ spring:
             - Path=/api/v1/wsgateway/**
           filters:
             - StripPrefix=2
+
+        # wsgatway SERVICE API-DOCS
+        - id: wsgateway-service-docs
+          uri: lb://wsgateway
+          predicates:
+            - Path=/api/v1/wsgateway/v3/api-docs/**
+          filters:
+            - StripPrefix=3
 
         # TEST SERVICE
         - id: test-service
@@ -82,6 +89,8 @@ springdoc:
         url: /api/v1/auth/v3/api-docs
       - name: users-service
         url: /api/v1/users/v3/api-docs
+      - name: wsgateway-service
+        url: /api/v1/wsgateway/v3/api-docs
 logging:
   level:
     reactor.netty.http.server: DEBUG
