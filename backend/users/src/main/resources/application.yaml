@@ -45,3 +45,8 @@ springdoc:
     title: Users Service API
     version: 1.0
     description: Users microservice API
+
+
+internal:
+  service:
+    token: ${INTERNAL_SERVICE_SECRET}
