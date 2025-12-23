@@ -123,5 +123,17 @@ services:
       - redis
     # extra_hosts:
     #   - "host.docker.internal:host-gateway"
+  users-service:
+    build: ./backend/users/
+    container_name: users-service
+    environment:
+      - EUREKA_URL=http://eureka-server:${EUREKA_PORT}/eureka
+      - POSTGRES_HOST=users_db
+    depends_on:
+      - eureka-server
+      - api-gateway
+      - kafka
+      - redis
+
 
 

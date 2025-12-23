@@ -14,7 +14,7 @@ import com.wordium.users.dto.ReportResponse;
 
 import feign.form.ContentType;
 
-@FeignClient(name = "posts-service", url = "http://localhost:3003")  // or use service discovery
+@FeignClient(name = "posts-service", url = "${services.api.url}/api/v1/posts")  // or use service discovery
 public interface PostServiceClient {
 
     @GetMapping("/internal/posts")

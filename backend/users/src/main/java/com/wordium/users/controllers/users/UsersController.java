@@ -16,9 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.wordium.users.client.WsgatewayServiceClient;
 import com.wordium.users.dto.BatchUsersRequest;
-import com.wordium.users.dto.NotificationsResponse;
 import com.wordium.users.dto.SignUpRequest;
 import com.wordium.users.dto.SignUpResponse;
 import com.wordium.users.dto.UpdateProfileRequest;
@@ -41,22 +39,12 @@ public class UsersController {
 
     @Autowired
     private final UsersService userService;
-    private final WsgatewayServiceClient wsgatewayServiceClient;
 
-    public UsersController(UsersService userService, WsgatewayServiceClient wsgatewayServiceClient) {
+    public UsersController(UsersService userService) {
         this.userService = userService;
-        this.wsgatewayServiceClient = wsgatewayServiceClient;
     }
 
-    @Hidden
-    @GetMapping("/notifications")
-    public ResponseEntity<NotificationsResponse> getNotifications(
-            @RequestHeader("User-Id") String userId) {
-        System.out.println("callllllllllllllllllllllllllllllllllllllll" + userId);
 
-        NotificationsResponse res = wsgatewayServiceClient.getAllNotif(userId);
-        return ResponseEntity.ok(res);
-    }
 
     @Hidden
     @PostMapping("/internal/create")
