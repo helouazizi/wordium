@@ -1,0 +1,12 @@
+FROM eclipse-temurin:17-jdk-alpine
+
+WORKDIR /app
+
+# Copy the built Spring Boot JAR
+COPY target/*.jar app.jar
+COPY .env ./
+
+EXPOSE 3001
+
+
+ENTRYPOINT ["java", "-jar", "app.jar"]

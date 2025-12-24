@@ -1,6 +1,6 @@
 spring:
   application:
-    name: users-service
+    name: posts-service
   datasource:
     url: jdbc:postgresql://${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}
     username: ${POSTGRES_USER}
@@ -16,35 +16,35 @@ spring:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
   jackson:
     default-property-inclusion: non_null
-  kafka:
-    bootstrap-servers: ${KAFKA_HOST}:${KAFKA_PORT}
-    producer:
-      key-serializer: org.apache.kafka.common.serialization.StringSerializer
-      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
-      properties:
-        spring.json.add.type.headers: false
+  # kafka:
+  #   bootstrap-servers: ${KAFKA_HOST}:${KAFKA_PORT}
+  #   producer:
+  #     key-serializer: org.apache.kafka.common.serialization.StringSerializer
+  #     value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+  #     properties:
+  #       spring.json.add.type.headers: false
 
 server:
-  port: 3001
+  port: 3003
   address: 0.0.0.0
 
 eureka:
   client:
-    register-with-eureka: true  
-    fetch-registry: true
-    service-url:
-      defaultZone: ${EUREKA_URL:http://localhost:8761/eureka}
+    register-with-eureka: false  
+    fetch-registry: false
+    # service-url:
+    #   defaultZone: ${EUREKA_URL:http://localhost:8761/eureka}
 
 
 springdoc:
   api-docs:
-    path: /users/v3/api-docs
+    path: /posts/v3/api-docs
   swagger-ui:
-    path: /users/swagger-ui.html
+    path: /posts/swagger-ui.html
   info:
-    title: Users Service API
+    title: posts Service API
     version: 1.0
-    description: Users microservice API
+    description: posts microservice API
 
 
 internal:

@@ -28,7 +28,7 @@ spring:
 
         # USERS SERVICE
         - id: users-service
-          uri: http://${HOST}:3001
+          uri: lb://users-service # http://${HOST}:3001
           predicates:
             - Path=/api/v1/users/**
           filters:
@@ -43,13 +43,14 @@ spring:
             - StripPrefix=3
 
         # WS-GATEWAY SERVICE
-        - id: wsgateway-ws
-          uri: ws://${HOST}:3002 
-          # uri: lb://wsgateway
-          predicates:
-            - Path=/api/v1/wsgateway/ws/**
-          filters:
-            - StripPrefix=2
+        # - id: wsgateway-ws
+        #   uri: ws://${HOST}:3002 
+        #   # uri: lb://wsgateway
+        #   predicates:
+        #     - Path=/api/v1/wsgateway/ws/**
+        #   filters:
+        #     - StripPrefix=2
+
         - id: wsgateway-rest
           # uri: http://${HOST}:3002
           uri: lb://wsgateway
