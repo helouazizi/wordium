@@ -15,10 +15,4 @@ public record PostRequest(
 
 }
 
-record PostImageRequest(
-        String url,
-        String altText,
-        Integer displayOrder
-        ) {
 
-}

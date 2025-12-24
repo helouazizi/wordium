@@ -9,8 +9,9 @@ public record PostResponse(
         String content,
         UserProfile actor,
         List<PostImageResponse> images,
-        int likesCount,
-        int commentsCount,
+        long likesCount,
+        long commentsCount,
+        long reportsCount,
         boolean isReported,
         boolean isFlagged,
         LocalDateTime createdAt,
@@ -19,11 +20,4 @@ public record PostResponse(
 
 }
 
-record PostImageResponse(
-        Long id,
-        String url,
-        String altText,
-        int displayOrder
-        ) {
 
-}
