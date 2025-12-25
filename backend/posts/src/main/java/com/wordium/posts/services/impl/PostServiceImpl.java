@@ -10,10 +10,12 @@ import org.springframework.transaction.annotation.Transactional;
 import com.wordium.posts.dto.PostImageResponse;
 import com.wordium.posts.dto.PostRequest;
 import com.wordium.posts.dto.PostResponse;
+import com.wordium.posts.dto.UserProfile;
 import com.wordium.posts.models.Post;
 import com.wordium.posts.models.PostImage;
 import com.wordium.posts.repo.PostRepository;
 import com.wordium.posts.services.PostService;
+import com.wordium.posts.utils.UserEnrichmentHelper;
 
 import jakarta.persistence.EntityNotFoundException;
 
@@ -22,15 +24,18 @@ import jakarta.persistence.EntityNotFoundException;
 public class PostServiceImpl implements PostService {
 
     private final PostRepository postRepository;
+    private final UserEnrichmentHelper userEnrichmentHelper;
 
-    public PostServiceImpl(PostRepository postRepository) {
+    public PostServiceImpl(PostRepository postRepository, UserEnrichmentHelper userEnrichmentHelper) {
         this.postRepository = postRepository;
+        this.userEnrichmentHelper = userEnrichmentHelper;
     }
 
     @Override
     public PostResponse createPost(Long userId, PostRequest request) {
         Post post = new Post();
         post.setUserId(userId);
+        post.setTitle(request.title());
         post.setContent(request.content());
 
         if (request.images() != null && !request.images().isEmpty()) {
@@ -44,26 +49,38 @@ public class PostServiceImpl implements PostService {
         }
 
         Post saved = postRepository.save(post);
-        return mapToResponse(saved);
+        return mapToResponse(saved,new UserProfile(userId, null, null, "null", null, "null", null));
     }
 
     @Override
     public PostResponse getPostById(Long id) {
         Post post = postRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Post not found with id: " + id));
-        return mapToResponse(post);
+        return userEnrichmentHelper.enrichSingle(
+                post,
+                Post::getUserId,
+                this::mapToResponse
+        );
     }
 
     @Override
     public Page<PostResponse> getPosts(Pageable pageable) {
         Page<Post> page = postRepository.findByFlaggedFalse(pageable);
-        return page.map(this::mapToResponse);
+        return userEnrichmentHelper.enrichPage(
+                page,
+                Post::getUserId,
+                this::mapToResponse
+        );
     }
 
     @Override
     public Page<PostResponse> getPostsByUser(Long userId, Pageable pageable) {
         Page<Post> page = postRepository.findByUserId(userId, pageable);
-        return page.map(this::mapToResponse);
+        return userEnrichmentHelper.enrichPage(
+                page,
+                Post::getUserId,
+                this::mapToResponse
+        );
     }
 
     @Override
@@ -72,7 +89,7 @@ public class PostServiceImpl implements PostService {
                 .orElseThrow(() -> new EntityNotFoundException("Post not found with id: " + postId));
 
         // Optional: Add ownership check here
-        // if (!post.getUserId().equals(userId)) throw new AccessDeniedException(...);
+        // if (!post.getUserId().equals(userId)) throw new AccessDeniedException("...");
         if (request.content() != null && !request.content().isBlank()) {
             post.setContent(request.content());
         }
@@ -90,7 +107,7 @@ public class PostServiceImpl implements PostService {
         }
 
         Post updated = postRepository.save(post);
-        return mapToResponse(updated);
+        return mapToResponse(updated, new UserProfile(userId, null, null, "null", null, "null", null));
     }
 
     @Override
@@ -134,8 +151,8 @@ public class PostServiceImpl implements PostService {
         postRepository.incrementReportCount(postId);
     }
 
-    private PostResponse mapToResponse(Post post) {
-        List<PostImageResponse> imageResponses = post.getImages().stream()
+    private PostResponse mapToResponse(Post post, UserProfile userProfile) {
+        List<PostImageResponse> images = post.getImages().stream()
                 .map(img -> new PostImageResponse(
                 img.getId(),
                 img.getUrl(),
@@ -146,9 +163,10 @@ public class PostServiceImpl implements PostService {
 
         return new PostResponse(
                 post.getId(),
+                post.getTitle(),
                 post.getContent(),
-                null,
-                imageResponses,
+                new UserProfile(null, null, null, userProfile.username(), null, userProfile.avatar(), null),
+                images,
                 post.getLikesCount(),
                 post.getCommentsCount(),
                 post.getRportCount(),

@@ -31,6 +31,11 @@ public class Post {
     private Long userId;
 
     @NotBlank
+    @Size(max = 500)
+    @Column(nullable = false, length = 500)
+    private String title;
+
+    @NotBlank
     @Size(max = 1000)
     @Column(nullable = false, length = 1000)
     private String content;
@@ -89,6 +94,13 @@ public class Post {
 
     public void setUserId(Long userId) {
         this.userId = userId;
+    }
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getTitle() {
+        return title;
     }
 
     public String getContent() {
