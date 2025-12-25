@@ -5,7 +5,7 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 
 public record PaginatedResponse<T>(
-        List<T> content,
+        List<T> data,
         int page,
         int size,
         long totalElements,
