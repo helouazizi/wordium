@@ -45,12 +45,6 @@ public class Report {
     @Column(nullable = false, length = 500)
     private String reason;
 
-    // @Size(max = 500, message = "Custom message cannot exceed 500 characters")
-    // private String customMessage;
-    // @NotBlank(message = "Status is required")
-    // @Size(max = 20, message = "Status cannot exceed 20 characters")
-    // @Column(nullable = false, length = 20)
-    // private String status = "PENDING";  // e.g., "PENDING", "RESOLVED", "DISMISSED"
     @Column(name = "resolved_by")
     private Long resolvedById;
 
@@ -68,7 +62,6 @@ public class Report {
         this.reportedPostId = reportedPostId;
         this.reportedUserId = reportedUserId;
         this.reason = reason;
-        // this.customMessage = customMessage;
     }
 
     @PrePersist
@@ -76,13 +69,6 @@ public class Report {
         createdAt = LocalDateTime.now();
     }
 
-    // @PreUpdate
-    // protected void onUpdate() {
-    //     if ("RESOLVED".equalsIgnoreCase(status) || "DISMISSED".equalsIgnoreCase(status)) {
-    //         resolvedAt = LocalDateTime.now();
-    //     }
-    // }
-    // Convenience methods
     public boolean isPostReport() {
         return reportedPostId != null;
     }
@@ -132,10 +118,7 @@ public class Report {
         this.reason = reason;
     }
 
-    // public String getCustomMessage() { return customMessage; }
-    // public void setCustomMessage(String customMessage) { this.customMessage = customMessage; }
-    // public String getStatus() { return status; }
-    // public void setStatus(String status) { this.status = status; }
+
     public Long getResolvedById() {
         return resolvedById;
     }
