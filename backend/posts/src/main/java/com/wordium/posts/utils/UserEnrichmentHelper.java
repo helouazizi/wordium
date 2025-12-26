@@ -1,6 +1,5 @@
 package com.wordium.posts.utils;
 
-// src/main/java/com/wordium/posts/util/UserEnrichmentHelper.java
 
 import java.util.List;
 import java.util.Map;
@@ -17,19 +16,13 @@ import com.wordium.posts.services.ResolveUsersProfile;
 @Component
 public class UserEnrichmentHelper {
 
-    private final ResolveUsersProfile userEnrichmentService;
+    private final ResolveUsersProfile resolveUsersProfile;
 
-    public UserEnrichmentHelper(ResolveUsersProfile userEnrichmentService) {
-        this.userEnrichmentService = userEnrichmentService;
+    public UserEnrichmentHelper(ResolveUsersProfile resolveUsersProfile) {
+        this.resolveUsersProfile = resolveUsersProfile;
     }
 
-    /**
-     * Enrich a list of entities with user profiles
-     * @param entities List of any entity with userId(s)
-     * @param userIdExtractor Function to extract userId from entity
-     * @param mapper Function to map entity + userProfile to response DTO
-     * @return List of enriched DTOs
-     */
+
     public <E, R> List<R> enrichList(
             List<E> entities,
             Function<E, Long> userIdExtractor,
@@ -44,16 +37,14 @@ public class UserEnrichmentHelper {
                 .filter(Objects::nonNull)
                 .collect(Collectors.toSet());
 
-        Map<Long, UserProfile> userMap = userEnrichmentService.getUserProfiles(userIds);
+        Map<Long, UserProfile> userMap = resolveUsersProfile.getUserProfiles(userIds);
 
         return entities.stream()
                 .map(entity -> mapper.apply(entity, userMap.get(userIdExtractor.apply(entity))))
                 .toList();
     }
 
-    /**
-     * Enrich a single entity
-     */
+
     public <E, R> R enrichSingle(
             E entity,
             Function<E, Long> userIdExtractor,
@@ -64,14 +55,11 @@ public class UserEnrichmentHelper {
         }
 
         Long userId = userIdExtractor.apply(entity);
-        UserProfile userProfile = userId != null ? userEnrichmentService.getUserProfile(userId) : null;
+        UserProfile userProfile = userId != null ? resolveUsersProfile.getUserProfile(userId) : null;
 
         return mapper.apply(entity, userProfile);
     }
 
-    /**
-     * Enrich Spring Data Page
-     */
     public <E, R> org.springframework.data.domain.Page<R> enrichPage(
             org.springframework.data.domain.Page<E> page,
             Function<E, Long> userIdExtractor,
@@ -86,7 +74,7 @@ public class UserEnrichmentHelper {
                 .filter(Objects::nonNull)
                 .collect(Collectors.toSet());
 
-        Map<Long, UserProfile> userMap = userEnrichmentService.getUserProfiles(userIds);
+        Map<Long, UserProfile> userMap = resolveUsersProfile.getUserProfiles(userIds);
 
         return page.map(entity -> mapper.apply(entity, userMap.get(userIdExtractor.apply(entity))));
     }
