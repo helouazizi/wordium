@@ -26,7 +26,7 @@ public class InternalPostController {
 
     @GetMapping
     public ResponseEntity<PaginatedResponse<PostResponse>> getAllPosts(Pageable pageable) {
-        var page = postService.getPosts(pageable);  // includes flagged/reported
+        var page = postService.getFeed(pageable);  // includes flagged/reported
         return ResponseEntity.ok(PaginatedResponse.fromPage(page));
     }
 

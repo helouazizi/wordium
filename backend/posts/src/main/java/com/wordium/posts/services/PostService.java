@@ -14,7 +14,7 @@ public interface PostService {
 
     PostResponse getPostById(Long id);
 
-    Page<PostResponse> getPosts(Pageable pageable);
+    Page<PostResponse> getFeed(Pageable pageable);
 
     Page<PostResponse> getPostsByUser(Long userId, Pageable pageable);
 

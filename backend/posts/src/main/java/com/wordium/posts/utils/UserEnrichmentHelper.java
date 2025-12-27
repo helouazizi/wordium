@@ -1,7 +1,6 @@
 package com.wordium.posts.utils;
 
 
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -23,26 +22,26 @@ public class UserEnrichmentHelper {
     }
 
 
-    public <E, R> List<R> enrichList(
-            List<E> entities,
-            Function<E, Long> userIdExtractor,
-            java.util.function.BiFunction<E, UserProfile, R> mapper) {
+    // public <E, R> List<R> enrichList(
+    //         List<E> entities,
+    //         Function<E, Long> userIdExtractor,
+    //         java.util.function.BiFunction<E, UserProfile, R> mapper) {
 
-        if (entities.isEmpty()) {
-            return List.of();
-        }
+    //     if (entities.isEmpty()) {
+    //         return List.of();
+    //     }
 
-        Set<Long> userIds = entities.stream()
-                .map(userIdExtractor)
-                .filter(Objects::nonNull)
-                .collect(Collectors.toSet());
+    //     Set<Long> userIds = entities.stream()
+    //             .map(userIdExtractor)
+    //             .filter(Objects::nonNull)
+    //             .collect(Collectors.toSet());
 
-        Map<Long, UserProfile> userMap = resolveUsersProfile.getUserProfiles(userIds);
+    //     Map<Long, UserProfile> userMap = resolveUsersProfile.getUserProfiles(userIds);
 
-        return entities.stream()
-                .map(entity -> mapper.apply(entity, userMap.get(userIdExtractor.apply(entity))))
-                .toList();
-    }
+    //     return entities.stream()
+    //             .map(entity -> mapper.apply(entity, userMap.get(userIdExtractor.apply(entity))))
+    //             .toList();
+    // }
 
 
     public <E, R> R enrichSingle(

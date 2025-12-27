@@ -67,6 +67,15 @@ spring:
           filters:
             - StripPrefix=3
 
+        # POSTS SERVICE
+        - id: posts-service
+          # uri: lb://posts-service
+          uri: http://${HOST}:3003
+          predicates:
+            - Path=/api/v1/posts/**
+          filters:
+            - StripPrefix=2
+
         # TEST SERVICE
         - id: test-service
           uri: lb://test-service

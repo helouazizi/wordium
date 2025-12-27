@@ -49,7 +49,7 @@ public class PostServiceImpl implements PostService {
         }
 
         Post saved = postRepository.save(post);
-        return mapToResponse(saved,new UserProfile(userId, null, null, "null", null, "null", null));
+        return mapToResponse(saved, new UserProfile(userId, null, null, "null", null, "null", null));
     }
 
     @Override
@@ -64,7 +64,7 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public Page<PostResponse> getPosts(Pageable pageable) {
+    public Page<PostResponse> getFeed(Pageable pageable) {
         Page<Post> page = postRepository.findByFlaggedFalse(pageable);
         return userEnrichmentHelper.enrichPage(
                 page,

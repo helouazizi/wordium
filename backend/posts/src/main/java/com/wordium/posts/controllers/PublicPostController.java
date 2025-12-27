@@ -38,7 +38,7 @@ public class PublicPostController {
 
     @GetMapping
     public ResponseEntity<PaginatedResponse<PostResponse>> getFeed(Pageable pageable) {
-        var page = postService.getPosts(pageable);
+        var page = postService.getFeed(pageable);
         return ResponseEntity.ok(PaginatedResponse.fromPage(page));
     }
 

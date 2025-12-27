@@ -47,7 +47,7 @@ public class Report {
 
     @Column(name = "resolved_by")
     private Long resolvedById;
-
+    private boolean resolved = false;
     private LocalDateTime resolvedAt;
 
     @Column(nullable = false, updatable = false)
@@ -57,13 +57,12 @@ public class Report {
     public Report() {
     }
 
-    public Report(Long reporterId, Long reportedPostId, Long reportedUserId, String reason, String customMessage) {
-        this.reporterId = reporterId;
-        this.reportedPostId = reportedPostId;
-        this.reportedUserId = reportedUserId;
-        this.reason = reason;
-    }
-
+    // public Report(Long reporterId, Long reportedPostId, Long reportedUserId, String reason, String customMessage) {
+    //     this.reporterId = reporterId;
+    //     this.reportedPostId = reportedPostId;
+    //     this.reportedUserId = reportedUserId;
+    //     this.reason = reason;
+    // }
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
@@ -84,6 +83,14 @@ public class Report {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public void setResolved(boolean resolved) {
+        this.resolved = resolved;
+    }
+
+    public boolean getResolved() {
+        return this.resolved;
     }
 
     public Long getReporterId() {
@@ -117,7 +124,6 @@ public class Report {
     public void setReason(String reason) {
         this.reason = reason;
     }
-
 
     public Long getResolvedById() {
         return resolvedById;
