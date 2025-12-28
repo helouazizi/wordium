@@ -118,7 +118,6 @@ public class PublicPostController {
             @PathVariable Long id,
             @Valid @RequestBody CommentRequest request) {
 
-        request = new CommentRequest(id, request.commentId(), request.content());
         CommentResponse comment = postService.createComment(userId, id, request);
         return ResponseEntity.status(201).body(comment);
     }
@@ -153,9 +152,10 @@ public class PublicPostController {
     @DeleteMapping("/{id}/comments")
     public ResponseEntity<Void> deleteComment(
             @RequestHeader("User-Id") Long userId,
+             @PathVariable Long id,
             @Valid @RequestBody CommentRequest req) {
 
-        postService.deleteComment(userId, req);
+        postService.deleteComment(userId,id, req);
         return ResponseEntity.noContent().build();
     }
 }

@@ -35,6 +35,11 @@ public interface PostRepository extends JpaRepository<Post, Long>, JpaSpecificat
 
     @Modifying
     @Transactional
+    @Query("UPDATE Post p SET p.commentsCount = p.commentsCount - 1 WHERE p.id = :postId")
+    void decrementCommentsCount(Long postId);
+
+    @Modifying
+    @Transactional
     @Query("UPDATE Post p SET p.reportCount = p.reportCount + 1, p.reported = true WHERE p.id = :postId")
     void incrementReportCount(Long postId);
 }

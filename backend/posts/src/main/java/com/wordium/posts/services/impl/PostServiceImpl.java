@@ -150,8 +150,10 @@ public class PostServiceImpl implements PostService {
 
     // likes 
     @Override
-    public void react(Long userId, Long postId , PostReactionRequest req) {
-
+    public void react(Long userId, Long postId, PostReactionRequest req) {
+        if (!postRepository.existsById(postId)) {
+            throw new EntityNotFoundException("Post not found with id: " + postId);
+        }
         Optional<PostReaction> existing
                 = reactionRepository.findByPostIdAndUserId(postId, userId);
 
@@ -222,12 +224,16 @@ public class PostServiceImpl implements PostService {
     @Transactional
     public CommentResponse createComment(Long userId, Long postId, CommentRequest request) {
 
+        if (!postRepository.existsById(postId)) {
+            throw new EntityNotFoundException("Post not found with id: " + postId);
+        }
         Comment comment = new Comment();
-        comment.setPostId(request.postId());
+        comment.setPostId(postId);
         comment.setUserId(userId);
         comment.setContent(request.content());
 
         Comment saved = commentRepository.save(comment);
+        postRepository.incrementCommentsCount(postId);
 
         return userEnrichmentHelper.enrichSingle(
                 saved,
@@ -239,6 +245,9 @@ public class PostServiceImpl implements PostService {
     @Override
     @Transactional(readOnly = true)
     public Page<CommentResponse> getPostComments(Long postId, Pageable pageable) {
+        if (!postRepository.existsById(postId)) {
+            throw new EntityNotFoundException("Post not found with id: " + postId);
+        }
         Page<Comment> page = commentRepository.findByPostIdOrderByCreatedAtAsc(postId, pageable);
 
         return userEnrichmentHelper.enrichPage(
@@ -250,8 +259,15 @@ public class PostServiceImpl implements PostService {
 
     @Override
     @Transactional
-    public void deleteComment(Long userId, CommentRequest req) {
+    public void deleteComment(Long userId, Long postId, CommentRequest req) {
+        if (!postRepository.existsById(postId)) {
+            throw new EntityNotFoundException("Post not found with id: " + postId);
+        }
+        if (!commentRepository.existsById(req.commentId())) {
+            throw new EntityNotFoundException("Comment not found with id: ");
+        }
         commentRepository.deleteByIdAndUserId(req.commentId(), userId);
+        postRepository.decrementCommentsCount(postId);
     }
 
 }

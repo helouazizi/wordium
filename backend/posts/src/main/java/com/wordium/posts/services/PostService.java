@@ -35,6 +35,6 @@ public interface PostService {
     // comments
     CommentResponse createComment(Long userId, Long postId, CommentRequest request);
     Page<CommentResponse> getPostComments(Long postId, Pageable pageable);
-    void deleteComment(Long userId, CommentRequest req);
+    void deleteComment(Long userId,Long id, CommentRequest req);
 
 }
