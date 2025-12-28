@@ -1,36 +1,48 @@
 package com.wordium.posts.services.impl;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.wordium.posts.dto.CommentRequest;
+import com.wordium.posts.dto.CommentResponse;
 import com.wordium.posts.dto.PostImageResponse;
+import com.wordium.posts.dto.PostReactionRequest;
 import com.wordium.posts.dto.PostRequest;
 import com.wordium.posts.dto.PostResponse;
 import com.wordium.posts.dto.UserProfile;
+import com.wordium.posts.models.Comment;
 import com.wordium.posts.models.Post;
 import com.wordium.posts.models.PostImage;
+import com.wordium.posts.models.PostReaction;
+import com.wordium.posts.repo.CommentRepository;
 import com.wordium.posts.repo.PostRepository;
+import com.wordium.posts.repo.ReactionRepository;
 import com.wordium.posts.services.PostService;
 import com.wordium.posts.utils.UserEnrichmentHelper;
 
 import jakarta.persistence.EntityNotFoundException;
 
 @Service
-@Transactional
 public class PostServiceImpl implements PostService {
 
     private final PostRepository postRepository;
+    private final ReactionRepository reactionRepository;
+    private final CommentRepository commentRepository;
     private final UserEnrichmentHelper userEnrichmentHelper;
 
-    public PostServiceImpl(PostRepository postRepository, UserEnrichmentHelper userEnrichmentHelper) {
+    public PostServiceImpl(PostRepository postRepository, UserEnrichmentHelper userEnrichmentHelper, ReactionRepository reactionRepository, CommentRepository commentRepository) {
         this.postRepository = postRepository;
         this.userEnrichmentHelper = userEnrichmentHelper;
+        this.reactionRepository = reactionRepository;
+        this.commentRepository = commentRepository;
     }
 
+    //posts
     @Override
     public PostResponse createPost(Long userId, PostRequest request) {
         Post post = new Post();
@@ -136,19 +148,37 @@ public class PostServiceImpl implements PostService {
         postRepository.save(post);
     }
 
+    // likes 
     @Override
-    public void incrementLikes(Long postId) {
-        postRepository.incrementLikesCount(postId);
-    }
+    public void react(Long userId, Long postId , PostReactionRequest req) {
 
-    @Override
-    public void incrementComments(Long postId) {
-        postRepository.incrementCommentsCount(postId);
-    }
+        Optional<PostReaction> existing
+                = reactionRepository.findByPostIdAndUserId(postId, userId);
 
-    @Override
-    public void incrementReports(Long postId) {
-        postRepository.incrementReportCount(postId);
+        if ("like".equals(req.reaction())) {
+
+            if (existing.isPresent()) {
+                return;
+            }
+
+            PostReaction reaction = new PostReaction();
+            reaction.setPostId(postId);
+            reaction.setUserId(userId);
+
+            reactionRepository.save(reaction);
+            postRepository.incrementLikesCount(postId);
+
+            return;
+        }
+
+        if ("unlike".equals(req.reaction())) {
+            if (existing.isEmpty()) {
+                return;
+            }
+
+            reactionRepository.delete(existing.get());
+            postRepository.decrementLikesCount(postId);
+        }
     }
 
     private PostResponse mapToResponse(Post post, UserProfile userProfile) {
@@ -176,4 +206,52 @@ public class PostServiceImpl implements PostService {
                 post.getUpdatedAt()
         );
     }
+
+    private CommentResponse mapCommentToResponse(Comment comment, UserProfile userProfile) {
+        return new CommentResponse(
+                comment.getId(),
+                comment.getPostId(),
+                comment.getContent(),
+                comment.getCreatedAt(),
+                userProfile
+        );
+    }
+
+    // comments 
+    @Override
+    @Transactional
+    public CommentResponse createComment(Long userId, Long postId, CommentRequest request) {
+
+        Comment comment = new Comment();
+        comment.setPostId(request.postId());
+        comment.setUserId(userId);
+        comment.setContent(request.content());
+
+        Comment saved = commentRepository.save(comment);
+
+        return userEnrichmentHelper.enrichSingle(
+                saved,
+                Comment::getUserId,
+                this::mapCommentToResponse
+        );
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<CommentResponse> getPostComments(Long postId, Pageable pageable) {
+        Page<Comment> page = commentRepository.findByPostIdOrderByCreatedAtAsc(postId, pageable);
+
+        return userEnrichmentHelper.enrichPage(
+                page,
+                Comment::getUserId,
+                this::mapCommentToResponse
+        );
+    }
+
+    @Override
+    @Transactional
+    public void deleteComment(Long userId, CommentRequest req) {
+        commentRepository.deleteByIdAndUserId(req.commentId(), userId);
+    }
+
 }

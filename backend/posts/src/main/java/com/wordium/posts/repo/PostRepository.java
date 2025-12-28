@@ -1,7 +1,5 @@
 package com.wordium.posts.repo;
 
-// src/main/java/com/wordium/posts/repository/PostRepository.java
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -16,17 +14,19 @@ import com.wordium.posts.models.Post;
 @Repository
 public interface PostRepository extends JpaRepository<Post, Long>, JpaSpecificationExecutor<Post> {
 
-    // Find posts by user
     Page<Post> findByUserId(Long userId, Pageable pageable);
 
-    // Optional: custom query for public feed (not flagged)
     Page<Post> findByFlaggedFalse(Pageable pageable);
 
-    // Increment likes/comments/report count atomically
     @Modifying
     @Transactional
     @Query("UPDATE Post p SET p.likesCount = p.likesCount + 1 WHERE p.id = :postId")
     void incrementLikesCount(Long postId);
+
+    @Modifying
+    @Transactional
+    @Query("UPDATE Post p SET p.likesCount = p.likesCount - 1 WHERE p.id = :postId")
+    void decrementLikesCount(Long postId);
 
     @Modifying
     @Transactional

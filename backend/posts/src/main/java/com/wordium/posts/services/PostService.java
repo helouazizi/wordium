@@ -1,15 +1,18 @@
 package com.wordium.posts.services;
 
 // src/main/java/com/wordium/posts/service/PostService.java
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import com.wordium.posts.dto.CommentRequest;
+import com.wordium.posts.dto.CommentResponse;
+import com.wordium.posts.dto.PostReactionRequest;
 import com.wordium.posts.dto.PostRequest;
 import com.wordium.posts.dto.PostResponse;
 
 public interface PostService {
 
+    // posts
     PostResponse createPost(Long userId, PostRequest request);
 
     PostResponse getPostById(Long id);
@@ -26,8 +29,12 @@ public interface PostService {
 
     void unflagPost(Long postId);
 
-    // Admin/internal
-    void incrementLikes(Long postId);
-    void incrementComments(Long postId);
-    void incrementReports(Long postId);
+    // likes 
+    void react(Long userId,Long postId , PostReactionRequest req);
+
+    // comments
+    CommentResponse createComment(Long userId, Long postId, CommentRequest request);
+    Page<CommentResponse> getPostComments(Long postId, Pageable pageable);
+    void deleteComment(Long userId, CommentRequest req);
+
 }
