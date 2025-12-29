@@ -8,7 +8,6 @@ public record ReportPostResponse(
         Long reportedPostId,
         String reason,
         boolean resolved,
-        UserProfile resolvedById,
         LocalDateTime resolvedAt,
         LocalDateTime createdAt
 

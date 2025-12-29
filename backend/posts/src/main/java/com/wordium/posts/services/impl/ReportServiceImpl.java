@@ -61,7 +61,6 @@ public class ReportServiceImpl implements ReportService {
                 report.getReportedPostId(),
                 report.getReason(),
                 report.getResolved(),
-                new UserProfile(report.getResolvedById(), null, null, "null", null, "null", null), // resolvedBy can be enriched later if needed
                 report.getResolvedAt(),
                 report.getCreatedAt()
         );
