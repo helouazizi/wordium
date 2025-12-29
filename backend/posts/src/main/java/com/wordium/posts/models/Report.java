@@ -19,7 +19,7 @@ import jakarta.validation.constraints.Size;
 @Table(name = "reports",
         uniqueConstraints = {
             @UniqueConstraint(
-                    columnNames = {"reporter_id", "reported_post_id", "reported_user_id", "reason"},
+                    columnNames = {"reporter_id", "reported_post_id", "reason"},
                     name = "uk_reporter_target_reason"
             )
         })
@@ -33,12 +33,10 @@ public class Report {
     @Column(name = "reporter_id", nullable = false)
     private Long reporterId;
 
-    // Target: either post or user (at least one should be provided in business logic)
     @Column(name = "reported_post_id")
     private Long reportedPostId;
 
-    @Column(name = "reported_user_id")
-    private Long reportedUserId;
+
 
     @NotBlank(message = "Reason is required")
     @Size(max = 50, message = "Reason cannot exceed 500 characters")
@@ -53,16 +51,9 @@ public class Report {
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
-    // Constructors
     public Report() {
     }
 
-    // public Report(Long reporterId, Long reportedPostId, Long reportedUserId, String reason, String customMessage) {
-    //     this.reporterId = reporterId;
-    //     this.reportedPostId = reportedPostId;
-    //     this.reportedUserId = reportedUserId;
-    //     this.reason = reason;
-    // }
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
@@ -72,11 +63,8 @@ public class Report {
         return reportedPostId != null;
     }
 
-    public boolean isUserReport() {
-        return reportedUserId != null;
-    }
 
-    // Getters and Setters
+
     public Long getId() {
         return id;
     }
@@ -107,14 +95,6 @@ public class Report {
 
     public void setReportedPostId(Long reportedPostId) {
         this.reportedPostId = reportedPostId;
-    }
-
-    public Long getReportedUserId() {
-        return reportedUserId;
-    }
-
-    public void setReportedUserId(Long reportedUserId) {
-        this.reportedUserId = reportedUserId;
     }
 
     public String getReason() {

@@ -11,9 +11,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.wordium.posts.dto.PaginatedResponse;
+import com.wordium.posts.dto.PaginationRequest;
 import com.wordium.posts.dto.PostResponse;
 import com.wordium.posts.services.impl.PostServiceImpl;
 
+import io.swagger.v3.oas.annotations.Hidden;
+import jakarta.validation.Valid;
+
+@Hidden
 @RestController
 @RequestMapping("posts/internal/posts")
 public class InternalPostController {
@@ -25,8 +30,9 @@ public class InternalPostController {
     }
 
     @GetMapping
-    public ResponseEntity<PaginatedResponse<PostResponse>> getAllPosts(Pageable pageable) {
-        var page = postService.getFeed(pageable);  // includes flagged/reported
+    public ResponseEntity<PaginatedResponse<PostResponse>> getAllPosts(@Valid PaginationRequest paginationRequest) {
+        Pageable pageable = paginationRequest.toPageable();
+        var page = postService.getAllposts(pageable);
         return ResponseEntity.ok(PaginatedResponse.fromPage(page));
     }
 
@@ -37,19 +43,19 @@ public class InternalPostController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletePost(@PathVariable Long id) {
-        postService.deletePost(id, null);  // admin call
+        postService.deletePost(id, null);  
         return ResponseEntity.noContent().build();
     }
 
     @PatchMapping("/{id}/flag")
-    public ResponseEntity<PostResponse> flagPost(@PathVariable Long id) {
+    public ResponseEntity<Void> flagPost(@PathVariable Long id) {
         postService.flagPost(id);
-        return ResponseEntity.ok(postService.getPostById(id));
+        return ResponseEntity.noContent().build();
     }
 
     @PatchMapping("/{id}/unflag")
-    public ResponseEntity<PostResponse> unflagPost(@PathVariable Long id) {
+    public ResponseEntity<Void> unflagPost(@PathVariable Long id) {
         postService.unflagPost(id);
-        return ResponseEntity.ok(postService.getPostById(id));
+        return ResponseEntity.noContent().build();
     }
 }

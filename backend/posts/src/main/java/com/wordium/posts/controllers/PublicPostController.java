@@ -98,7 +98,7 @@ public class PublicPostController {
             @PathVariable Long id,
             @Valid @RequestBody PostReactionRequest req) {
         postService.react(userId, id, req);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok().build();
     }
 
     @Operation(summary = "Create a comment on a post")
@@ -156,6 +156,6 @@ public class PublicPostController {
             @Valid @RequestBody CommentRequest req) {
 
         postService.deleteComment(userId,id, req);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok().build();
     }
 }

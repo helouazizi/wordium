@@ -19,6 +19,8 @@ public interface PostService {
 
     Page<PostResponse> getFeed(Pageable pageable);
 
+    Page<PostResponse> getAllposts(Pageable pageable);
+
     Page<PostResponse> getPostsByUser(Long userId, Pageable pageable);
 
     PostResponse updatePost(Long postId, Long userId, PostRequest request);  // only owner or admin
@@ -30,11 +32,13 @@ public interface PostService {
     void unflagPost(Long postId);
 
     // likes 
-    void react(Long userId,Long postId , PostReactionRequest req);
+    void react(Long userId, Long postId, PostReactionRequest req);
 
     // comments
     CommentResponse createComment(Long userId, Long postId, CommentRequest request);
+
     Page<CommentResponse> getPostComments(Long postId, Pageable pageable);
-    void deleteComment(Long userId,Long id, CommentRequest req);
+
+    void deleteComment(Long userId, Long id, CommentRequest req);
 
 }

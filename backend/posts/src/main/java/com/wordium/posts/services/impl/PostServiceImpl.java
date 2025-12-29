@@ -86,6 +86,16 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
+    public Page<PostResponse> getAllposts(Pageable pageable) {
+        Page<Post> page = postRepository.findAll(pageable);
+        return userEnrichmentHelper.enrichPage(
+                page,
+                Post::getUserId,
+                this::mapToResponse
+        );
+    }
+
+    @Override
     public Page<PostResponse> getPostsByUser(Long userId, Pageable pageable) {
         Page<Post> page = postRepository.findByUserId(userId, pageable);
         return userEnrichmentHelper.enrichPage(
