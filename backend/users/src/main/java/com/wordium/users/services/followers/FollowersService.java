@@ -5,8 +5,8 @@ import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
-import com.wordium.users.dto.NotificationEvent;
-import com.wordium.users.dto.UsersResponse;
+import com.wordium.users.dto.notification.NotificationEvent;
+import com.wordium.users.dto.users.UsersResponse;
 import com.wordium.users.events.FollowEventProducer;
 import com.wordium.users.exceptions.BadRequestException;
 import com.wordium.users.exceptions.NotFoundException;

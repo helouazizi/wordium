@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.wordium.users.dto.RoleChangeRequest;
+import com.wordium.users.dto.users.RoleChangeRequest;
 import com.wordium.users.models.Users;
 import com.wordium.users.services.admin.impl.AdminAccountServiceImpl;
 

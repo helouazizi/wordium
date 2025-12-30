@@ -8,7 +8,7 @@ spring:
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
-     ddl-auto: update   # options: validate, update, create, create-drop
+      ddl-auto: update # options: validate, update, create, create-drop
     show-sql: true
     properties:
       hibernate:
@@ -30,11 +30,10 @@ server:
 
 eureka:
   client:
-    register-with-eureka: true  
+    register-with-eureka: true
     fetch-registry: true
     service-url:
       defaultZone: ${EUREKA_URL:http://localhost:8761/eureka}
-
 
 springdoc:
   api-docs:
@@ -46,11 +45,16 @@ springdoc:
     version: 1.0
     description: Users microservice API
 
-
 internal:
   service:
     token: ${INTERNAL_SERVICE_SECRET}
 
 services:
   api:
-    url: ${GATEWAY_API:http://localhost:8080}  # fallback for local dev if env var missing
+    url: ${GATEWAY_API:http://localhost:8080} # fallback for local dev if env var missing
+
+feign:
+  httpclient:
+    enabled: true
+  okhttp:
+    enabled: false

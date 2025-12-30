@@ -6,11 +6,11 @@ import java.util.Set;
 
 import org.springframework.stereotype.Service;
 
-import com.wordium.users.dto.BatchUsersRequest;
-import com.wordium.users.dto.SignUpRequest;
-import com.wordium.users.dto.SignUpResponse;
-import com.wordium.users.dto.UpdateProfileRequest;
-import com.wordium.users.dto.UsersResponse;
+import com.wordium.users.dto.auth.SignUpRequest;
+import com.wordium.users.dto.auth.SignUpResponse;
+import com.wordium.users.dto.users.BatchUsersRequest;
+import com.wordium.users.dto.users.UpdateProfileRequest;
+import com.wordium.users.dto.users.UsersResponse;
 import com.wordium.users.exceptions.BadRequestException;
 import com.wordium.users.exceptions.ConflictException;
 import com.wordium.users.exceptions.NotFoundException;

@@ -9,7 +9,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import feign.RequestInterceptor;
 import feign.RequestTemplate;
 
-@Component 
+@Component
 public class InternalServiceInterceptor implements RequestInterceptor {
 
     @Value("${internal.service.token}")
@@ -19,8 +19,8 @@ public class InternalServiceInterceptor implements RequestInterceptor {
     public void apply(RequestTemplate template) {
         template.header("Internal-Service-Token", internalToken);
 
-        ServletRequestAttributes attributes = 
-            (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+        ServletRequestAttributes attributes
+                = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
         if (attributes != null) {
             String userId = attributes.getRequest().getHeader("User-Id");
             if (userId != null) {
@@ -32,4 +32,6 @@ public class InternalServiceInterceptor implements RequestInterceptor {
             }
         }
     }
+
+
 }

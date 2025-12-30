@@ -1,7 +1,6 @@
 package com.wordium.users.controllers.admin;
 
-import java.util.List;
-
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -11,8 +10,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.wordium.users.dto.PostResponse;
-import com.wordium.users.services.admin.AdminPostService;
+import com.wordium.users.dto.PaginatedResponse;
+import com.wordium.users.dto.PaginationRequest;
+import com.wordium.users.dto.posts.PostResponse;
+import com.wordium.users.services.admin.AdminPostsService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -20,15 +21,16 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 
 @Tag(name = "Admin - Posts Management", description = "Admin endpoints for managing user posts")
 @RestController
 @RequestMapping("/users/admin/posts")
 public class AdminPostsController {
 
-    private final AdminPostService adminPostService;
+    private final AdminPostsService adminPostService;
 
-    public AdminPostsController(AdminPostService adminPostService) {
+    public AdminPostsController(AdminPostsService adminPostService) {
         this.adminPostService = adminPostService;
     }
 
@@ -37,18 +39,21 @@ public class AdminPostsController {
             description = "Retrieve a list of all posts in the system. Accessible only to admins."
     )
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Posts fetched successfully",
-                    content = @Content(schema = @Schema(implementation = PostResponse.class))),
-            @ApiResponse(responseCode = "401", description = "Unauthorized - Invalid or missing token",
-                    content = @Content(schema = @Schema(implementation = ProblemDetail.class))),
-            @ApiResponse(responseCode = "403", description = "Forbidden - User is not an admin",
-                    content = @Content(schema = @Schema(implementation = ProblemDetail.class))),
-            @ApiResponse(responseCode = "500", description = "Internal Server Error",
-                    content = @Content(schema = @Schema(implementation = ProblemDetail.class)))
+        @ApiResponse(responseCode = "200", description = "Posts fetched successfully",
+                content = @Content(schema = @Schema(implementation = PostResponse.class))),
+        @ApiResponse(responseCode = "401", description = "Unauthorized - Invalid or missing token",
+                content = @Content(schema = @Schema(implementation = ProblemDetail.class))),
+        @ApiResponse(responseCode = "403", description = "Forbidden - User is not an admin",
+                content = @Content(schema = @Schema(implementation = ProblemDetail.class))),
+        @ApiResponse(responseCode = "500", description = "Internal Server Error",
+                content = @Content(schema = @Schema(implementation = ProblemDetail.class)))
     })
     @GetMapping
-    public ResponseEntity<List<PostResponse>> getAllPosts() {
-        List<PostResponse> posts = adminPostService.getAllPosts();
+    public ResponseEntity<PaginatedResponse<PostResponse>> getAllPosts(
+            @Valid PaginationRequest paginationRequest
+    ) {
+        Pageable pageable = paginationRequest.toPageable();
+        PaginatedResponse<PostResponse> posts = adminPostService.getAllPosts(pageable);
         return ResponseEntity.ok(posts);
     }
 
@@ -57,16 +62,16 @@ public class AdminPostsController {
             description = "Retrieve detailed information about a specific post using its ID."
     )
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Post fetched successfully",
-                    content = @Content(schema = @Schema(implementation = PostResponse.class))),
-            @ApiResponse(responseCode = "404", description = "Post not found",
-                    content = @Content(schema = @Schema(implementation = ProblemDetail.class))),
-            @ApiResponse(responseCode = "401", description = "Unauthorized",
-                    content = @Content(schema = @Schema(implementation = ProblemDetail.class))),
-            @ApiResponse(responseCode = "403", description = "Forbidden - Not an admin",
-                    content = @Content(schema = @Schema(implementation = ProblemDetail.class))),
-            @ApiResponse(responseCode = "500", description = "Internal Server Error",
-                    content = @Content(schema = @Schema(implementation = ProblemDetail.class)))
+        @ApiResponse(responseCode = "200", description = "Post fetched successfully",
+                content = @Content(schema = @Schema(implementation = PostResponse.class))),
+        @ApiResponse(responseCode = "404", description = "Post not found",
+                content = @Content(schema = @Schema(implementation = ProblemDetail.class))),
+        @ApiResponse(responseCode = "401", description = "Unauthorized",
+                content = @Content(schema = @Schema(implementation = ProblemDetail.class))),
+        @ApiResponse(responseCode = "403", description = "Forbidden - Not an admin",
+                content = @Content(schema = @Schema(implementation = ProblemDetail.class))),
+        @ApiResponse(responseCode = "500", description = "Internal Server Error",
+                content = @Content(schema = @Schema(implementation = ProblemDetail.class)))
     })
     @GetMapping("/{id}")
     public ResponseEntity<PostResponse> getPostById(@PathVariable Long id) {
@@ -79,15 +84,15 @@ public class AdminPostsController {
             description = "Permanently delete a post by its ID. Only admins can perform this action."
     )
     @ApiResponses({
-            @ApiResponse(responseCode = "204", description = "Post deleted successfully"),
-            @ApiResponse(responseCode = "404", description = "Post not found",
-                    content = @Content(schema = @Schema(implementation = ProblemDetail.class))),
-            @ApiResponse(responseCode = "401", description = "Unauthorized",
-                    content = @Content(schema = @Schema(implementation = ProblemDetail.class))),
-            @ApiResponse(responseCode = "403", description = "Forbidden - Not an admin",
-                    content = @Content(schema = @Schema(implementation = ProblemDetail.class))),
-            @ApiResponse(responseCode = "500", description = "Internal Server Error",
-                    content = @Content(schema = @Schema(implementation = ProblemDetail.class)))
+        @ApiResponse(responseCode = "204", description = "Post deleted successfully"),
+        @ApiResponse(responseCode = "404", description = "Post not found",
+                content = @Content(schema = @Schema(implementation = ProblemDetail.class))),
+        @ApiResponse(responseCode = "401", description = "Unauthorized",
+                content = @Content(schema = @Schema(implementation = ProblemDetail.class))),
+        @ApiResponse(responseCode = "403", description = "Forbidden - Not an admin",
+                content = @Content(schema = @Schema(implementation = ProblemDetail.class))),
+        @ApiResponse(responseCode = "500", description = "Internal Server Error",
+                content = @Content(schema = @Schema(implementation = ProblemDetail.class)))
     })
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletePost(@PathVariable Long id) {
@@ -100,16 +105,16 @@ public class AdminPostsController {
             description = "Mark a post as flagged (e.g., for review, hiding, or warning). Toggles or sets flagged = true."
     )
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Post flagged successfully",
-                    content = @Content(schema = @Schema(implementation = PostResponse.class))),
-            @ApiResponse(responseCode = "404", description = "Post not found",
-                    content = @Content(schema = @Schema(implementation = ProblemDetail.class))),
-            @ApiResponse(responseCode = "401", description = "Unauthorized",
-                    content = @Content(schema = @Schema(implementation = ProblemDetail.class))),
-            @ApiResponse(responseCode = "403", description = "Forbidden - Not an admin",
-                    content = @Content(schema = @Schema(implementation = ProblemDetail.class))),
-            @ApiResponse(responseCode = "500", description = "Internal Server Error",
-                    content = @Content(schema = @Schema(implementation = ProblemDetail.class)))
+        @ApiResponse(responseCode = "200", description = "Post flagged successfully",
+                content = @Content(schema = @Schema(implementation = PostResponse.class))),
+        @ApiResponse(responseCode = "404", description = "Post not found",
+                content = @Content(schema = @Schema(implementation = ProblemDetail.class))),
+        @ApiResponse(responseCode = "401", description = "Unauthorized",
+                content = @Content(schema = @Schema(implementation = ProblemDetail.class))),
+        @ApiResponse(responseCode = "403", description = "Forbidden - Not an admin",
+                content = @Content(schema = @Schema(implementation = ProblemDetail.class))),
+        @ApiResponse(responseCode = "500", description = "Internal Server Error",
+                content = @Content(schema = @Schema(implementation = ProblemDetail.class)))
     })
     @PatchMapping("/{id}/flag")
     public ResponseEntity<PostResponse> flagPost(@PathVariable Long id) {
@@ -122,16 +127,16 @@ public class AdminPostsController {
             description = "Remove the flagged status from a post."
     )
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Post unflagged successfully",
-                    content = @Content(schema = @Schema(implementation = PostResponse.class))),
-            @ApiResponse(responseCode = "404", description = "Post not found",
-                    content = @Content(schema = @Schema(implementation = ProblemDetail.class))),
-            @ApiResponse(responseCode = "401", description = "Unauthorized",
-                    content = @Content(schema = @Schema(implementation = ProblemDetail.class))),
-            @ApiResponse(responseCode = "403", description = "Forbidden - Not an admin",
-                    content = @Content(schema = @Schema(implementation = ProblemDetail.class))),
-            @ApiResponse(responseCode = "500", description = "Internal Server Error",
-                    content = @Content(schema = @Schema(implementation = ProblemDetail.class)))
+        @ApiResponse(responseCode = "200", description = "Post unflagged successfully",
+                content = @Content(schema = @Schema(implementation = PostResponse.class))),
+        @ApiResponse(responseCode = "404", description = "Post not found",
+                content = @Content(schema = @Schema(implementation = ProblemDetail.class))),
+        @ApiResponse(responseCode = "401", description = "Unauthorized",
+                content = @Content(schema = @Schema(implementation = ProblemDetail.class))),
+        @ApiResponse(responseCode = "403", description = "Forbidden - Not an admin",
+                content = @Content(schema = @Schema(implementation = ProblemDetail.class))),
+        @ApiResponse(responseCode = "500", description = "Internal Server Error",
+                content = @Content(schema = @Schema(implementation = ProblemDetail.class)))
     })
     @PatchMapping("/{id}/unflag")
     public ResponseEntity<PostResponse> unflagPost(@PathVariable Long id) {

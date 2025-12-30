@@ -8,9 +8,11 @@ import com.wordium.posts.dto.ReportRequest;
 
 public interface ReportService {
 
-    ReportPostResponse createReport(Long userId, ReportRequest report);
+    ReportPostResponse createReport(Long userId, Long id, ReportRequest report);
 
     Page<ReportPostResponse> getReports(Pageable pageable);
+
+    ReportPostResponse getReport(Long id);
 
     long countUnresolvedReports();
 

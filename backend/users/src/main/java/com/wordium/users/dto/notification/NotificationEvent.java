@@ -1,4 +1,4 @@
-package com.wordium.users.dto;
+package com.wordium.users.dto.notification;
 public record NotificationEvent(
         String type,
         Long actorId,

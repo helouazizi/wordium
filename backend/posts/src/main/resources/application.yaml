@@ -8,7 +8,7 @@ spring:
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
-     ddl-auto: update  
+      ddl-auto: update
     show-sql: true
     properties:
       hibernate:
@@ -17,11 +17,14 @@ spring:
   jackson:
     default-property-inclusion: non_null
   cache:
-      type: redis 
-        
+    type: redis
+
   redis:
-      host: ${REDIS_HOST:redis}
-      port: ${REDIS_PORT:6379}
+    host: ${REDIS_HOST:redis}
+    port: ${REDIS_PORT:6379}
+feign:
+  httpclient:
+    enabled: true
 
 server:
   port: 3003
@@ -29,11 +32,10 @@ server:
 
 eureka:
   client:
-    register-with-eureka: false  
+    register-with-eureka: false
     fetch-registry: false
     # service-url:
     #   defaultZone: ${EUREKA_URL:http://localhost:8761/eureka}
-
 
 springdoc:
   api-docs:
@@ -45,11 +47,10 @@ springdoc:
     version: 1.0
     description: posts microservice API
 
-
 internal:
   service:
     token: ${INTERNAL_SERVICE_SECRET}
 
 services:
   api:
-    url: ${GATEWAY_API}  # fallback for local dev if env var missing
+    url: ${GATEWAY_API} # fallback for local dev if env var missing

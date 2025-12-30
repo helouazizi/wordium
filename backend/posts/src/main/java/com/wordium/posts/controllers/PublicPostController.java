@@ -149,13 +149,14 @@ public class PublicPostController {
         @ApiResponse(responseCode = "404", description = "Comment not found",
                 content = @Content(schema = @Schema(implementation = ProblemDetail.class)))
     })
-    @DeleteMapping("/{id}/comments")
+    @DeleteMapping("/{id}/comments/{commentId}")
     public ResponseEntity<Void> deleteComment(
             @RequestHeader("User-Id") Long userId,
-             @PathVariable Long id,
-            @Valid @RequestBody CommentRequest req) {
-
-        postService.deleteComment(userId,id, req);
-        return ResponseEntity.ok().build();
+            @PathVariable Long id,
+            @PathVariable Long commentId
+    ) {
+        postService.deleteComment(userId, id, commentId);
+        return ResponseEntity.noContent().build();
     }
+
 }

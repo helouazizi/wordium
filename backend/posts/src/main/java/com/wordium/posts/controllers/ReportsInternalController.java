@@ -3,8 +3,8 @@ package com.wordium.posts.controllers;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -37,12 +37,20 @@ public class ReportsInternalController {
         return ResponseEntity.ok(PaginatedResponse.fromPage(page));
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<ReportPostResponse> getReport(
+            @PathVariable Long id
+    ) {
+         ReportPostResponse report = reportService.getReport( id);
+        return ResponseEntity.ok(report);
+    }
+
     @GetMapping("/unresolved/count")
     public ResponseEntity<Long> countUnresolvedReports() {
         return ResponseEntity.ok(reportService.countUnresolvedReports());
     }
 
-    @PostMapping("/{id}/resolve")
+    @PatchMapping("/{id}/resolve")
     public ResponseEntity<Void> resolveReport(
             @RequestHeader("User-Id") Long userId,
             @PathVariable Long id

@@ -2,6 +2,7 @@ package com.wordium.posts.controllers;
 
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -25,7 +26,7 @@ import jakarta.validation.Valid;
         description = "Public endpoints for reporting posts"
 )
 @RestController
-@RequestMapping("posts/reports")
+@RequestMapping("posts/{id}/reports")
 public class ReportsPublicController {
 
     private final ReportService reportService;
@@ -58,9 +59,10 @@ public class ReportsPublicController {
     @PostMapping
     public ResponseEntity<Void> createReport(
             @RequestHeader("User-Id") Long userId,
+            @PathVariable Long id,
             @Valid @RequestBody ReportRequest request
     ) {
-        reportService.createReport(userId, request);
+        reportService.createReport(userId,id, request);
         return ResponseEntity.ok().build();
     }
 }

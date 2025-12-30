@@ -1,17 +1,16 @@
-
 package com.wordium.users.services.admin.impl;
 
-import java.util.List;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.wordium.users.client.PostServiceClient;
-import com.wordium.users.dto.PostResponse;
-import com.wordium.users.services.admin.AdminPostService;
-
+import com.wordium.users.dto.PaginatedResponse;
+import com.wordium.users.dto.posts.PostResponse;
+import com.wordium.users.services.admin.AdminPostsService;
 
 @Service
-public class AdminPostsServiceImpl implements AdminPostService {
+public class AdminPostsServiceImpl implements AdminPostsService {
 
     private final PostServiceClient postServiceClient;
 
@@ -20,8 +19,8 @@ public class AdminPostsServiceImpl implements AdminPostService {
     }
 
     @Override
-    public List<PostResponse> getAllPosts() {
-        return postServiceClient.getAllPosts();
+    public PaginatedResponse<PostResponse> getAllPosts(Pageable pageable) {
+        return postServiceClient.getAllPosts(pageable);
     }
 
     @Override

@@ -16,11 +16,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.wordium.users.dto.BatchUsersRequest;
-import com.wordium.users.dto.SignUpRequest;
-import com.wordium.users.dto.SignUpResponse;
-import com.wordium.users.dto.UpdateProfileRequest;
-import com.wordium.users.dto.UsersResponse;
+import com.wordium.users.dto.auth.SignUpRequest;
+import com.wordium.users.dto.auth.SignUpResponse;
+import com.wordium.users.dto.users.BatchUsersRequest;
+import com.wordium.users.dto.users.UpdateProfileRequest;
+import com.wordium.users.dto.users.UsersResponse;
 import com.wordium.users.services.users.UsersService;
 
 import io.swagger.v3.oas.annotations.Hidden;

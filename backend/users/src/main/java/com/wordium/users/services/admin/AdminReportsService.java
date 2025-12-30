@@ -1,18 +1,17 @@
 package com.wordium.users.services.admin;
 
-import java.util.List;
+import org.springframework.data.domain.Pageable;
 
-import com.wordium.users.dto.ReportResponse;
-
-import feign.form.ContentType;
+import com.wordium.users.dto.PaginatedResponse;
+import com.wordium.users.dto.report.ReportPostResponse;
 
 public interface AdminReportsService {
 
-    List<ReportResponse> getAllReports(Long userId, Long postId, ContentType type);
+    PaginatedResponse<ReportPostResponse> getAllReports(Pageable page);
 
-    ReportResponse getReportById(Long id);
+    ReportPostResponse getReportById(Long id);
 
-    ReportResponse resolveReport(Long id);
+    ReportPostResponse resolveReport(Long id);
 
     void deleteReport(Long id);
 }

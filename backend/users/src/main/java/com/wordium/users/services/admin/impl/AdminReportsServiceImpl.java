@@ -2,10 +2,12 @@ package com.wordium.users.services.admin.impl;
 
 import java.util.List;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.wordium.users.client.PostServiceClient;
-import com.wordium.users.dto.ReportResponse;
+import com.wordium.users.dto.PaginatedResponse;
+import com.wordium.users.dto.report.ReportPostResponse;
 import com.wordium.users.services.admin.AdminReportsService;
 
 import feign.form.ContentType;
@@ -20,17 +22,17 @@ public class AdminReportsServiceImpl implements AdminReportsService {
     }
 
     @Override
-    public List<ReportResponse> getAllReports(Long userId, Long postId, ContentType type) {
-        return postServiceClient.getAllReports(userId, postId, type);
+    public PaginatedResponse<ReportPostResponse> getAllReports(Pageable page) {
+        return postServiceClient.getAllReports(page);
     }
 
     @Override
-    public ReportResponse getReportById(Long id) {
+    public ReportPostResponse getReportById(Long id) {
         return postServiceClient.getReportById(id);
     }
 
     @Override
-    public ReportResponse resolveReport(Long id) {
+    public ReportPostResponse resolveReport(Long id) {
         return postServiceClient.resolveReport(id);
     }
 

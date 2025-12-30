@@ -15,6 +15,8 @@ import com.wordium.posts.dto.PostReactionRequest;
 import com.wordium.posts.dto.PostRequest;
 import com.wordium.posts.dto.PostResponse;
 import com.wordium.posts.dto.UserProfile;
+import com.wordium.posts.exeptions.BadRequestException;
+import com.wordium.posts.exeptions.NotFoundException;
 import com.wordium.posts.models.Comment;
 import com.wordium.posts.models.Post;
 import com.wordium.posts.models.PostImage;
@@ -24,8 +26,6 @@ import com.wordium.posts.repo.PostRepository;
 import com.wordium.posts.repo.ReactionRepository;
 import com.wordium.posts.services.PostService;
 import com.wordium.posts.utils.UserEnrichmentHelper;
-
-import jakarta.persistence.EntityNotFoundException;
 
 @Service
 public class PostServiceImpl implements PostService {
@@ -67,7 +67,7 @@ public class PostServiceImpl implements PostService {
     @Override
     public PostResponse getPostById(Long id) {
         Post post = postRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Post not found with id: " + id));
+                .orElseThrow(() -> new NotFoundException("Not Found"));
         return userEnrichmentHelper.enrichSingle(
                 post,
                 Post::getUserId,
@@ -108,7 +108,7 @@ public class PostServiceImpl implements PostService {
     @Override
     public PostResponse updatePost(Long postId, Long userId, PostRequest request) {
         Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new EntityNotFoundException("Post not found with id: " + postId));
+                .orElseThrow(() -> new NotFoundException("Not Found"));
 
         // Optional: Add ownership check here
         // if (!post.getUserId().equals(userId)) throw new AccessDeniedException("...");
@@ -135,7 +135,7 @@ public class PostServiceImpl implements PostService {
     @Override
     public void deletePost(Long postId, Long userId) {
         Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new EntityNotFoundException("Post not found with id: " + postId));
+                .orElseThrow(() -> new NotFoundException("Not Found"));
 
         // Optional: ownership/admin check
         // if (!post.getUserId().equals(userId) && !isAdmin(userId)) throw new AccessDeniedException(...);
@@ -145,7 +145,7 @@ public class PostServiceImpl implements PostService {
     @Override
     public void flagPost(Long postId) {
         Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new EntityNotFoundException("Post not found with id: " + postId));
+                .orElseThrow(() -> new NotFoundException("Not Found"));
         post.setFlagged(true);
         postRepository.save(post);
     }
@@ -153,7 +153,7 @@ public class PostServiceImpl implements PostService {
     @Override
     public void unflagPost(Long postId) {
         Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new EntityNotFoundException("Post not found with id: " + postId));
+                .orElseThrow(() -> new NotFoundException("Not Found"));
         post.setFlagged(false);
         postRepository.save(post);
     }
@@ -162,10 +162,14 @@ public class PostServiceImpl implements PostService {
     @Override
     public void react(Long userId, Long postId, PostReactionRequest req) {
         if (!postRepository.existsById(postId)) {
-            throw new EntityNotFoundException("Post not found with id: " + postId);
+            throw new NotFoundException("Not Found");
         }
         Optional<PostReaction> existing
                 = reactionRepository.findByPostIdAndUserId(postId, userId);
+
+        if (!"like".equals(req.reaction()) && !"unlike".equals(req.reaction())) {
+            throw new BadRequestException("Bad Reaction");
+        }
 
         if ("like".equals(req.reaction())) {
 
@@ -235,7 +239,7 @@ public class PostServiceImpl implements PostService {
     public CommentResponse createComment(Long userId, Long postId, CommentRequest request) {
 
         if (!postRepository.existsById(postId)) {
-            throw new EntityNotFoundException("Post not found with id: " + postId);
+            throw new NotFoundException("Not Found");
         }
         Comment comment = new Comment();
         comment.setPostId(postId);
@@ -256,7 +260,7 @@ public class PostServiceImpl implements PostService {
     @Transactional(readOnly = true)
     public Page<CommentResponse> getPostComments(Long postId, Pageable pageable) {
         if (!postRepository.existsById(postId)) {
-            throw new EntityNotFoundException("Post not found with id: " + postId);
+            throw new NotFoundException("Not Found");
         }
         Page<Comment> page = commentRepository.findByPostIdOrderByCreatedAtAsc(postId, pageable);
 
@@ -269,14 +273,14 @@ public class PostServiceImpl implements PostService {
 
     @Override
     @Transactional
-    public void deleteComment(Long userId, Long postId, CommentRequest req) {
+    public void deleteComment(Long userId, Long postId, Long commentId) {
         if (!postRepository.existsById(postId)) {
-            throw new EntityNotFoundException("Post not found with id: " + postId);
+            throw new NotFoundException("Not Found");
         }
-        if (!commentRepository.existsById(req.commentId())) {
-            throw new EntityNotFoundException("Comment not found with id: ");
+        if (!commentRepository.existsById(commentId)) {
+            throw new NotFoundException("Not Found");
         }
-        commentRepository.deleteByIdAndUserId(req.commentId(), userId);
+        commentRepository.deleteByIdAndUserId(commentId, userId);
         postRepository.decrementCommentsCount(postId);
     }
 

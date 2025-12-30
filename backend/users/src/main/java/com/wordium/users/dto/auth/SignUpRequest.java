@@ -1,4 +1,4 @@
-package com.wordium.users.dto;
+package com.wordium.users.dto.auth;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

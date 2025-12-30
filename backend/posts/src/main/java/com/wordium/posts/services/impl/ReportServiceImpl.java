@@ -10,13 +10,13 @@ import org.springframework.transaction.annotation.Transactional;
 import com.wordium.posts.dto.ReportPostResponse;
 import com.wordium.posts.dto.ReportRequest;
 import com.wordium.posts.dto.UserProfile;
+import com.wordium.posts.exeptions.ConflictException;
+import com.wordium.posts.exeptions.NotFoundException;
 import com.wordium.posts.models.Report;
 import com.wordium.posts.repo.PostRepository;
 import com.wordium.posts.repo.ReportRepository;
 import com.wordium.posts.services.ReportService;
 import com.wordium.posts.utils.UserEnrichmentHelper;
-
-import jakarta.persistence.EntityNotFoundException;
 
 @Service
 @Transactional
@@ -26,30 +26,31 @@ public class ReportServiceImpl implements ReportService {
     private final PostRepository postRepository;
     private final UserEnrichmentHelper userEnrichmentHelper;
 
-    public ReportServiceImpl(ReportRepository reportRepository, PostRepository postRepository, UserEnrichmentHelper userEnrichmentHelper) {
+    public ReportServiceImpl(ReportRepository reportRepository, PostRepository postRepository,
+            UserEnrichmentHelper userEnrichmentHelper) {
         this.reportRepository = reportRepository;
         this.userEnrichmentHelper = userEnrichmentHelper;
         this.postRepository = postRepository;
     }
 
     @Override
-    public ReportPostResponse createReport(Long userId, ReportRequest report) {
-        if (!postRepository.existsById(report.reportedPostId())) {
-            throw new EntityNotFoundException("Post not found with id: ");
+    public ReportPostResponse createReport(Long userId, Long posId, ReportRequest report) {
+        if (!postRepository.existsById(posId)) {
+            throw new NotFoundException("Not Found");
         }
-        boolean exists = reportRepository.existsByReporterIdAndReportedPostId(userId, report.reportedPostId());
+        boolean exists = reportRepository.existsByReporterIdAndReportedPostId(userId, posId);
 
         if (exists) {
-            throw new IllegalStateException("User has already reported this target with the same reason.");
+            throw new ConflictException("User has already reported this target with the same reason.");
         }
 
         Report data = new Report();
         data.setReporterId(userId);
-        data.setReportedPostId(report.reportedPostId());
+        data.setReportedPostId(posId);
         data.setReason(report.reason());
         reportRepository.save(data);
 
-        postRepository.incrementReportCount(report.reportedPostId());
+        postRepository.incrementReportCount(posId);
 
         return mapToResponse(data, new UserProfile(userId, null, null, "null", null, "null", null));
     }
@@ -62,8 +63,7 @@ public class ReportServiceImpl implements ReportService {
                 report.getReason(),
                 report.getResolved(),
                 report.getResolvedAt(),
-                report.getCreatedAt()
-        );
+                report.getCreatedAt());
     }
 
     @Override
@@ -73,7 +73,7 @@ public class ReportServiceImpl implements ReportService {
 
     @Override
     public ReportPostResponse resolveReport(Long userId, Long reportId) {
-        Report report = reportRepository.findById(reportId).orElseThrow(() -> new EntityNotFoundException("Report Not Fount"));
+        Report report = reportRepository.findById(reportId).orElseThrow(() -> new NotFoundException("Not Found"));
         report.setResolvedAt(LocalDateTime.now());
         report.setResolved(true);
         reportRepository.save(report);
@@ -85,6 +85,15 @@ public class ReportServiceImpl implements ReportService {
     public Page<ReportPostResponse> getReports(Pageable pageable) {
         Page<Report> page = reportRepository.findAll(pageable);
         return userEnrichmentHelper.enrichPage(
+                page,
+                Report::getReporterId,
+                this::mapToResponse);
+    }
+
+    @Override
+    public ReportPostResponse getReport(Long id) {
+        Report page = reportRepository.findById(id).orElseThrow(() -> new NotFoundException("Not Found"));
+        return userEnrichmentHelper.enrichSingle(
                 page,
                 Report::getReporterId,
                 this::mapToResponse);

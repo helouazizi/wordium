@@ -5,17 +5,48 @@ import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wordium.users.exceptions.BadRequestException;
 import com.wordium.users.exceptions.ConflictException;
 import com.wordium.users.exceptions.NotFoundException;
 
+import feign.FeignException;
+
 @ControllerAdvice
 public class GlobalExceptionHandler {
+
+    private final ObjectMapper objectMapper;
+
+    public GlobalExceptionHandler(ObjectMapper objectMapper) {
+        this.objectMapper = objectMapper;
+    }
+
+    @ExceptionHandler(FeignException.class)
+    public ResponseEntity<ProblemDetail> handleFeignException(FeignException ex) {
+
+        try {
+            ProblemDetail problem = objectMapper.readValue(
+                    ex.contentUTF8(),
+                    ProblemDetail.class
+            );
+            return ResponseEntity.status(problem.getStatus()).body(problem);
+        } catch (Exception ignored) {
+
+        }
+
+        // Fallback if body is missing or invalid
+        ProblemDetail fallback = ProblemDetail.forStatus(ex.status());
+        fallback.setTitle("Downstream service error");
+        fallback.setDetail(ex.getMessage());
+
+        return ResponseEntity.status(ex.status()).body(fallback);
+    }
 
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
     public ProblemDetail handleMethodNotAllowed(HttpRequestMethodNotSupportedException e) {
@@ -57,8 +88,8 @@ public class GlobalExceptionHandler {
 
         List<Map<String, String>> fieldErrors = e.getBindingResult().getFieldErrors().stream()
                 .map(err -> Map.of(
-                        "field", err.getField(),
-                        "message", err.getDefaultMessage() != null ? err.getDefaultMessage() : "Invalid value"))
+                "field", err.getField(),
+                "message", err.getDefaultMessage() != null ? err.getDefaultMessage() : "Invalid value"))
                 .toList();
 
         pd.setProperty("fieldErrors", fieldErrors);

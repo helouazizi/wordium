@@ -1,4 +1,4 @@
-package com.wordium.users.dto;
+package com.wordium.users.dto.users;
 
 import java.util.List;
 

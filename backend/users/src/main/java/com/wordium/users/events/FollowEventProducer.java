@@ -3,7 +3,7 @@ package com.wordium.users.events;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 
-import com.wordium.users.dto.NotificationEvent;
+import com.wordium.users.dto.notification.NotificationEvent;
 
 @Component
 public class FollowEventProducer {

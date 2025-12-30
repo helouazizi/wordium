@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.wordium.users.dto.FollowResponse;
-import com.wordium.users.dto.UsersResponse;
+import com.wordium.users.dto.users.FollowResponse;
+import com.wordium.users.dto.users.UsersResponse;
 import com.wordium.users.services.followers.FollowersService;
 
 import io.swagger.v3.oas.annotations.Operation;

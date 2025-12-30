@@ -3,6 +3,7 @@ package com.wordium.users.controllers.admin;
 
 import java.util.List;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -13,7 +14,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.wordium.users.dto.ReportResponse;
+import com.wordium.users.dto.PaginatedResponse;
+import com.wordium.users.dto.PaginationRequest;
+import com.wordium.users.dto.posts.PostResponse;
+import com.wordium.users.dto.report.ReportPostResponse;
 import com.wordium.users.services.admin.AdminReportsService;
 
 import feign.form.ContentType;
@@ -23,6 +27,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 
 @Tag(name = "Admin - Reports Management", description = "Admin endpoints for viewing and managing user reports on posts/users")
 @RestController
@@ -40,22 +45,21 @@ public class AdminReportsController {
             description = "Retrieve all reports with optional filters: by reported user, post, or content type (POST, USER, COMMENT)."
     )
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Reports fetched successfully",
-                    content = @Content(schema = @Schema(implementation = ReportResponse.class))),
-            @ApiResponse(responseCode = "401", description = "Unauthorized",
-                    content = @Content(schema = @Schema(implementation = ProblemDetail.class))),
-            @ApiResponse(responseCode = "403", description = "Forbidden - Not an admin",
-                    content = @Content(schema = @Schema(implementation = ProblemDetail.class))),
-            @ApiResponse(responseCode = "500", description = "Internal Server Error",
-                    content = @Content(schema = @Schema(implementation = ProblemDetail.class)))
+        @ApiResponse(responseCode = "200", description = "Reports fetched successfully",
+                content = @Content(schema = @Schema(implementation = ReportPostResponse.class))),
+        @ApiResponse(responseCode = "401", description = "Unauthorized",
+                content = @Content(schema = @Schema(implementation = ProblemDetail.class))),
+        @ApiResponse(responseCode = "403", description = "Forbidden - Not an admin",
+                content = @Content(schema = @Schema(implementation = ProblemDetail.class))),
+        @ApiResponse(responseCode = "500", description = "Internal Server Error",
+                content = @Content(schema = @Schema(implementation = ProblemDetail.class)))
     })
     @GetMapping
-    public ResponseEntity<List<ReportResponse>> getAllReports(
-            @RequestParam(required = false) Long userId,
-            @RequestParam(required = false) Long postId,
-            @RequestParam(required = false) ContentType type) {
+    public ResponseEntity<PaginatedResponse<ReportPostResponse>> getAllReports(
+            @Valid PaginationRequest paginationRequest) {
 
-        List<ReportResponse> reports = adminReportsService.getAllReports(userId, postId, type);
+        Pageable page = paginationRequest.toPageable();
+        PaginatedResponse<ReportPostResponse> reports = adminReportsService.getAllReports(page);
         return ResponseEntity.ok(reports);
     }
 
@@ -64,20 +68,20 @@ public class AdminReportsController {
             description = "Retrieve full details of a specific report."
     )
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Report fetched successfully",
-                    content = @Content(schema = @Schema(implementation = ReportResponse.class))),
-            @ApiResponse(responseCode = "404", description = "Report not found",
-                    content = @Content(schema = @Schema(implementation = ProblemDetail.class))),
-            @ApiResponse(responseCode = "401", description = "Unauthorized",
-                    content = @Content(schema = @Schema(implementation = ProblemDetail.class))),
-            @ApiResponse(responseCode = "403", description = "Forbidden",
-                    content = @Content(schema = @Schema(implementation = ProblemDetail.class))),
-            @ApiResponse(responseCode = "500", description = "Internal Server Error",
-                    content = @Content(schema = @Schema(implementation = ProblemDetail.class)))
+        @ApiResponse(responseCode = "200", description = "Report fetched successfully",
+                content = @Content(schema = @Schema(implementation = ReportPostResponse.class))),
+        @ApiResponse(responseCode = "404", description = "Report not found",
+                content = @Content(schema = @Schema(implementation = ProblemDetail.class))),
+        @ApiResponse(responseCode = "401", description = "Unauthorized",
+                content = @Content(schema = @Schema(implementation = ProblemDetail.class))),
+        @ApiResponse(responseCode = "403", description = "Forbidden",
+                content = @Content(schema = @Schema(implementation = ProblemDetail.class))),
+        @ApiResponse(responseCode = "500", description = "Internal Server Error",
+                content = @Content(schema = @Schema(implementation = ProblemDetail.class)))
     })
     @GetMapping("/{id}")
-    public ResponseEntity<ReportResponse> getReportById(@PathVariable Long id) {
-        ReportResponse report = adminReportsService.getReportById(id);
+    public ResponseEntity<ReportPostResponse> getReportById(@PathVariable Long id) {
+        ReportPostResponse report = adminReportsService.getReportById(id);
         return ResponseEntity.ok(report);
     }
 
@@ -86,20 +90,20 @@ public class AdminReportsController {
             description = "Mark a report as resolved. Typically done after taking action (e.g., deleting post, banning user)."
     )
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Report resolved successfully",
-                    content = @Content(schema = @Schema(implementation = ReportResponse.class))),
-            @ApiResponse(responseCode = "404", description = "Report not found",
-                    content = @Content(schema = @Schema(implementation = ProblemDetail.class))),
-            @ApiResponse(responseCode = "401", description = "Unauthorized",
-                    content = @Content(schema = @Schema(implementation = ProblemDetail.class))),
-            @ApiResponse(responseCode = "403", description = "Forbidden",
-                    content = @Content(schema = @Schema(implementation = ProblemDetail.class))),
-            @ApiResponse(responseCode = "500", description = "Internal Server Error",
-                    content = @Content(schema = @Schema(implementation = ProblemDetail.class)))
+        @ApiResponse(responseCode = "200", description = "Report resolved successfully",
+                content = @Content(schema = @Schema(implementation = ReportPostResponse.class))),
+        @ApiResponse(responseCode = "404", description = "Report not found",
+                content = @Content(schema = @Schema(implementation = ProblemDetail.class))),
+        @ApiResponse(responseCode = "401", description = "Unauthorized",
+                content = @Content(schema = @Schema(implementation = ProblemDetail.class))),
+        @ApiResponse(responseCode = "403", description = "Forbidden",
+                content = @Content(schema = @Schema(implementation = ProblemDetail.class))),
+        @ApiResponse(responseCode = "500", description = "Internal Server Error",
+                content = @Content(schema = @Schema(implementation = ProblemDetail.class)))
     })
     @PatchMapping("/{id}/resolve")
-    public ResponseEntity<ReportResponse> resolveReport(@PathVariable Long id) {
-        ReportResponse report = adminReportsService.resolveReport(id);
+    public ResponseEntity<ReportPostResponse> resolveReport(@PathVariable Long id) {
+        ReportPostResponse report = adminReportsService.resolveReport(id);
         return ResponseEntity.ok(report);
     }
 
@@ -108,15 +112,15 @@ public class AdminReportsController {
             description = "Permanently delete a report (e.g., if it was a false report or already handled externally)."
     )
     @ApiResponses({
-            @ApiResponse(responseCode = "204", description = "Report deleted successfully"),
-            @ApiResponse(responseCode = "404", description = "Report not found",
-                    content = @Content(schema = @Schema(implementation = ProblemDetail.class))),
-            @ApiResponse(responseCode = "401", description = "Unauthorized",
-                    content = @Content(schema = @Schema(implementation = ProblemDetail.class))),
-            @ApiResponse(responseCode = "403", description = "Forbidden",
-                    content = @Content(schema = @Schema(implementation = ProblemDetail.class))),
-            @ApiResponse(responseCode = "500", description = "Internal Server Error",
-                    content = @Content(schema = @Schema(implementation = ProblemDetail.class)))
+        @ApiResponse(responseCode = "204", description = "Report deleted successfully"),
+        @ApiResponse(responseCode = "404", description = "Report not found",
+                content = @Content(schema = @Schema(implementation = ProblemDetail.class))),
+        @ApiResponse(responseCode = "401", description = "Unauthorized",
+                content = @Content(schema = @Schema(implementation = ProblemDetail.class))),
+        @ApiResponse(responseCode = "403", description = "Forbidden",
+                content = @Content(schema = @Schema(implementation = ProblemDetail.class))),
+        @ApiResponse(responseCode = "500", description = "Internal Server Error",
+                content = @Content(schema = @Schema(implementation = ProblemDetail.class)))
     })
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteReport(@PathVariable Long id) {

@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wordium.posts.exeptions.BadRequestException;
 import com.wordium.posts.exeptions.ConflictException;
-import com.wordium.posts.exeptions.ExternalServiceProblemException;
 import com.wordium.posts.exeptions.NotFoundException;
 
 import feign.FeignException;
@@ -99,15 +98,13 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ProblemDetail handleUnexpected(Exception e) {
+        System.err.println(e);
         ProblemDetail pd = ProblemDetail.forStatus(HttpStatus.INTERNAL_SERVER_ERROR);
         pd.setTitle("Internal Server Error");
         pd.setDetail("An unexpected error occurred");
         return pd;
     }
 
-    @ExceptionHandler(ExternalServiceProblemException.class)
-    public ProblemDetail handleExternalProblem(ExternalServiceProblemException e) {
-        return e.getProblemDetail();
-    }
+ 
 
 }
