@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.wordium.users.dto.PostResponse;
-import com.wordium.users.services.admin.AdminPostsService;
+import com.wordium.users.services.admin.AdminPostService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -26,9 +26,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @RequestMapping("/users/admin/posts")
 public class AdminPostsController {
 
-    private final AdminPostsService adminPostService;
+    private final AdminPostService adminPostService;
 
-    public AdminPostsController(AdminPostsService adminPostService) {
+    public AdminPostsController(AdminPostService adminPostService) {
         this.adminPostService = adminPostService;
     }
 

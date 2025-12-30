@@ -2,7 +2,7 @@ package com.wordium.users.services.admin.impl;
 
 import java.util.List;
 
-import com.wordium.users.clients.PostServiceClient;
+import com.wordium.users.client.PostServiceClient;
 import com.wordium.users.dto.PostResponse;
 import com.wordium.users.services.admin.AdminPostService;
 
@@ -16,7 +16,7 @@ public class AdminPostServiceImpl implements AdminPostService {
 
     @Override
     public List<PostResponse> getAllPosts() {
-        return postClient.getAllPosts(true);
+        return postClient.getAllPosts();
     }
 
     @Override

@@ -7,10 +7,11 @@ import org.springframework.stereotype.Service;
 
 import com.wordium.users.client.PostServiceClient;
 import com.wordium.users.dto.PostResponse;
-import com.wordium.users.services.admin.AdminPostsService;
+import com.wordium.users.services.admin.AdminPostService;
+
 
 @Service
-public class AdminPostsServiceImpl implements AdminPostsService {
+public class AdminPostsServiceImpl implements AdminPostService {
 
     private final PostServiceClient postServiceClient;
 
