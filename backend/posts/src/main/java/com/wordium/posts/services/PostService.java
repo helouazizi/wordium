@@ -25,7 +25,7 @@ public interface PostService {
 
     PostResponse updatePost(Long postId, Long userId, PostRequest request);  // only owner or admin
 
-    void deletePost(Long postId, Long userId);  // only owner or admin
+    void deletePost(Long postId, Long userId,String role);  // only owner or admin
 
     void flagPost(Long postId);
 

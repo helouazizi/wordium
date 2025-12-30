@@ -1,5 +1,6 @@
 package com.wordium.posts.config;
 
+import java.nio.file.AccessDeniedException;
 import java.util.List;
 import java.util.Map;
 
@@ -33,11 +34,10 @@ public class GlobalExceptionHandler {
         try {
             ProblemDetail problem = objectMapper.readValue(
                     ex.contentUTF8(),
-                    ProblemDetail.class
-            );
+                    ProblemDetail.class);
             return ResponseEntity.status(problem.getStatus()).body(problem);
         } catch (Exception ignored) {
-            
+
         }
 
         // Fallback if body is missing or invalid
@@ -46,6 +46,15 @@ public class GlobalExceptionHandler {
         fallback.setDetail(ex.getMessage());
 
         return ResponseEntity.status(ex.status()).body(fallback);
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ProblemDetail> handleAccessDenied(AccessDeniedException ex) {
+        ProblemDetail problem = ProblemDetail.forStatus(HttpStatus.FORBIDDEN);
+        problem.setTitle("Access Denied");
+        problem.setDetail(ex.getMessage());
+
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(problem);
     }
 
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
@@ -88,8 +97,8 @@ public class GlobalExceptionHandler {
 
         List<Map<String, String>> fieldErrors = e.getBindingResult().getFieldErrors().stream()
                 .map(err -> Map.of(
-                "field", err.getField(),
-                "message", err.getDefaultMessage() != null ? err.getDefaultMessage() : "Invalid value"))
+                        "field", err.getField(),
+                        "message", err.getDefaultMessage() != null ? err.getDefaultMessage() : "Invalid value"))
                 .toList();
 
         pd.setProperty("fieldErrors", fieldErrors);
@@ -104,7 +113,5 @@ public class GlobalExceptionHandler {
         pd.setDetail("An unexpected error occurred");
         return pd;
     }
-
- 
 
 }

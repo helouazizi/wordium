@@ -36,12 +36,12 @@ public class ReportServiceImpl implements ReportService {
     @Override
     public ReportPostResponse createReport(Long userId, Long posId, ReportRequest report) {
         if (!postRepository.existsById(posId)) {
-            throw new NotFoundException("Not Found");
+            throw new NotFoundException("Report not found");
         }
         boolean exists = reportRepository.existsByReporterIdAndReportedPostId(userId, posId);
 
         if (exists) {
-            throw new ConflictException("User has already reported this target with the same reason.");
+            throw new ConflictException("You have already reported this post");
         }
 
         Report data = new Report();
@@ -73,7 +73,8 @@ public class ReportServiceImpl implements ReportService {
 
     @Override
     public ReportPostResponse resolveReport(Long userId, Long reportId) {
-        Report report = reportRepository.findById(reportId).orElseThrow(() -> new NotFoundException("Not Found"));
+        Report report = reportRepository.findById(reportId)
+                .orElseThrow(() -> new NotFoundException("Report not found"));
         report.setResolvedAt(LocalDateTime.now());
         report.setResolved(true);
         reportRepository.save(report);
@@ -92,7 +93,7 @@ public class ReportServiceImpl implements ReportService {
 
     @Override
     public ReportPostResponse getReport(Long id) {
-        Report page = reportRepository.findById(id).orElseThrow(() -> new NotFoundException("Not Found"));
+        Report page = reportRepository.findById(id).orElseThrow(() -> new NotFoundException("Report not found"));
         return userEnrichmentHelper.enrichSingle(
                 page,
                 Report::getReporterId,
