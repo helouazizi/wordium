@@ -10,8 +10,7 @@ spring:
       routes:
         # AUTH SERVICE
         - id: auth-service
-          # uri: http://host.docker.internal:3000
-          uri: lb://auth-service
+          uri: lb://auth-service # http://${HOST}:3000
           predicates:
             - Path=/api/v1/auth/**
           filters:
@@ -24,7 +23,6 @@ spring:
             - Path=/api/v1/auth/v3/api-docs/**
           filters:
             - StripPrefix=3
-
 
         # USERS SERVICE
         - id: users-service
@@ -42,18 +40,9 @@ spring:
           filters:
             - StripPrefix=3
 
-        # WS-GATEWAY SERVICE
-        # - id: wsgateway-ws
-        #   uri: ws://${HOST}:3002 
-        #   # uri: lb://wsgateway
-        #   predicates:
-        #     - Path=/api/v1/wsgateway/ws/**
-        #   filters:
-        #     - StripPrefix=2
-
+        #  WS GATEWAY SERVICE HAVE TWO END POINT REST AND WS
         - id: wsgateway-rest
-          # uri: http://${HOST}:3002
-          uri: lb://wsgateway
+          uri: lb://wsgateway #http://${HOST}:3002
           predicates:
             - Path=/api/v1/wsgateway/**
           filters:
@@ -69,10 +58,17 @@ spring:
 
         # POSTS SERVICE
         - id: posts-service
-          # uri: lb://posts-service
-          uri: http://${HOST}:3003
+          uri: lb://posts-service #http://${HOST}:3003
           predicates:
             - Path=/api/v1/posts/**
+          filters:
+            - StripPrefix=2
+
+        # POSTS SERVICE
+        - id: posts-service-docs
+          uri: lb://posts-service 
+          predicates:
+            - Path=/api/v1/posts/v3/api-docs/**
           filters:
             - StripPrefix=2
 
@@ -101,6 +97,8 @@ springdoc:
         url: /api/v1/users/v3/api-docs
       - name: wsgateway-service
         url: /api/v1/wsgateway/v3/api-docs
+      - name: posts-service
+        url: /api/v1/posts/v3/api-docs
 logging:
   level:
     reactor.netty.http.server: DEBUG

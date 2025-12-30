@@ -23,14 +23,16 @@ services:
 
   # cache
   redis:
-    image: redis:7.2
+    image: redis:7
     container_name: redis
     ports:
       - "6379:6379"
-    command: redis-server --appendonly yes
-    # volumes:
-    #   - redis_data:/data
-    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
 
   # message broaker 
   zookeeper:
@@ -111,8 +113,7 @@ services:
       - eureka-server
       - auth_db
       - api-gateway
-    # extra_hosts:
-    #   - "host.docker.internal:host-gateway"
+
   wsgateway-service:
     build: ./backend/wsgateway/
     container_name: wsgateway-service
@@ -125,8 +126,7 @@ services:
       - api-gateway
       - kafka
       - redis
-    # extra_hosts:
-    #   - "host.docker.internal:host-gateway"
+
   users-service:
     build: ./backend/users/
     container_name: users-service
@@ -137,6 +137,17 @@ services:
       - eureka-server
       - api-gateway
       - kafka
+      - redis
+
+  posts-service:
+    build: ./backend/posts/
+    container_name: posts-service
+    environment:
+      - EUREKA_URL=http://eureka-server:${EUREKA_PORT}/eureka
+      - POSTGRES_HOST=posts_db
+    depends_on:
+      - eureka-server
+      - api-gateway
       - redis
 
 
