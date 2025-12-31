@@ -19,9 +19,11 @@ spring:
   cache:
     type: redis
 
-  redis:
-    host: ${REDIS_HOST:redis}
-    port: ${REDIS_PORT:6379}
+  data:
+    redis:
+      host: ${REDIS_HOST:redis}
+      port: ${REDIS_PORT:6379}
+
 feign:
   httpclient:
     enabled: true
@@ -53,10 +55,9 @@ internal:
 
 services:
   api:
-    url: ${GATEWAY_API} 
+    url: ${GATEWAY_API}
 
 cloudinary:
   cloud-name: ${CLOUDINARY_CLOUD_NAME}
   api-key: ${CLOUDINARY_API_KEY}
   api-secret: ${CLOUDINARY_API_SECRET}
-
