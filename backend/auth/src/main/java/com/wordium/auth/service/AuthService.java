@@ -37,7 +37,6 @@ public class AuthService {
 
     public String registerUser(SignUpRequest req) {
         String avatarUrl = uploadFile(req.avatar());
-        System.out.println(avatarUrl);
         SignUpRequest signUpRequest = new SignUpRequest(req.email(), req.username(), null, req.bio(),
                 null, avatarUrl, req.location());
 
@@ -59,7 +58,7 @@ public class AuthService {
 
     private String uploadFile(MultipartFile avatar) {
         if (avatar == null) {
-            return "";
+            return null;
         }
 
         if (!isValidContentType(avatar.getContentType())) {
@@ -79,7 +78,6 @@ public class AuthService {
             }
 
             return secureUrl.toString();
-
 
         } catch (Exception e) {
             throw new BadRequestException("Failed to upload media file");

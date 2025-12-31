@@ -2,10 +2,14 @@ package com.wordium.users.services.users;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
 import com.wordium.users.dto.auth.SignUpRequest;
 import com.wordium.users.dto.auth.SignUpResponse;
 import com.wordium.users.dto.users.BatchUsersRequest;
@@ -21,9 +25,11 @@ import com.wordium.users.repo.UsersRepo;
 public class UsersService {
 
     private final UsersRepo usersRepo;
+    private final Cloudinary cloudinary;
 
-    public UsersService(UsersRepo usersRepo) {
+    public UsersService(UsersRepo usersRepo, Cloudinary cloudinary) {
         this.usersRepo = usersRepo;
+        this.cloudinary = cloudinary;
     }
 
     public SignUpResponse createUser(SignUpRequest req) {
@@ -67,10 +73,21 @@ public class UsersService {
 
         return new UsersResponse(
                 user.getId(),
+                null, null, user.getUsername(), user.getBio(),
+                user.getAvatarUrl(), user.getLocation());
+
+    }
+
+    public UsersResponse getProfile(Long userId) {
+        Users user = usersRepo.findById(userId).orElseThrow(() -> new NotFoundException("User Not Found"));
+
+        return new UsersResponse(
+                user.getId(),
                 user.getRole(), user.getEmail(), user.getUsername(), user.getBio(),
                 user.getAvatarUrl(), user.getLocation());
 
     }
+    
 
     public List<UsersResponse> getUsers(BatchUsersRequest req) {
         Set<Long> ids = new HashSet<>(req.usersIds());
@@ -81,14 +98,14 @@ public class UsersService {
         }
         return users.stream()
                 .map(user -> new UsersResponse(
-                user.getId(), // id
-                user.getRole(), // role
-                user.getEmail(), // email
-                user.getUsername(), // username
-                user.getBio(), // bio
-                user.getAvatarUrl(), // avatar
-                user.getLocation() // location
-        )).toList();
+                        user.getId(), // id
+                        user.getRole(), // role
+                        user.getEmail(), // email
+                        user.getUsername(), // username
+                        user.getBio(), // bio
+                        user.getAvatarUrl(), // avatar
+                        user.getLocation() // location
+                )).toList();
     }
 
     public UsersResponse updateUserProfile(Long userId, UpdateProfileRequest req) {
@@ -115,8 +132,10 @@ public class UsersService {
         if (req.location() != null) {
             user.setLocation(req.location());
         }
-        if (req.avatarUrl() != null) {
-            user.setAvatarUrl(req.avatarUrl());
+        // avatar
+        String url = uploadFile(req.avatar());
+        if (url != null) {
+            user.setAvatarUrl(url);
         }
 
         try {
@@ -133,6 +152,38 @@ public class UsersService {
                 user.getBio(),
                 user.getAvatarUrl(),
                 user.getLocation());
+    }
+
+    private boolean isValidContentType(String contentType) {
+        return contentType != null && (contentType.startsWith("image/"));
+    }
+
+    private String uploadFile(MultipartFile avatar) {
+        if (avatar == null) {
+            return null;
+        }
+
+        if (!isValidContentType(avatar.getContentType())) {
+            throw new BadRequestException("Unsupported file type");
+        }
+
+        try {
+            Map<?, ?> uploadResult = cloudinary.uploader().upload(
+                    avatar.getBytes(),
+                    ObjectUtils.asMap(
+                            "resource_type", "auto",
+                            "folder", "avatars"));
+
+            Object secureUrl = uploadResult.get("secure_url");
+            if (secureUrl == null) {
+                throw new BadRequestException("Upload failed: no URL returned");
+            }
+
+            return secureUrl.toString();
+
+        } catch (Exception e) {
+            throw new BadRequestException("Failed to upload media file");
+        }
     }
 
 }

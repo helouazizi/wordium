@@ -3,8 +3,11 @@ package com.wordium.users.services.admin.impl;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import com.wordium.users.dto.PaginatedResponse;
 import com.wordium.users.models.Users;
 import com.wordium.users.repo.UsersRepo;
 import com.wordium.users.services.admin.AdminAccountService;
@@ -22,19 +25,9 @@ public class AdminAccountServiceImpl implements AdminAccountService {
     }
 
     @Override
-    public List<Users> getAllAccounts() {
-        // Specification<Users> spec = (root, query, cb) -> {
-        // List<Predicate> predicates = new ArrayList<>();
-        // if (banned != null) {
-        // predicates.add(cb.equal(root.get("banned"), banned));
-        // }
-        // if (active != null) {
-        // predicates.add(cb.equal(root.get("active"), active));
-        // }
-        // return cb.and(predicates.toArray(new Predicate[0]));
-        // };
-
-        return usersRepo.findAll();
+    public Page<Users>  getAllAccounts(Pageable pageable) {
+        Page<Users> users = usersRepo.findAll(pageable);
+        return users;
     }
 
     @Override

@@ -76,8 +76,8 @@ public class UsersController {
         @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = ProblemDetail.class))),
         @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(implementation = ProblemDetail.class))),})
 
-    public ResponseEntity<UsersResponse> getSessionProfile(@RequestHeader("User-Id") Long userId) {
-        UsersResponse user = userService.getUserProfile(userId);
+    public ResponseEntity<UsersResponse> getProfile(@RequestHeader("User-Id") Long userId) {
+        UsersResponse user = userService.getProfile(userId);
         return ResponseEntity.ok(user);
     }
 

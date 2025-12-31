@@ -1,11 +1,12 @@
 package com.wordium.users.services.admin;
 
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import com.wordium.users.models.Users;
 
 public interface AdminAccountService {
-    List<Users> getAllAccounts();
+    Page<Users> getAllAccounts(Pageable pageable);
     Users getAccountById(Long id);
     Users banAccount(Long id);
     Users unbanAccount(Long id);
