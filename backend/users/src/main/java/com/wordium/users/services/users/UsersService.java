@@ -35,6 +35,7 @@ public class UsersService {
         user.setUsername(req.username());
         user.setBio(req.bio());
         user.setLocation(req.location());
+        user.setAvatarUrl(req.avatarUrl());
         usersRepo.save(user);
 
         return new SignUpResponse(

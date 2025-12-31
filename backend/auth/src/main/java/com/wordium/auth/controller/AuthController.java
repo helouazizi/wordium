@@ -2,6 +2,7 @@ package com.wordium.auth.controller;
 
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -34,8 +35,9 @@ public class AuthController {
                         @ApiResponse(responseCode = "200", description = "User registered successfully", content = @Content(schema = @Schema(implementation = AuthResponse.class))),
                         @ApiResponse(responseCode = "400", description = "Validation Errors", content = @Content(schema = @Schema(implementation = ProblemDetail.class)))
         })
-        @PostMapping("/signup")
-        public ResponseEntity<AuthResponse> signup(@Valid @RequestBody SignUpRequest req) {
+        @PostMapping(value = "/signup", consumes = "multipart/form-data")
+        public ResponseEntity<AuthResponse> signup(
+                        @Valid @ModelAttribute SignUpRequest req) {
                 String token = authService.registerUser(req);
                 return ResponseEntity.ok(new AuthResponse(token));
         }
@@ -45,7 +47,8 @@ public class AuthController {
                         @ApiResponse(responseCode = "200", description = "User authenticated successfully", content = @Content(schema = @Schema(implementation = AuthResponse.class))),
                         @ApiResponse(responseCode = "400", description = "Invalid credentials", content = @Content(schema = @Schema(implementation = ProblemDetail.class)))
         })
-        @PostMapping("/login")
+        @PostMapping(value = "/login", consumes = "application/json")
+
         public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest req) {
                 String token = authService.validateUser(req);
                 return ResponseEntity.ok(new AuthResponse(token));

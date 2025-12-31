@@ -1,10 +1,15 @@
 package com.wordium.auth.service;
 
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
+import com.wordium.auth.client.UsersServiceClient;
 import com.wordium.auth.dto.LoginRequest;
 import com.wordium.auth.dto.SignUpRequest;
 import com.wordium.auth.dto.UserResponse;
@@ -20,16 +25,21 @@ public class AuthService {
     private final UsersServiceClient usersServiceClient;
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
     private final JwtUtil jwtUtil;
+    private final Cloudinary cloudinary;
 
-    public AuthService(AuthRepository authRepository, UsersServiceClient usersServiceClient, JwtUtil jwtUtil) {
+    public AuthService(AuthRepository authRepository, UsersServiceClient usersServiceClient, JwtUtil jwtUtil,
+            Cloudinary cloudinary) {
         this.authRepository = authRepository;
         this.usersServiceClient = usersServiceClient;
         this.jwtUtil = jwtUtil;
+        this.cloudinary = cloudinary;
     }
 
     public String registerUser(SignUpRequest req) {
-        SignUpRequest signUpRequest = new SignUpRequest(req.email(), req.username(), "11111111", req.bio(),
-                req.location(), req.avatarUrl());
+        String avatarUrl = uploadFile(req.avatar());
+        System.out.println(avatarUrl);
+        SignUpRequest signUpRequest = new SignUpRequest(req.email(), req.username(), null, req.bio(),
+                null, avatarUrl, req.location());
 
         UserResponse userResponse = usersServiceClient.createUser(signUpRequest);
 
@@ -43,9 +53,42 @@ public class AuthService {
         return token;
     }
 
+    private boolean isValidContentType(String contentType) {
+        return contentType != null && (contentType.startsWith("image/"));
+    }
+
+    private String uploadFile(MultipartFile avatar) {
+        if (avatar == null) {
+            return "";
+        }
+
+        if (!isValidContentType(avatar.getContentType())) {
+            throw new BadRequestException("Unsupported file type");
+        }
+
+        try {
+            Map<?, ?> uploadResult = cloudinary.uploader().upload(
+                    avatar.getBytes(),
+                    ObjectUtils.asMap(
+                            "resource_type", "auto",
+                            "folder", "avatars"));
+
+            Object secureUrl = uploadResult.get("secure_url");
+            if (secureUrl == null) {
+                throw new BadRequestException("Upload failed: no URL returned");
+            }
+
+            return secureUrl.toString();
+
+
+        } catch (Exception e) {
+            throw new BadRequestException("Failed to upload media file");
+        }
+    }
+
     public String validateUser(LoginRequest req) {
 
-        UserResponse user = usersServiceClient.validateUser(req.email(),req.username());
+        UserResponse user = usersServiceClient.validateUser(req.email(), req.username());
 
         Optional<AuthUser> authUserOpt = authRepository.findByUserId(user.id());
         AuthUser authUser = authUserOpt.orElseThrow(() -> new BadRequestException("Invalid credentials"));

@@ -1,25 +1,60 @@
 package com.wordium.auth.config;
 
+import java.nio.file.AccessDeniedException;
 import java.util.List;
 import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wordium.auth.exceptions.BadRequestException;
 import com.wordium.auth.exceptions.ConflictException;
-import com.wordium.auth.exceptions.ExternalServiceProblemException;
 import com.wordium.auth.exceptions.NotFoundException;
+
+import feign.FeignException;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
-        @ExceptionHandler(ExternalServiceProblemException.class)
-        public ProblemDetail handleExternalProblem(ExternalServiceProblemException e) {
-                return e.getProblemDetail(); // forwarded EXACTLY
+        private final ObjectMapper objectMapper;
+
+        public GlobalExceptionHandler(ObjectMapper objectMapper) {
+                this.objectMapper = objectMapper;
+        }
+
+        @ExceptionHandler(FeignException.class)
+        public ResponseEntity<ProblemDetail> handleFeignException(FeignException ex) {
+                System.err.println(ex);
+
+                try {
+                        ProblemDetail problem = objectMapper.readValue(
+                                        ex.contentUTF8(),
+                                        ProblemDetail.class);
+                        return ResponseEntity.status(problem.getStatus()).body(problem);
+                } catch (Exception ignored) {
+
+                }
+
+                // Fallback if body is missing or invalid
+                ProblemDetail fallback = ProblemDetail.forStatus(ex.status());
+                fallback.setTitle("Downstream service error");
+                fallback.setDetail(ex.getMessage());
+
+                return ResponseEntity.status(ex.status()).body(fallback);
+        }
+
+        @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+        public ProblemDetail handleMethodNotAllowed(HttpRequestMethodNotSupportedException e) {
+                ProblemDetail pd = ProblemDetail.forStatus(HttpStatus.METHOD_NOT_ALLOWED);
+                pd.setTitle("Method Not Allowed");
+                pd.setDetail("HTTP method " + e.getMethod() + " is not supported for this endpoint");
+                return pd;
         }
 
         @ExceptionHandler(NotFoundException.class)
@@ -64,11 +99,20 @@ public class GlobalExceptionHandler {
                 return pd;
         }
 
-        @ExceptionHandler(Exception.class)
-        public ProblemDetail handleUnexpected(Exception e) {
-                ProblemDetail pd = ProblemDetail.forStatus(HttpStatus.INTERNAL_SERVER_ERROR);
-                pd.setTitle("Internal Server Error");
-                pd.setDetail("An unexpected error occurred");
-                return pd;
+        @ExceptionHandler(AccessDeniedException.class)
+        public ResponseEntity<ProblemDetail> handleAccessDenied(AccessDeniedException ex) {
+                ProblemDetail problem = ProblemDetail.forStatus(HttpStatus.FORBIDDEN);
+                problem.setTitle("Access Denied");
+                problem.setDetail(ex.getMessage());
+
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(problem);
         }
+
+        // @ExceptionHandler(Exception.class)
+        // public ProblemDetail handleUnexpected(Exception e) {
+        //         ProblemDetail pd = ProblemDetail.forStatus(HttpStatus.INTERNAL_SERVER_ERROR);
+        //         pd.setTitle("Internal Server Error");
+        //         pd.setDetail("An unexpected error occurred");
+        //         return pd;
+        // }
 }

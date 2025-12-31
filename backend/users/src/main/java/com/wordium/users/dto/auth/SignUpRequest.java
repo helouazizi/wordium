@@ -9,10 +9,10 @@ public record SignUpRequest(
 
                 @NotBlank(message = "Username is required") @Size(max = 30, min = 6, message = "Username must be 6 -> 30 characters") String username,
 
-                @Size(max = 300, message = "Bio must be less than 300 characters") String bio,
+                @Size(max = 500, message = "Bio must be less than 500 characters") String bio,
 
-                @Size(max = 500, message = "avatarUrl must be less than 500 characters") String avatarUrl,
+                String avatarUrl,
 
-                @Size(max = 300, message = "Location must be less than 30 characters") String location) {
+                @Size(max = 500, message = "Location must be less than 500 characters") String location) {
 
 }

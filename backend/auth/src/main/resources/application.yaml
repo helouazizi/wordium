@@ -38,3 +38,21 @@ springdoc:
     version: 1.0
     description: Authentication microservice API
 
+
+internal:
+  service:
+    token: ${INTERNAL_SERVICE_SECRET}
+
+services:
+  api:
+    url: ${GATEWAY_API}
+
+cloudinary:
+  cloud-name: ${CLOUDINARY_CLOUD_NAME}
+  api-key: ${CLOUDINARY_API_KEY}
+  api-secret: ${CLOUDINARY_API_SECRET}
+
+
+feign:
+  httpclient:
+    enabled: true

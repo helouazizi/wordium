@@ -107,7 +107,7 @@ public class PostServiceImpl implements PostService {
             try {
                 Map<?, ?> uploadResult = cloudinary.uploader().upload(file.getBytes(),
                         ObjectUtils.asMap(
-                                "resource_type", "auto"));
+                                "resource_type", "auto",  "folder", "posts"));
                 urls.add(uploadResult.get("secure_url").toString());
             } catch (IOException e) {
                 throw new BadRequestException(
