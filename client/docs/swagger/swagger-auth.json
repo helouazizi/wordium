@@ -1,0 +1,92 @@
+{
+  "openapi": "3.1.0",
+  "info": { "title": "OpenAPI definition", "version": "v0" },
+  "servers": [{ "url": "http://8b47165a5787:3000", "description": "Generated server url" }],
+  "paths": {
+    "/auth/signup": {
+      "post": {
+        "tags": ["auth-controller"],
+        "summary": "Register a new user",
+        "description": "Creates a new user account and returns a JWT token.",
+        "operationId": "signup",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": { "schema": { "$ref": "#/components/schemas/SignUpRequest" } }
+          }
+        },
+        "responses": {
+          "400": {
+            "description": "Validation Errors",
+            "content": { "*/*": { "schema": { "$ref": "#/components/schemas/ProblemDetail" } } }
+          },
+          "200": {
+            "description": "User registered successfully",
+            "content": { "*/*": { "schema": { "$ref": "#/components/schemas/AuthResponse" } } }
+          }
+        }
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "tags": ["auth-controller"],
+        "summary": "Authenticate a user",
+        "description": "Validates user credentials and returns a JWT token.",
+        "operationId": "login",
+        "requestBody": {
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/LoginRequest" } }
+          },
+          "required": true
+        },
+        "responses": {
+          "400": {
+            "description": "Invalid credentials",
+            "content": { "*/*": { "schema": { "$ref": "#/components/schemas/ProblemDetail" } } }
+          },
+          "200": {
+            "description": "User authenticated successfully",
+            "content": { "*/*": { "schema": { "$ref": "#/components/schemas/AuthResponse" } } }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "SignUpRequest": {
+        "type": "object",
+        "properties": {
+          "email": { "type": "string" },
+          "username": { "type": "string", "maxLength": 30, "minLength": 6 },
+          "password": { "type": "string", "maxLength": 30, "minLength": 6 },
+          "bio": { "type": "string", "maxLength": 300, "minLength": 0 },
+          "avatar": { "type": "string", "format": "binary" },
+          "avatarUrl": { "type": "string" },
+          "location": { "type": "string", "maxLength": 300, "minLength": 0 }
+        },
+        "required": ["email", "password", "username"]
+      },
+      "ProblemDetail": {
+        "type": "object",
+        "properties": {
+          "type": { "type": "string", "format": "uri" },
+          "title": { "type": "string" },
+          "status": { "type": "integer", "format": "int32" },
+          "detail": { "type": "string" },
+          "instance": { "type": "string", "format": "uri" },
+          "properties": { "type": "object", "additionalProperties": { "type": "object" } }
+        }
+      },
+      "AuthResponse": { "type": "object", "properties": { "token": { "type": "string" } } },
+      "LoginRequest": {
+        "type": "object",
+        "properties": {
+          "email": { "type": "string" },
+          "username": { "type": "string" },
+          "password": { "type": "string" }
+        },
+        "required": ["password"]
+      }
+    }
+  }
+}

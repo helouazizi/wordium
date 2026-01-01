@@ -1,0 +1,170 @@
+{
+  "openapi": "3.1.0",
+  "info": { "title": "OpenAPI definition", "version": "v0" },
+  "servers": [{ "url": "http://f506118fc252:3002", "description": "Generated server url" }],
+  "paths": {
+    "/wsgateway/notifications/{id}/read": {
+      "post": {
+        "tags": ["notifications-controller"],
+        "summary": "Mark a notification as read",
+        "description": "Marks a specific notification as read by the user",
+        "operationId": "markAsRead",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          },
+          {
+            "name": "User-Id",
+            "in": "header",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          }
+        ],
+        "responses": {
+          "404": {
+            "description": "Notification not found",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ProblemDetail" } }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ProblemDetail" } }
+            }
+          },
+          "204": { "description": "Notification marked as read, no content" },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ProblemDetail" } }
+            }
+          }
+        }
+      }
+    },
+    "/wsgateway/notifications": {
+      "get": {
+        "tags": ["notifications-controller"],
+        "summary": "Get all notifications for the current user",
+        "description": "Returns all notifications including actor, type, read status, and creation time",
+        "operationId": "getMyNotifications",
+        "parameters": [
+          {
+            "name": "User-Id",
+            "in": "header",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of notifications returned",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/NotificationsResponse" }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ProblemDetail" } }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ProblemDetail" } }
+            }
+          }
+        }
+      }
+    },
+    "/wsgateway/notifications/unread-count": {
+      "get": {
+        "tags": ["notifications-controller"],
+        "summary": "Get unread notifications count",
+        "description": "Returns the number of unread notifications for the current user",
+        "operationId": "unreadCount",
+        "parameters": [
+          {
+            "name": "User-Id",
+            "in": "header",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Unread count returned",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/NotificationsResponse" }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ProblemDetail" } }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ProblemDetail" } }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ProblemDetail": {
+        "type": "object",
+        "properties": {
+          "type": { "type": "string", "format": "uri" },
+          "title": { "type": "string" },
+          "status": { "type": "integer", "format": "int32" },
+          "detail": { "type": "string" },
+          "instance": { "type": "string", "format": "uri" },
+          "properties": { "type": "object", "additionalProperties": { "type": "object" } }
+        }
+      },
+      "NotificationResponse": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer", "format": "int64" },
+          "type": { "type": "string" },
+          "actor": { "$ref": "#/components/schemas/UserProfile" },
+          "read": { "type": "boolean" },
+          "createdAt": { "type": "string", "format": "date-time" }
+        }
+      },
+      "NotificationsResponse": {
+        "type": "object",
+        "properties": {
+          "notifications": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/NotificationResponse" }
+          },
+          "unreadCount": { "type": "integer", "format": "int64" },
+          "totalCount": { "type": "integer", "format": "int64" }
+        }
+      },
+      "UserProfile": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer", "format": "int64" },
+          "username": { "type": "string" },
+          "avatarUrl": { "type": "string" }
+        }
+      }
+    }
+  }
+}
