@@ -4,12 +4,14 @@
 
   <!-- Email Field -->
   <div class="field">
-    <label>Email</label>
-    <input type="email" formControlName="email" />
-    <small *ngIf="form.controls.email.touched && form.controls.email.invalid">
-      Valid email is required
+    <label>Email or Username</label>
+    <input type="text" formControlName="identifier"/>
+    <small *ngIf="form.controls.identifier.touched && form.controls.identifier.invalid">
+      Email or username is required
     </small>
+    <!-- <small *ngIf="fieldErrors.identifier">{{ fieldErrors.identifier[0] }}</small> -->
   </div>
+
 
   <!-- Password Field -->
   <div class="field">
@@ -20,12 +22,10 @@
     </small>
   </div>
 
-  <!-- Backend Error Message -->
   <div *ngIf="errorMessage as error" class="error">
     {{ error }}
   </div>
 
-  <!-- Submit Button -->
   <button type="submit" [disabled]="form.invalid">
     Login
   </button>

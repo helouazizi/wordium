@@ -1,9 +1,11 @@
-import { Component, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, inject } from '@angular/core';
 import { AuthService } from '../../../../core/services/auth.service';
 import { Router } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { NgIf } from '@angular/common';
-import { LoginRequest } from '../../../../core/api/auth';
+import { LoginRequest } from '../../../../core/apis/auth/models';
+import { ProblemDetail } from '../../../../models/problem-detail';
+import { SessionService } from '../../../../core/services/session.service';
 
 @Component({
   selector: 'app-login',
@@ -12,28 +14,46 @@ import { LoginRequest } from '../../../../core/api/auth';
   styleUrl: './login.scss',
 })
 export class Login {
+  constructor(private cd: ChangeDetectorRef) {}
   private auth = inject(AuthService);
   private router = inject(Router);
   private fb = inject(FormBuilder);
+  private session = inject(SessionService);
 
   form = this.fb.group({
-    email: ['', [Validators.required, Validators.email]],
+    identifier: ['', [Validators.required]],
     password: ['', Validators.required],
   });
 
-  // Error message from backend
   errorMessage: string | null = null;
 
-  // Login method
   login() {
-    if (this.form.invalid) return;
+    const formValue = this.form.value;
+    if (!formValue || this.form.invalid) return;
+
+    const { identifier, password } = formValue;
+
+    const payload: LoginRequest = { email: null, username: null, password: password ?? '' };
+
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (emailPattern.test(identifier ?? '')) {
+      payload.email = identifier ?? null;
+    } else {
+      payload.username = identifier ?? null;
+    }
 
     this.errorMessage = null;
 
-    this.auth.login(this.form.value as LoginRequest).subscribe({
-      next: () => this.router.navigate(['/dashboard']),
+    this.auth.login(payload).subscribe({
+      next: () => {
+        // this.session.loadUser().subscribe({
+          this.router.navigate(['/dashboard'])
+        // });
+      },
       error: (err) => {
-        this.errorMessage = err?.error?.message || 'Login failed';
+        const problem: ProblemDetail = err as ProblemDetail;
+        this.errorMessage = problem?.detail || 'Login failed';
+        this.cd.markForCheck();
       },
     });
   }

@@ -1,40 +1,34 @@
-import { inject, Injectable, signal } from '@angular/core';
-import { AuthControllerService } from '../api/auth/api/authController.service';
-import { LoginRequest } from '../api/auth/model/loginRequest';
-import { tap } from 'rxjs/operators';
+// src/app/core/services/auth.service.ts
+import { Injectable, inject } from '@angular/core';
+import { AuthClient } from '../apis/auth/auth.client';
+import { catchError, tap } from 'rxjs/operators';
 import { Router } from '@angular/router';
+import { LoginRequest, LoginResponse } from '../apis/auth/models';
+import { throwError } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  //   private _token = signal<string | null>(null);
+  private client = inject(AuthClient);
   private router = inject(Router);
 
-  constructor(private authApi: AuthControllerService) {}
-
   login(payload: LoginRequest) {
-    return this.authApi.login(payload).pipe(
-      tap((res) => {
-        // this._token.set(res.token);
-        localStorage.setItem('token', 'res.token');
+    return this.client.login(payload).pipe(
+      tap((res: LoginResponse) => {
+        localStorage.setItem('token', res.token);
       })
     );
   }
 
   logout() {
-    // this._token.set(null);
     localStorage.removeItem('token');
     this.router.navigate(['/login']);
   }
 
-  //   get token() {
-  //     return this._token();
-  //   }
-
-  //   isLoggedIn() {
-  //     return !!this._token();
-  //   }
+  getToken(): string | null {
+    return localStorage.getItem('token');
+  }
 
   isAuthenticated(): boolean {
-    return !!localStorage.getItem('token');
+    return !!this.getToken();
   }
 }

@@ -1,14 +1,14 @@
-export const environment = {
-  production: false,
-  apiUrl: 'http://localhost:8080/api/v1',
-};
-
-
-
-
 // export const environment = {
 //   production: false,
-//   apiAuth: 'http://localhost:8080/api/v1',
-//   apiUser: 'http://localhost:8080/api/v1/user',
-//   apiProduct: 'http://localhost:8080/api/v1/product'
+//   apiUrl: 'http://localhost:8080/api/v1',
 // };
+
+
+
+
+export const environment = {
+  production: false,
+  apiAuth: 'http://localhost:8080/api/v1/auth',
+  apiUsers: 'http://localhost:8080/api/v1/users',
+  apiPosts: 'http://localhost:8080/api/v1/posts'
+};
