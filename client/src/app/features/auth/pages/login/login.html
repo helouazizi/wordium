@@ -1,0 +1,33 @@
+<form [formGroup]="form" (ngSubmit)="login()" class="login-form">
+
+  <h2>Login</h2>
+
+  <!-- Email Field -->
+  <div class="field">
+    <label>Email</label>
+    <input type="email" formControlName="email" />
+    <small *ngIf="form.controls.email.touched && form.controls.email.invalid">
+      Valid email is required
+    </small>
+  </div>
+
+  <!-- Password Field -->
+  <div class="field">
+    <label>Password</label>
+    <input type="password" formControlName="password" />
+    <small *ngIf="form.controls.password.touched && form.controls.password.invalid">
+      Password is required
+    </small>
+  </div>
+
+  <!-- Backend Error Message -->
+  <div *ngIf="errorMessage as error" class="error">
+    {{ error }}
+  </div>
+
+  <!-- Submit Button -->
+  <button type="submit" [disabled]="form.invalid">
+    Login
+  </button>
+
+</form>

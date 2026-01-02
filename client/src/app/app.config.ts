@@ -10,6 +10,8 @@ import { environment } from '../environments/environment';
 import { Configuration as AuthConfig } from './core/api/auth/configuration';
 import { AuthControllerService } from './core/api/auth/api/authController.service';
 
+import { provideApi as provideAuthApi } from './core/api/auth/provide-api';
+
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
@@ -23,6 +25,7 @@ export const appConfig: ApplicationConfig = {
     // Auth service
     { provide: AuthConfig, useValue: new AuthConfig({ basePath: environment.apiUrl }) },
     AuthControllerService, // ore use     ...provideApi(() => new AuthConfig({ basePath: environment.apiAuth }))
+
 
     // posts service
   ],

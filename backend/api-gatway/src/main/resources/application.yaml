@@ -7,6 +7,19 @@ spring:
 
   cloud:
     gateway:
+      globalcors:
+        corsConfigurations:
+          "[/**]":
+            allowedOrigins: ${CLIENT_API}
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - OPTIONS
+              - PATCH
+            allowedHeaders: "*"
+            allowCredentials: true
       routes:
         # AUTH SERVICE
         - id: auth-service
@@ -66,7 +79,7 @@ spring:
 
         # POSTS SERVICE
         - id: posts-service-docs
-          uri: lb://posts-service 
+          uri: lb://posts-service
           predicates:
             - Path=/api/v1/posts/v3/api-docs/**
           filters:

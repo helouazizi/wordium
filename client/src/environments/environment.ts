@@ -8,7 +8,7 @@ export const environment = {
 
 // export const environment = {
 //   production: false,
-//   apiAuth: 'http://localhost:8080/api/v1/auth',
+//   apiAuth: 'http://localhost:8080/api/v1',
 //   apiUser: 'http://localhost:8080/api/v1/user',
 //   apiProduct: 'http://localhost:8080/api/v1/product'
 // };
