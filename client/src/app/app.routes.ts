@@ -1,13 +1,33 @@
 import { Routes } from '@angular/router';
+import { authGuard, roleGuard } from './core/guards/auth-guard';
 
 export const routes: Routes = [
   {
     path: 'login',
     loadComponent: () => import('./features/auth/pages/login/login').then((m) => m.Login),
   },
+
   {
-    path: 'dashboard',
-    loadChildren: () =>
-      import('./features/dashboard/dashboard.module').then((m) => m.DashboardModule),
+    path: '',
+    canActivate: [authGuard],
+    loadComponent: () => import('./layout/app-layout/app-layout').then((c) => c.AppLayout),
+    children: [
+      {
+        path: '', // feed
+        loadComponent: () => import('./features/feed/feed').then((c) => c.Feed),
+      },
+      {
+        path: 'dashboard',
+        canActivate: [roleGuard],
+        data: { roles: ['ADMIN'] },
+        loadChildren: () =>
+          import('./features/dashboard/dashboard.module').then((m) => m.DashboardModule),
+      },
+    ],
+  },
+
+  {
+    path: '**',
+    redirectTo: '',
   },
 ];

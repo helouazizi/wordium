@@ -13,7 +13,6 @@ export class App {
   private session = inject(SessionService);
 
   ngOnInit() {
-    console.log(localStorage.getItem('token'))
     if (localStorage.getItem('token')) {
       this.session.loadUser().subscribe();
     }

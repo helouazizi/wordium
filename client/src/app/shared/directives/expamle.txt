@@ -1,0 +1,7 @@
+| Directive           | Example usage                                               |
+| ------------------- | ----------------------------------------------------------- |
+| `appHighlight`      | Highlight new posts when the user hasn’t seen them yet      |
+| `appTooltip`        | Show a tooltip over buttons like “Like” or “Comment”        |
+| `appInfiniteScroll` | Automatically load more posts when scrolling to the bottom  |
+| `appClickOutside`   | Close dropdown menus or modals when clicking outside        |
+| `appLazyImage`      | Lazy load profile pictures or post images to save bandwidth |

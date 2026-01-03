@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { NgIf } from '@angular/common';
 import { LoginRequest } from '../../../../core/apis/auth/models';
-import { ProblemDetail } from '../../../../models/problem-detail';
+import { ProblemDetail } from '../../../../shared/models/problem-detail';
 import { SessionService } from '../../../../core/services/session.service';
 
 @Component({
@@ -46,9 +46,7 @@ export class Login {
 
     this.auth.login(payload).subscribe({
       next: () => {
-        // this.session.loadUser().subscribe({
-          this.router.navigate(['/dashboard'])
-        // });
+        this.router.navigate(['']);
       },
       error: (err) => {
         const problem: ProblemDetail = err as ProblemDetail;

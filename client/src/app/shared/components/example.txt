@@ -1,0 +1,12 @@
+| Component      | Example usage                                                 |
+| -------------- | ------------------------------------------------------------- |
+| Button         | primary, secondary buttons throughout the app                 |
+| Card           | display posts, user info, stats, etc.                         |
+| UserProfile    | avatar + name + dropdown menu, used in top navbar and sidebar |
+| Modal/Dialog   | confirm actions, edit forms                                   |
+| Table/DataGrid | list of users, posts, reports                                 |
+| Loader/Spinner | show during API calls                                         |
+| Alerts/Toasts  | success/error messages                                        |
+| Breadcrumbs    | for nested pages like dashboard/users/edit                    |
+| Pagination     | tables, lists                                                 |
+| SidebarMenu    | if you have multiple layouts with menus                       |
