@@ -1,0 +1,11 @@
+<div class="user-profile">
+  <button [matMenuTriggerFor]="menu" class="profile-button">
+    <img *ngIf="avatarUrl" [src]="avatarUrl" alt="avatar" class="avatar" />
+  </button>
+
+  <mat-menu #menu="matMenu">
+    <button mat-menu-item routerLink="/profile">View Profile</button>
+    <button mat-menu-item routerLink="/settings">Settings</button>
+    <button mat-menu-item routerLink="/logout">Logout</button>
+  </mat-menu>
+</div>

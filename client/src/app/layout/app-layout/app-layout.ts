@@ -1,37 +1,31 @@
-import { Component } from '@angular/core';
-import { RouterModule, RouterOutlet } from '@angular/router';
-// import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
+import { Component, inject } from '@angular/core';
+import { RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { ResponsiveService } from '../../core/services/responsive.service';
+import { MaterialModule } from '../../shared/material.module';
+import { SessionService } from '../../core/services/session.service';
+import { UserProfile } from '../../shared/components/user-profile/user-profile'; 
 
 @Component({
   selector: 'app-app-layout',
-  imports: [CommonModule, RouterModule],
+  standalone: true,
+  imports: [CommonModule, RouterModule, MaterialModule, UserProfile],
   templateUrl: './app-layout.html',
-  styleUrl: './app-layout.scss',
+  styleUrls: ['./app-layout.scss'],
 })
 export class AppLayout {
-  constructor(private responsive: ResponsiveService) {}
   isMobile = false;
-  sidebarOpen = false;
+  user$ = inject(SessionService).user$;
+
+  constructor(private responsive: ResponsiveService) {}
+
   ngOnInit() {
-    this.responsive.isMobile$.subscribe((isMobile) => {
+    this.responsive.isMobile$.subscribe(isMobile => {
       this.isMobile = isMobile;
-      if (!isMobile) this.sidebarOpen = true;
     });
   }
+
+  goToProfile(userId: string) {
+    // navigate to profile page
+  }
 }
-
-//  example usage
-
-// <aside class="sidebar" [class.hidden]="isMobile">
-//   <!-- sidebar content -->
-// </aside>
-
-// <main class="main-content">
-//   <header>
-//     <button *ngIf="isMobile" (click)="toggleSidebar()">☰</button>
-//     <app-user-profile></app-user-profile>
-//   </header>
-//   <router-outlet></router-outlet>
-// </main>
