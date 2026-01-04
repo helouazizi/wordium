@@ -1,25 +1,28 @@
-// src/app/core/services/responsive.service.ts
-import { Injectable } from '@angular/core';
-import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
-import { Observable } from 'rxjs';
+import { inject, Injectable } from '@angular/core';
+import { BreakpointObserver, Breakpoints, BreakpointState } from '@angular/cdk/layout';
 import { map, shareReplay } from 'rxjs/operators';
+import { Observable } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class ResponsiveService {
-  isMobile$: Observable<boolean>;
+  private bpObs = inject(BreakpointObserver);
 
-  constructor(private breakpointObserver: BreakpointObserver) {
-    this.isMobile$ = this.breakpointObserver.observe([Breakpoints.Handset]).pipe(
-      map((result) => result.matches),
-      shareReplay(1) // ensures all subscribers get the latest value
+  readonly isHandset$: Observable<boolean> = this.bpObs
+    .observe([Breakpoints.HandsetPortrait, Breakpoints.HandsetLandscape])
+    .pipe(
+      map((s) => s.matches),
+      shareReplay(1)
     );
-  }
+
+  readonly isTablet$: Observable<boolean> = this.bpObs
+    .observe([Breakpoints.TabletPortrait, Breakpoints.TabletLandscape])
+    .pipe(
+      map((s) => s.matches),
+      shareReplay(1)
+    );
+
+  readonly isDesktop$: Observable<boolean> = this.bpObs.observe([Breakpoints.Web]).pipe(
+    map((s) => s.matches),
+    shareReplay(1)
+  );
 }
-
-// usage
-
-// constructor(private responsive: ResponsiveService) {}
-
-// ngOnInit() {
-//   this.responsive.isMobile$.subscribe(isMobile => this.isMobile = isMobile);
-// }

@@ -1,0 +1,65 @@
+:root {
+  /* ===== CORE: BLACK & WHITE ===== */
+  --color-primary: #000000;        /* Pure black — for key actions, logos, headlines */
+  --color-primary-contrast: #ffffff;
+
+  --color-secondary: #ffffff;      /* Pure white — for backgrounds, cards, surfaces */
+  --color-secondary-contrast: #000000;
+
+  /* ===== NEUTRALS (for depth & typography) ===== */
+  --color-bg-default: #ffffff;     /* Main background */
+  --color-bg-paper: #ffffff;       /* Cards, modals (same as secondary) */
+  --color-bg-muted: #f5f5f5;       /* Subtle fills (e.g., comment bubbles, input backgrounds) */
+
+  --color-text-primary: #000000;   /* Headlines, body text */
+  --color-text-secondary: #333333; /* Subtle text (captions, timestamps) */
+  --color-text-tertiary: #666666;  /* Disabled, placeholder */
+  --color-text-disabled: #999999;
+  --color-text-on-primary: #ffffff;
+  --color-text-on-secondary: #000000;
+
+  /* ===== BORDERS & DIVIDERS ===== */
+  --color-border-light: #eeeeee;
+  --color-border-medium: #dddddd;
+  --color-border-strong: #bbbbbb;
+
+  /* ===== SEMANTIC COLORS ===== */
+  --color-success: #10b981;        /* Emerald green — publish, like, follow */
+  --color-success-light: #a7f3d0;
+  --color-success-contrast: #065f46;
+
+  --color-error: #ef4444;          /* Red — delete, error, block */
+  --color-error-light: #fecaca;
+  --color-error-contrast: #b91c1c;
+
+  --color-warning: #f59e0b;        /* Amber — warning, pending */
+  --color-warning-light: #fef3c7;
+  --color-warning-contrast: #92400e;
+
+  --color-info: #3b82f6;           /* Blue — info, tips, neutral actions */
+  --color-info-light: #dbeafe;
+  --color-info-contrast: #1d4ed8;
+
+  /* ===== INTERACTIONS (for buttons, links) ===== */
+  --color-interactive: #000000;    /* Links, icons, hover states (black) */
+  --color-interactive-hover: #333333;
+
+  /* ===== SHADOWS (subtle depth) ===== */
+  --shadow-xs: 0 1px 1px rgba(0, 0, 0, 0.03);
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+
+  /* ===== RADIUS & SPACE (keep clean) ===== */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-full: 9999px;
+
+  --space-1: 0.25rem;   /* 4px */
+  --space-2: 0.5rem;    /* 8px */
+  --space-3: 0.75rem;   /* 12px */
+  --space-4: 1rem;      /* 16px */
+  --space-5: 1.25rem;   /* 20px */
+  --space-6: 1.5rem;    /* 24px */
+}
