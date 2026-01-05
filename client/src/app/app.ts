@@ -11,7 +11,6 @@ import { SessionService } from './core/services/session.service';
 export class App {
   protected readonly title = signal('client');
   private session = inject(SessionService);
-
   ngOnInit() {
     if (localStorage.getItem('token')) {
       this.session.loadUser().subscribe();

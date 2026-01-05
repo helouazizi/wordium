@@ -1,33 +1,56 @@
-<form [formGroup]="form" (ngSubmit)="login()" class="login-form">
+<div class="min-vh-100 d-flex align-items-center justify-content-center bg-light">
+  <div class="card auth-card border-0">
+    <div class="card-body p-4">
+      <h1 class="text-center mb-2 fw-bold">Welcome back</h1>
+      <p class="text-center text-muted mb-4">Sign in to your account</p>
 
-  <h2>Login</h2>
+      <form [formGroup]="form" (ngSubmit)="login()" class="d-grid gap-3" novalidate>
+        <div>
+          <input
+            type="text"
+            class="form-control"
+            placeholder="Email or username"
+            formControlName="identifier"
+          />
 
-  <!-- Email Field -->
-  <div class="field">
-    <label>Email or Username</label>
-    <input type="text" formControlName="identifier"/>
-    <small *ngIf="form.controls.identifier.touched && form.controls.identifier.invalid">
-      Email or username is required
-    </small>
-    <!-- <small *ngIf="fieldErrors.identifier">{{ fieldErrors.identifier[0] }}</small> -->
+          <small
+            class="text-danger"
+            *ngIf="form.controls.identifier.touched && form.controls.identifier.invalid"
+          >
+            Email or username is required
+          </small>
+        </div>
+
+        <div>
+          <input
+            type="password"
+            class="form-control"
+            placeholder="Password"
+            formControlName="password"
+          />
+
+          <small
+            class="text-danger"
+            *ngIf="form.controls.password.touched && form.controls.password.invalid"
+          >
+            Password is required
+          </small>
+        </div>
+
+        <div *ngIf="errorMessage as error" class="alert alert-danger py-2">
+          {{ error }}
+        </div>
+
+        <button type="submit" class="btn btn-dark w-100" [disabled]="form.invalid">
+          Sign in
+          <span *ngIf="isSubmitting" class="spinner-border spinner-border-sm"></span>
+        </button>
+      </form>
+
+      <p class="text-center mt-4 mb-0">
+        Don’t have an account?
+        <a routerLink="/signup" class="fw-semibold">Create one</a>
+      </p>
+    </div>
   </div>
-
-
-  <!-- Password Field -->
-  <div class="field">
-    <label>Password</label>
-    <input type="password" formControlName="password" />
-    <small *ngIf="form.controls.password.touched && form.controls.password.invalid">
-      Password is required
-    </small>
-  </div>
-
-  <div *ngIf="errorMessage as error" class="error">
-    {{ error }}
-  </div>
-
-  <button type="submit" [disabled]="form.invalid">
-    Login
-  </button>
-
-</form>
+</div>

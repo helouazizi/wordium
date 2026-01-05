@@ -1,0 +1,83 @@
+.auth-page {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--color-bg-muted);
+}
+
+.auth-card {
+    width: 100%;
+    max-width: 420px;
+    border-radius: var(--radius-lg);
+
+    .form-control {
+        padding: 0.5rem 0.75rem;
+        font-size: 0.95rem;
+        border-radius: var(--radius-md);
+        border: 1px solid var(--color-border-light);
+    }
+
+    textarea.form-control {
+        resize: none;
+    }
+
+    .btn {
+        padding: 0.55rem 0;
+        font-weight: 600;
+    }
+
+    input[type="file"] {
+        cursor: pointer;
+    }
+
+    img {
+        transition: 0.2s ease-in-out;
+
+        &:hover {
+            transform: scale(1.05);
+        }
+    }
+}
+
+.alert {
+    font-size: 0.875rem;
+    text-align: center;
+}
+
+
+.auth-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--color-text-primary);
+    margin-bottom: var(--space-2);
+}
+
+.auth-subtitle {
+    font-size: 0.875rem;
+    color: var(--color-text-secondary);
+    margin-bottom: var(--space-5);
+}
+
+.auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+}
+
+.auth-footer {
+    margin-top: var(--space-5);
+    font-size: 0.875rem;
+    color: var(--color-text-secondary);
+    text-align: center;
+
+    a {
+        color: var(--color-interactive);
+        font-weight: 600;
+    }
+}
+
+
+
+
+

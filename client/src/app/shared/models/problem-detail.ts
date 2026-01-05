@@ -5,5 +5,5 @@ export interface ProblemDetail {
   status?: number;
   detail?: string;
   instance?: string;
-  properties?: Record<string, string[]>;
+  fieldErrors?: Record<string, string[]>;
 }

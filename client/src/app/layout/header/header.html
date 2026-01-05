@@ -1,12 +1,12 @@
-
 <nav class="navbar">
   <div class="navbar-container">
-    <!-- Logo / Home -->
+
+    <!-- Logo -->
     <a class="navbar-brand" routerLink="/">
       <span class="logo-text">Wordium</span>
     </a>
 
-    <!-- Search (visible on medium+ screens) -->
+    <!-- Search -->
     <div class="search-container">
       <div class="search-input-group">
         <span class="search-icon">
@@ -21,54 +21,43 @@
       </div>
     </div>
 
-    <!-- Right-side actions -->
+    <!-- Right actions -->
     <ul class="navbar-actions">
 
-      <!-- Theme Toggle -->
+      <!-- Theme toggle -->
       <li class="nav-action">
-        <button
-          class="icon-button"
-          (click)="toggleTheme()"
-          aria-label="Toggle theme"
-        >
+        <button class="icon-button" (click)="toggleTheme()" aria-label="Toggle theme">
           <i class="bi" [class]="isDark() ? 'bi-brightness-high' : 'bi-moon'"></i>
         </button>
       </li>
 
       <!-- Notifications -->
       <li class="nav-action position-relative">
-        <button
-          class="icon-button"
-          (click)="openNotifications()"
-          aria-label="Notifications"
-        >
+        <button class="icon-button" (click)="openNotifications()" aria-label="Notifications">
           <i class="bi bi-bell"></i>
         </button>
-        <span class="notification-badge">
-          3
-          <span class="visually-hidden">unread notifications</span>
-        </span>
+        <span class="notification-badge">3</span>
       </li>
 
-      <!-- User Avatar -->
-      <li class="nav-action dropdown">
+      <!-- User Dropdown -->
+      <li class="nav-action dropdown" *ngIf="user$ | async as user">
         <button
           class="avatar-button"
           type="button"
           data-bs-toggle="dropdown"
           aria-expanded="false"
         >
-          <div class="avatar">
-            <span class="avatar-initial">A</span>
-          </div>
+          <app-user-profile [user]="user" size="md"></app-user-profile>
         </button>
-        <ul class="dropdown-menu">
+
+        <ul class="dropdown-menu dropdown-menu-end">
           <li><a class="dropdown-item" routerLink="/profile">My Profile</a></li>
           <li><a class="dropdown-item" routerLink="/settings">Settings</a></li>
           <li><hr class="dropdown-divider" /></li>
           <li><button class="dropdown-item dropdown-item-danger" (click)="logout()">Sign out</button></li>
         </ul>
       </li>
+
     </ul>
   </div>
 </nav>

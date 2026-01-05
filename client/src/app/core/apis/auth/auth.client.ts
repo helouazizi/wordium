@@ -2,7 +2,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { LoginRequest, LoginResponse } from './models';
+import { LoginRequest, LoginResponse, SignupRequest } from './models';
 import { API_CONFIG } from '../api.config';
 
 @Injectable({ providedIn: 'root' })
@@ -16,7 +16,19 @@ export class AuthClient {
     });
   }
 
-  //   refreshToken(): Observable<LoginResponse> {
-  //     return this.http.post<LoginResponse>(`${this.baseUrl}/refresh`, {});
-  //   }
+  signup(data: SignupRequest): Observable<LoginResponse> {
+    const formData = new FormData();
+
+    formData.append('email', data.email);
+    formData.append('username', data.username);
+    formData.append('password', data.password);
+
+    if (data.bio) formData.append('bio', data.bio);
+    if (data.location) formData.append('location', data.location);
+    if (data.avatar) formData.append('avatar', data.avatar);
+
+    return this.http.post<LoginResponse>(`${this.config.authBaseUrl}/signup`, formData);
+  }
+
+  
 }

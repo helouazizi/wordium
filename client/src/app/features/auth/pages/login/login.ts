@@ -1,6 +1,6 @@
 import { ChangeDetectorRef, Component, inject } from '@angular/core';
 import { AuthService } from '../../../../core/services/auth.service';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { NgIf } from '@angular/common';
 import { LoginRequest } from '../../../../core/apis/auth/models';
@@ -9,7 +9,7 @@ import { SessionService } from '../../../../core/services/session.service';
 
 @Component({
   selector: 'app-login',
-  imports: [ReactiveFormsModule, NgIf],
+  imports: [ReactiveFormsModule, NgIf, RouterLink],
   templateUrl: './login.html',
   styleUrl: './login.scss',
 })
@@ -26,10 +26,11 @@ export class Login {
   });
 
   errorMessage: string | null = null;
-
+  isSubmitting = false;
   login() {
     const formValue = this.form.value;
     if (!formValue || this.form.invalid) return;
+    this.isSubmitting = true;
 
     const { identifier, password } = formValue;
 
@@ -46,12 +47,16 @@ export class Login {
 
     this.auth.login(payload).subscribe({
       next: () => {
-        this.router.navigate(['']);
+        this.router.navigate(['/']);
       },
       error: (err) => {
         const problem: ProblemDetail = err as ProblemDetail;
         this.errorMessage = problem?.detail || 'Login failed';
+        this.isSubmitting = false;
         this.cd.markForCheck();
+      },
+      complete: () => {
+        this.isSubmitting = false;
       },
     });
   }

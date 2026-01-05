@@ -1,0 +1,18 @@
+<div class="user-profile" [ngClass]="size">
+  <div class="avatar">
+    <img
+      *ngIf="hasAvatar"
+      [src]="user.avatar"
+      alt="avatar"
+    />
+
+    <span *ngIf="!hasAvatar" class="avatar-fallback">
+      {{ initial }}
+    </span>
+  </div>
+
+  <div class="info">
+    <div  *ngIf="showName"  class="username">{{ user.username }}</div>
+    <div *ngIf="showEmail" class="email">{{ user.email }}</div>
+  </div>
+</div>
