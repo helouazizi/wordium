@@ -1,16 +1,16 @@
-<!-- <app-loading></app-loading> -->
 <div class="min-vh-100 d-flex align-items-center justify-content-center bg-light">
   <div class="card auth-card border-0">
     <div class="card-body p-4">
       <h1 class="text-center mb-2 fw-bold">Create account</h1>
       <p class="text-center text-muted mb-4">Join Wordium in seconds</p>
 
-      <!-- General backend error -->
-      <div *ngIf="errorMessage" class="alert alert-danger py-2">
-        {{ errorMessage }}
+      <!-- Global backend error -->
+      <div *ngIf="error$ | async as error" class="alert alert-danger py-2">
+        {{ error }}
       </div>
 
       <form [formGroup]="form" (ngSubmit)="signup()" class="d-grid gap-3" novalidate>
+        <!-- Avatar preview -->
         <div class="text-center">
           <label for="avatarInput" class="d-block mb-2 fw-semibold">Avatar</label>
           <input
@@ -48,31 +48,31 @@
             class="form-control"
             placeholder="Username"
           />
-          <small
-            *ngIf="form.controls.username.touched && form.controls.username.invalid"
-            class="text-danger"
-          >
-            <span *ngIf="form.controls.username.errors?.['required']">Username is required</span>
+          <small class="text-danger">
             <span
-              *ngIf="form.controls.username.errors?.['backend']"
-              >{{ form.controls.username.errors?.['backend'] }}</span
+              *ngIf="form.controls.username.errors?.['required'] && form.controls.username.touched"
             >
+              Username is required
+            </span>
+            <span *ngIf="form.controls.username.errors?.['backend']">
+              {{ form.controls.username.errors?.['backend'] }}
+            </span>
           </small>
         </div>
 
         <!-- Email -->
         <div>
           <input type="email" formControlName="email" class="form-control" placeholder="Email" />
-          <small
-            *ngIf="form.controls.email.touched && form.controls.email.invalid"
-            class="text-danger"
-          >
-            <span *ngIf="form.controls.email.errors?.['required']">Email is required</span>
-            <span *ngIf="form.controls.email.errors?.['email']">Invalid email</span>
-            <span
-              *ngIf="form.controls.email.errors?.['backend']"
-              >{{ form.controls.email.errors?.['backend'] }}</span
-            >
+          <small class="text-danger">
+            <span *ngIf="form.controls.email.errors?.['required'] && form.controls.email.touched">
+              Email is required
+            </span>
+            <span *ngIf="form.controls.email.errors?.['email'] && form.controls.email.touched">
+              Invalid email
+            </span>
+            <span *ngIf="form.controls.email.errors?.['backend']">
+              {{ form.controls.email.errors?.['backend'] }}
+            </span>
           </small>
         </div>
 
@@ -84,15 +84,15 @@
             class="form-control"
             placeholder="Password"
           />
-          <small
-            *ngIf="form.controls.password.touched && form.controls.password.invalid"
-            class="text-danger"
-          >
-            <span *ngIf="form.controls.password.errors?.['required']">Password is required</span>
+          <small class="text-danger">
             <span
-              *ngIf="form.controls.password.errors?.['backend']"
-              >{{ form.controls.password.errors?.['backend'] }}</span
+              *ngIf="form.controls.password.errors?.['required'] && form.controls.password.touched"
             >
+              Password is required
+            </span>
+            <span *ngIf="form.controls.password.errors?.['backend']">
+              {{ form.controls.password.errors?.['backend'] }}
+            </span>
           </small>
         </div>
 
@@ -122,7 +122,14 @@
         </div>
 
         <!-- Submit -->
-        <button type="submit" class="btn btn-dark w-100" [disabled]="form.invalid">Sign up  <span *ngIf="isSubmitting" class="spinner-border spinner-border-sm"></span></button>
+        <button
+          type="submit"
+          class="btn btn-dark w-100"
+          [disabled]="form.invalid || (loading$ | async)"
+        >
+          Sign up
+          <span *ngIf="loading$ | async" class="spinner-border spinner-border-sm"></span>
+        </button>
       </form>
 
       <p class="text-center mt-4 mb-0">

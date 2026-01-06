@@ -1,43 +1,41 @@
-// src/app/core/services/auth.service.ts
 import { Injectable, inject } from '@angular/core';
 import { AuthClient } from '../apis/auth/auth.client';
-import { catchError, tap } from 'rxjs/operators';
+import { catchError, switchMap, tap } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { LoginRequest, LoginResponse, SignupRequest } from '../apis/auth/models';
 import { SessionService } from './session.service';
+import { Observable } from 'rxjs';
+import { User } from '../../shared/models/user';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private client = inject(AuthClient);
-  private router = inject(Router);
-  private session = inject(SessionService);
-  login(payload: LoginRequest) {
-    return this.client.login(payload).pipe(
-      tap((res: LoginResponse) => {
+  constructor(private authClient: AuthClient, private session: SessionService) {}
+
+  login(payload: LoginRequest): Observable<User> {
+    return this.authClient.login(payload).pipe(
+      tap((res) => {
         this.session.clear();
         localStorage.setItem('token', res.token);
-        this.session.loadUser().subscribe();
-      })
+      }),
+      switchMap(() => this.session.loadUser()),
+      tap((user) => this.session.setUser(user))
     );
   }
 
-  signup(payload: SignupRequest) {
-    return this.client.signup(payload).pipe(
-      tap((res: LoginResponse) => {
-        this.session.clear();
-        localStorage.setItem('token', res.token);
-        this.session.loadUser().subscribe();
-      })
+  signup(payload: SignupRequest): Observable<User> {
+    return this.authClient.signup(payload).pipe(
+      tap((res) => localStorage.setItem('token', res.token)),
+      switchMap(() => this.session.loadUser()),
+      tap((user) => this.session.setUser(user))
     );
-  }
-
-
-
-  getToken(): string | null {
-    return localStorage.getItem('token');
   }
 
   isAuthenticated(): boolean {
-    return !!this.getToken();
+    return localStorage.getItem('token') != null;
+  }
+
+  logout(): void {
+    this.session.clear();
+    localStorage.removeItem('token');
   }
 }

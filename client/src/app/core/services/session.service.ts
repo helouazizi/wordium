@@ -20,11 +20,11 @@ export class SessionService {
     console.log('Session user :', user);
     return !!user && roles.includes(user.role);
   }
-  get user(): User | null {
+  getUser(): User | null {
     return this.userSubject.value;
   }
 
-  set user(user: User | null) {
+  setUser(user: User | null) {
     this.userSubject.next(user);
   }
 

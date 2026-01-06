@@ -108,11 +108,12 @@ public class GlobalExceptionHandler {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).body(problem);
         }
 
-        // @ExceptionHandler(Exception.class)
-        // public ProblemDetail handleUnexpected(Exception e) {
-        //         ProblemDetail pd = ProblemDetail.forStatus(HttpStatus.INTERNAL_SERVER_ERROR);
-        //         pd.setTitle("Internal Server Error");
-        //         pd.setDetail("An unexpected error occurred");
-        //         return pd;
-        // }
+        @ExceptionHandler(Exception.class)
+        public ProblemDetail handleUnexpected(Exception e) {
+                System.err.println(e);
+                ProblemDetail pd = ProblemDetail.forStatus(HttpStatus.INTERNAL_SERVER_ERROR);
+                pd.setTitle("Internal Server Error");
+                pd.setDetail("An unexpected error occurred");
+                return pd;
+        }
 }
