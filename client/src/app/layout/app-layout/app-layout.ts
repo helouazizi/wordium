@@ -1,13 +1,14 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { Observable, combineLatest, map } from 'rxjs';
+import { Observable } from 'rxjs';
 import { ResponsiveService } from '../../core/services/responsive.service';
 import { SessionService } from '../../core/services/session.service';
 import { ThemeService } from '../../core/services/theme.service';
 import { User } from '../../shared/models/user';
 import { Header } from '../header/header';
 import { Sidebar } from '../sidebar/sidebar';
+// import { Feed } from '../../features/feed/feed';
 @Component({
   selector: 'app-app-layout',
   standalone: true,

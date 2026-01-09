@@ -14,5 +14,6 @@
   <div class="info">
     <div  *ngIf="showName"  class="username">{{ user.username }}</div>
     <div *ngIf="showEmail" class="email">{{ user.email }}</div>
+    <div *ngIf="showTime" class="email">{{ time | timeAgo}}</div>
   </div>
 </div>
