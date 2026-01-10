@@ -80,6 +80,8 @@ public class AuthService {
             return secureUrl.toString();
 
         } catch (Exception e) {
+
+            e.printStackTrace();
             throw new BadRequestException("Failed to upload media file");
         }
     }

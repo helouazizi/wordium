@@ -113,6 +113,9 @@ services:
       - eureka-server
       - auth_db
       - api-gateway
+    dns:
+      - 8.8.8.8
+      - 8.8.4.4
 
   wsgateway-service:
     build: ./backend/wsgateway/
@@ -149,6 +152,8 @@ services:
       - eureka-server
       - api-gateway
       - redis
-
+    dns:
+      - 8.8.8.8
+      - 8.8.4.4
 
 
