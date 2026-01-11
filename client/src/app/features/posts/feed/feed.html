@@ -1,6 +1,6 @@
 <div class="feed-container">
   <app-feed-skeleton *ngIf="loading$ | async"></app-feed-skeleton>
-
+  <app-blog-editor></app-blog-editor>
   <div class="posts-list">
     <article class="card feed-post" *ngFor="let post of posts$ | async; trackBy: trackByPostId">
       <div class="post-header">

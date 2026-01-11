@@ -4,8 +4,8 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { API_CONFIG } from '../api.config';
 import { PageResponse } from '../../../shared/models/pagination.model';
-import { Post } from './modles';
 import { PageRequest } from '../../../shared/models/page-request.model';
+import { Post, SignatureData, SignatureResponse } from './modles';
 
 @Injectable({ providedIn: 'root' })
 export class PostsClient {
@@ -28,5 +28,29 @@ export class PostsClient {
     return this.http.get<PageResponse<Post>>(`${this.config.postsBaseUrl}`, {
       params: httpParams,
     });
+  }
+
+  getSignature(): Observable<SignatureResponse> {
+    return this.http.get<SignatureResponse>(`${this.config.postsBaseUrl}/signature`);
+  }
+
+  uploadToCloudinary(file: File, sigData: SignatureData) {
+    const formData = new FormData();
+
+    // File
+    formData.append('file', file);
+
+    // Required for signed upload
+    formData.append('api_key', sigData.apiKey);
+    formData.append('timestamp', sigData.timestamp.toString());
+    formData.append('signature', sigData.signature);
+
+    // Must match backend signature
+    formData.append('folder', sigData.folder);
+    formData.append('upload_preset', sigData.upload_preset);
+
+    const url = `https://api.cloudinary.com/v1_1/${sigData.cloudName}/auto/upload`;
+
+    return this.http.post(url, formData);
   }
 }

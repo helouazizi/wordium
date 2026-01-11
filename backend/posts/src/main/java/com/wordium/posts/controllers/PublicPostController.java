@@ -20,6 +20,7 @@ import com.wordium.posts.dto.PaginationRequest;
 import com.wordium.posts.dto.PostReactionRequest;
 import com.wordium.posts.dto.PostRequest;
 import com.wordium.posts.dto.PostResponse;
+import com.wordium.posts.dto.PostsSegnatureResponse;
 import com.wordium.posts.services.impl.PostServiceImpl;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -50,7 +51,7 @@ public class PublicPostController {
         @PostMapping(consumes = "multipart/form-data")
         public ResponseEntity<PostResponse> createPost(
                         @RequestHeader("User-Id") Long userId,
-                        
+
                         @Valid @ModelAttribute PostRequest request) {
                 PostResponse post = postService.createPost(userId, request);
                 return ResponseEntity.status(201).body(post);
@@ -141,4 +142,9 @@ public class PublicPostController {
                 return ResponseEntity.noContent().build();
         }
 
+        @GetMapping("/signature")
+        public ResponseEntity<PostsSegnatureResponse> getUploadSignature() {
+                var res = postService.getSignature();
+                return ResponseEntity.ok(new PostsSegnatureResponse(res));
+        }
 }

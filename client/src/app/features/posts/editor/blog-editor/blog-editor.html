@@ -1,0 +1,69 @@
+<div class="editor-container">
+  <div class="editor-header">
+    <div class="d-flex align-items-center justify-content-between w-100">
+      <h2 class="editor-title" *ngIf="!isOpen()">Blogs</h2>
+      <h2 class="editor-title" *ngIf="isOpen()">Drafting blog</h2>
+
+      <div class="d-flex gap-2">
+        <button *ngIf="!isOpen()" class="btn-primary-pro" (click)="isOpen.set(true)">
+          <i class="bi bi-plus-lg"></i> New Blog
+        </button>
+
+        <ng-container *ngIf="isOpen()">
+          <button class="btn-outline-pro" (click)="cancelEdit()">Discard</button>
+          <button class="btn-primary-pro" (click)="saveBlog()">Publish</button>
+        </ng-container>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="isOpen()" class="editor-canvas animate-fade-in">
+    <div class="editor-toolbar">
+      <div class="tab-group">
+        <button [class.active]="viewMode() === 'write'" (click)="viewMode.set('write')">
+          Write
+        </button>
+        <button [class.active]="viewMode() === 'preview'" (click)="viewMode.set('preview')">
+          Preview
+        </button>
+      </div>
+
+      <div class="toolbar-actions" *ngIf="viewMode() === 'write'">
+        <label class="toolbar-btn" title="Upload Media">
+          <i class="bi bi-image"></i>
+          <input type="file" accept="image/*,video/*" (change)="onMediaUpload($event)" hidden />
+        </label>
+        <div class="v-divider"></div>
+        <button class="toolbar-btn" (click)="insertFormat('bold')" title="Bold">
+          <i class="bi bi-type-bold"></i>
+        </button>
+        <button class="toolbar-btn" (click)="insertFormat('italic')" title="Italic">
+          <i class="bi bi-type-italic"></i>
+        </button>
+        <button class="toolbar-btn" (click)="insertFormat('list')" title="List">
+          <i class="bi bi-list-ul"></i>
+        </button>
+      </div>
+    </div>
+
+    <div class="editor-body">
+      <textarea
+        *ngIf="viewMode() === 'write'"
+        class="main-textarea"
+        [value]="markdown()"
+        (input)="markdown.set($any($event.target).value)"
+        placeholder="Tell your story..."
+        spellcheck="false"
+      ></textarea>
+
+      <div *ngIf="viewMode() === 'preview'" class="preview-area" [innerHTML]="previewHtml()"></div>
+    </div>
+
+    <div class="editor-footer">
+      <span>{{ markdown().length }} characters</span>
+      <span class="ms-3 text-success" *ngIf="isUploading()">
+        <i class="bi bi-cloud-arrow-up animate-pulse"></i> Uploading media...
+      </span>
+    </div>
+  </div>
+</div>

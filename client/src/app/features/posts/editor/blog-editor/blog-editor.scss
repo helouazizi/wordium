@@ -1,0 +1,175 @@
+.editor-container {
+  max-width: 900px;
+  margin: var(--space-6) auto;
+  padding: 0 var(--space-4);
+}
+
+
+.editor-header {
+  padding-bottom: var(--space-4);
+  border-bottom: 1px solid var(--color-border-light);
+  margin-bottom: var(--space-5);
+}
+
+.editor-title {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--color-primary);
+  margin: 0;
+}
+
+
+.btn-primary-pro {
+  background: var(--color-primary);
+  color: var(--color-primary-contrast);
+  border: none;
+  padding: var(--space-2) var(--space-5);
+  border-radius: var(--radius-full);
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.btn-primary-pro:hover {
+  background: var(--color-interactive-hover);
+  transform: translateY(-1px);
+}
+
+.btn-outline-pro {
+  background: transparent;
+  color: var(--color-text-secondary);
+  border: 1px solid var(--color-border-medium);
+  padding: var(--space-2) var(--space-5);
+  border-radius: var(--radius-full);
+  font-weight: 500;
+}
+
+
+.editor-canvas {
+  background: var(--color-bg-paper);
+  border: 1px solid var(--color-border-medium);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+}
+
+
+.editor-toolbar {
+  background: var(--color-bg-muted);
+  border-bottom: 1px solid var(--color-border-light);
+  padding: var(--space-2) var(--space-4);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.tab-group {
+  display: flex;
+  gap: var(--space-1);
+}
+
+.tab-group button {
+  background: none;
+  border: none;
+  padding: var(--space-2) var(--space-4);
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--color-text-tertiary);
+  border-radius: var(--radius-md);
+}
+
+.tab-group button.active {
+  background: var(--color-secondary);
+  color: var(--color-primary);
+  box-shadow: var(--shadow-sm);
+}
+
+.toolbar-btn {
+  background: none;
+  border: none;
+  color: var(--color-text-secondary);
+  padding: var(--space-2);
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+}
+
+.toolbar-btn:hover {
+  background: var(--color-border-light);
+}
+
+
+.main-textarea {
+  width: 100%;
+  min-height: 450px;
+  border: none;
+  padding: var(--space-5);
+  font-family: 'Georgia', serif;
+  font-size: 1.1rem;
+  line-height: 1.6;
+  color: var(--color-text-primary);
+  resize: vertical;
+  outline: none;
+}
+
+.preview-area {
+  padding: var(--space-5);
+  min-height: 450px;
+  color: var(--color-text-primary);
+  line-height: 1.7;
+}
+
+.preview-area ::ng-deep img {
+  max-width: 100%;
+  border-radius: var(--radius-md);
+  margin: var(--space-4) 0;
+}
+
+.editor-footer {
+  padding: var(--space-2) var(--space-4);
+  background: var(--color-bg-muted);
+  font-size: 0.75rem;
+  color: var(--color-text-tertiary);
+  border-top: 1px solid var(--color-border-light);
+}
+
+.v-divider {
+  width: 1px;
+  height: 20px;
+  background: var(--color-border-medium);
+  display: inline-block;
+  margin: 0 var(--space-2);
+  vertical-align: middle;
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-pulse {
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.5;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}

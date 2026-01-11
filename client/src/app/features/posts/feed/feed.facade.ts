@@ -1,10 +1,10 @@
 import { Injectable, inject } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { finalize } from 'rxjs/operators';
-import { PostsService } from '../../core/services/posts.service';
-import { Post } from '../../core/apis/posts/modles';
-import { PageResponse } from '../../shared/models/pagination.model';
-import { PageRequest } from '../../shared/models/page-request.model';
+import { PostsService } from '../../../core/services/posts.service';
+import { Post } from '../../../core/apis/posts/modles';
+import { PageRequest } from '../../../shared/models/page-request.model';
+import { PageResponse } from '../../../shared/models/pagination.model';
 
 @Injectable()
 export class FeedFacade {

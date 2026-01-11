@@ -1,6 +1,8 @@
 package com.wordium.posts.services;
 
 // src/main/java/com/wordium/posts/service/PostService.java
+import java.util.Map;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -23,15 +25,15 @@ public interface PostService {
 
     Page<PostResponse> getPostsByUser(Long userId, Pageable pageable);
 
-    PostResponse updatePost(Long postId, Long userId, PostRequest request);  // only owner or admin
+    PostResponse updatePost(Long postId, Long userId, PostRequest request); // only owner or admin
 
-    void deletePost(Long postId, Long userId,String role);  // only owner or admin
+    void deletePost(Long postId, Long userId, String role); // only owner or admin
 
     void flagPost(Long postId);
 
     void unflagPost(Long postId);
 
-    // likes 
+    // likes
     void react(Long userId, Long postId, PostReactionRequest req);
 
     // comments
@@ -41,4 +43,5 @@ public interface PostService {
 
     void deleteComment(Long userId, Long id, Long commentId);
 
+    Map<String, Object> getSignature();
 }

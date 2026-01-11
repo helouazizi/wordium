@@ -2,6 +2,7 @@ package com.wordium.posts.services.impl;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -107,7 +108,7 @@ public class PostServiceImpl implements PostService {
             try {
                 Map<?, ?> uploadResult = cloudinary.uploader().upload(file.getBytes(),
                         ObjectUtils.asMap(
-                                "resource_type", "auto",  "folder", "posts"));
+                                "resource_type", "auto", "folder", "posts"));
                 urls.add(uploadResult.get("secure_url").toString());
             } catch (IOException e) {
                 throw new BadRequestException(
@@ -343,6 +344,31 @@ public class PostServiceImpl implements PostService {
 
         commentRepository.delete(comment);
         postRepository.decrementCommentsCount(postId);
+    }
+
+    @Override
+    public Map<String, Object> getSignature() {
+
+        long timestamp = System.currentTimeMillis() / 1000L;
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("timestamp", timestamp);
+        params.put("folder", "posts");
+        params.put("upload_preset", "ml_default"); // must match Angular
+
+        // Generate the signature
+        String signature = cloudinary.apiSignRequest(params, cloudinary.config.apiSecret);
+
+        // Send to Angular
+        Map<String, Object> response = new HashMap<>();
+        response.put("signature", signature);
+        response.put("timestamp", timestamp);
+        response.put("cloudName", cloudinary.config.cloudName);
+        response.put("apiKey", cloudinary.config.apiKey);
+        response.put("folder", "posts");
+        response.put("upload_preset", "ml_default");
+
+        return response;
     }
 
 }

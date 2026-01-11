@@ -21,3 +21,16 @@ export interface PostImage {
   altText: string;
   displayOrder: number;
 }
+
+export interface SignatureData {
+  folder: string;
+  apiKey: string;
+  signature: string;
+  cloudName: string;
+  timestamp: number;
+  upload_preset: string;
+}
+
+export interface SignatureResponse {
+  data: SignatureData;
+}

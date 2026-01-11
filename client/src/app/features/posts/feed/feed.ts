@@ -1,19 +1,30 @@
-import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, inject, OnDestroy, OnInit, ViewChild } from "@angular/core";
-import { Post } from "../../core/apis/posts/modles";
-import { AsyncPipe, CommonModule } from "@angular/common";
-import { FeedSkeleton } from "../../shared/components/feed-skeleton/feed-skeleton";
-import { UserProfile } from "../../shared/components/user-profile/user-profile";
-import { FeedFacade } from "./feed.facade";
-import { Subject } from "rxjs";
+import {
+  AfterViewInit,
+  ChangeDetectionStrategy,
+  Component,
+  ElementRef,
+  inject,
+  OnDestroy,
+  OnInit,
+  ViewChild,
+} from '@angular/core';
+import { AsyncPipe, CommonModule } from '@angular/common';
+import { BlogEditor } from '../editor/blog-editor/blog-editor';
+
+import { FeedFacade } from './feed.facade';
+import { Subject } from 'rxjs';
+import { FeedSkeleton } from '../../../shared/components/feed-skeleton/feed-skeleton';
+import { UserProfile } from '../../../shared/components/user-profile/user-profile';
+import { Post } from '../../../core/apis/posts/modles';
 
 @Component({
   selector: 'app-feed',
   standalone: true,
-  imports: [CommonModule, FeedSkeleton, UserProfile, AsyncPipe],
+  imports: [CommonModule, FeedSkeleton, UserProfile, AsyncPipe ,BlogEditor],
   templateUrl: './feed.html',
   styleUrls: ['./feed.scss'],
   providers: [FeedFacade],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Feed implements OnInit, AfterViewInit, OnDestroy {
   private readonly facade = inject(FeedFacade);
@@ -30,14 +41,12 @@ export class Feed implements OnInit, AfterViewInit, OnDestroy {
 
   ngOnInit(): void {
     this.facade.loadFeed();
-
-    // Track loading more state
-    this.loadingMore$.subscribe(val => (this.isLoadingMore = val));
+    this.loadingMore$.subscribe((val) => (this.isLoadingMore = val));
   }
 
   ngAfterViewInit(): void {
     const observer = new IntersectionObserver(
-      entries => {
+      (entries) => {
         if (entries[0].isIntersecting && !this.isLoadingMore) {
           this.facade.loadNext();
         }

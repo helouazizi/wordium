@@ -17,7 +17,7 @@ export const routes: Routes = [
     children: [
       {
         path: '', // feed
-        loadComponent: () => import('./features/feed/feed').then((c) => c.Feed),
+        loadComponent: () => import('./features/posts/feed/feed').then((c) => c.Feed),
       },
       {
         path: 'dashboard',
