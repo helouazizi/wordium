@@ -1,6 +1,15 @@
 .feed-post {
+    background: var(--color-primary-contrast);
+    border: var(--color-border-light);
+    box-shadow: var(--shadow-md);
+    overflow: hidden;
+    overflow-wrap: break-word;
+}
+
+.detail-post {
     background: transparent;
     overflow: hidden;
+    overflow-wrap: break-word;
 }
 
 .post-header {

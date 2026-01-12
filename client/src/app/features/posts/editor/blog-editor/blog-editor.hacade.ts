@@ -3,13 +3,13 @@ import { PostsService } from '../../../../core/services/posts.service';
 import { FeedFacade } from '../../feed/feed.facade';
 import { CreatePostRequest } from '../../../../core/apis/posts/modles';
 import { signal } from '@angular/core';
+import { SessionService } from '../../../../core/services/session.service';
 
 @Injectable()
 export class PostsEditorFacade {
   private postsService = inject(PostsService);
   private feedFacade = inject(FeedFacade);
 
-  // Signals for errors & state
   validationError = signal<string | null>(null);
   isSubmitting = signal(false);
 
@@ -23,13 +23,13 @@ export class PostsEditorFacade {
       return;
     }
 
-    if (postData.title.length < 5) {
-      this.validationError.set('Title must be at least 5 characters');
+    if (postData.title.length < 3) {
+      this.validationError.set('Title must be at least 3 characters');
       return;
     }
 
-    if (postData.title.length > 100) {
-      this.validationError.set('Title cannot exceed 100 characters');
+    if (postData.title.length > 500) {
+      this.validationError.set('Title cannot exceed 500 characters');
       return;
     }
 
@@ -38,8 +38,8 @@ export class PostsEditorFacade {
       return;
     }
 
-    if (postData.content.length < 20) {
-      this.validationError.set('Content must be at least 20 characters');
+    if (postData.content.length < 3) {
+      this.validationError.set('Content must be at least 3 characters');
       return;
     }
 
@@ -48,7 +48,6 @@ export class PostsEditorFacade {
       return;
     }
 
-    // Clear previous errors
     this.validationError.set(null);
     this.isSubmitting.set(true);
 

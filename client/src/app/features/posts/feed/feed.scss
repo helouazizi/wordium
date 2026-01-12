@@ -13,13 +13,13 @@
 
 }
 
-.ProseMirror p.is-editor-empty:first-child::before {
-    content: attr(data-placeholder);
-    float: left;
-    color: #adb5bd;
-    pointer-events: none;
-    height: 0;
-}
+// .ProseMirror p.is-editor-empty:first-child::before {
+//     content: attr(data-placeholder);
+//     float: left;
+//     color: #adb5bd;
+//     pointer-events: none;
+//     height: 0;
+// }
 
 .feed-container::-webkit-scrollbar {
     width: 0px;

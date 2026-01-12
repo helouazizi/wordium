@@ -2,11 +2,14 @@ import { Injectable, inject, signal } from '@angular/core';
 import { PostsService } from '../../../core/services/posts.service';
 import { Post } from '../../../core/apis/posts/modles';
 import { PageRequest } from '../../../shared/models/page-request.model';
+import { SessionService } from '../../../core/services/session.service';
 
 @Injectable({ providedIn: 'root' })
 export class FeedFacade {
   private readonly postsService = inject(PostsService);
 
+  private session = inject(SessionService);
+  private user = this.session.getUser();
   readonly posts = signal<Post[]>([]);
   readonly loading = signal(false);
   readonly loadingMore = signal(false);
@@ -50,12 +53,13 @@ export class FeedFacade {
   }
 
   addPost(post: Post) {
+    post.actor = this.user!;
     this.posts.update((p) => [post, ...p]);
   }
 
   getPostById(id: number): Post | undefined {
-    console.log(this.posts.length,"posts");
-    
+    console.log(this.posts.length, 'posts');
+
     return this.posts().find((p) => p.id === id);
   }
 

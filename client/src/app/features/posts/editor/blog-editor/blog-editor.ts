@@ -13,6 +13,7 @@ import { CommonModule } from '@angular/common';
   styleUrls: ['./blog-editor.scss'],
   providers: [PostsEditorFacade],
 })
+
 export class BlogEditor {
   private facade = inject(PostsEditorFacade);
   private sanitizer = inject(DomSanitizer);
@@ -50,6 +51,8 @@ export class BlogEditor {
     const clean = DOMPurify.sanitize(raw);
     this.previewHtml.set(this.sanitizer.bypassSecurityTrustHtml(clean));
   }
+
+
   onMediaUpload(event: Event) {
     const file = (event.target as HTMLInputElement).files?.[0];
     if (!file) return;
@@ -72,7 +75,7 @@ export class BlogEditor {
 
   insertFormat(type: 'bold' | 'italic' | 'list') {
     const formats: Record<string, string> = {
-      bold: '****',
+      bold: '**',
       italic: '__',
       list: '\n- ',
     };

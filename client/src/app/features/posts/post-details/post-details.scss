@@ -10,6 +10,12 @@
 .post-detail {
   width: 100%;
   margin: 0% auto;
-  height: fit-content;
-  max-width: 900px; /* limits the width */
+  height: 85dvh;
+  max-width: 900px;
+  overflow-y: scroll;
+}
+
+.post-detail::-webkit-scrollbar {
+    width: 0px;
+    background: transparent;
 }

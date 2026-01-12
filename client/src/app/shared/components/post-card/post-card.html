@@ -1,16 +1,15 @@
-<article class=" feed-post" (click)="openPost()">
+<article [class.feed-post]="mode === 'feed'" [class.detail-post]="mode === 'detail'">
   <div class="post-header">
     <app-user-profile
-      size="md"
-      [showEmail]="false"
-      [showName]="true"
       [user]="post.actor"
+      [showName]="true"
+      [showEmail]="false"
       [showTime]="true"
       [time]="post.createdAt"
     />
   </div>
 
-  <div class="post-content">
+  <div class="post-content" (click)="openPost()">
     <h2 class="post-title">{{ post.title }}</h2>
     @if (showContent) {
     <div [innerHTML]="post.content | safeHtml | async"></div>

@@ -12,9 +12,10 @@ import { TimeAgo } from '../../pipes/time-ago.pipe';
   styleUrls: ['./user-profile.scss'],
 })
 export class UserProfile {
-  @Input({ required: true }) user!: User;
+  @Input() user: User = {} as User; 
+  @Input() time: string = '';
+
   @Input() size: 'sm' | 'md' | 'lg' = 'md';
-  @Input() time!: string;
   @Input() showEmail = false;
   @Input() showName = false;
   @Input() showTime = false;

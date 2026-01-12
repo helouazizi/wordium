@@ -7,13 +7,14 @@ import { SafeHtmlPipe } from '../../pipes/safe-html.pipe';
 @Component({
   selector: 'app-post-card',
   standalone: true,
-  imports: [CommonModule, UserProfile , SafeHtmlPipe],
+  imports: [CommonModule, UserProfile, SafeHtmlPipe],
   templateUrl: './post-card.html',
   styleUrls: ['./post-card.scss'],
 })
 export class PostCard {
   @Input({ required: true }) post!: Post;
   @Input() showContent!: boolean;
+  @Input() mode: 'feed' | 'detail' = 'feed';
   @Output() open = new EventEmitter<number>();
 
   openPost() {
