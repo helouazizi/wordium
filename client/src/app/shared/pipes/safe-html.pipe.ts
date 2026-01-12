@@ -1,0 +1,18 @@
+import { Pipe, PipeTransform } from '@angular/core';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+import { marked } from 'marked';
+import DOMPurify from 'dompurify';
+
+@Pipe({
+  name: 'safeHtml',
+  standalone: true,
+})
+export class SafeHtmlPipe implements PipeTransform {
+  constructor(private sanitizer: DomSanitizer) {}
+
+  async transform(markdown: string): Promise<SafeHtml> {
+    const raw = await marked.parse(markdown);
+    const clean = DOMPurify.sanitize(raw);
+    return this.sanitizer.bypassSecurityTrustHtml(clean);
+  }
+}

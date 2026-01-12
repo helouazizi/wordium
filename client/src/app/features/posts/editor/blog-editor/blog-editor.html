@@ -67,29 +67,23 @@
     </div>
 
     <div class="editor-body">
-      <!-- WRITING MODE -->
       <textarea
         *ngIf="viewMode() === 'write'"
         class="main-textarea animate-fade-in"
         [value]="markdown()"
         (input)="markdown.set($any($event.target).value)"
-        placeholder="Once upon a time..."
+        placeholder="Whrite down a blog..."
         spellcheck="true"
       ></textarea>
 
-      <!-- PREVIEW MODE: Title + Body rendered as a real article -->
       <div *ngIf="viewMode() === 'preview'" class="preview-area animate-fade-in">
-        <!-- Preview Title -->
         <h1 class="preview-title" *ngIf="title()">{{ title() }}</h1>
         <h1 class="preview-title-placeholder" *ngIf="!title()">Untitled Story</h1>
 
-        <!-- Preview Horizontal Line -->
         <hr class="preview-divider" *ngIf="title() || markdown()" />
 
-        <!-- Rendered Markdown Body -->
         <div class="preview-content" [innerHTML]="previewHtml()"></div>
 
-        <!-- Empty State for Preview -->
         <div class="text-center py-5" *ngIf="!title() && !markdown()">
           <i class="bi bi-eye text-muted" style="font-size: 2rem"></i>
           <p class="text-muted">Nothing to preview yet.</p>
@@ -99,7 +93,7 @@
 
     <footer class="editor-footer">
       <div class="footer-item">
-        <i class="bi bi-text-paragraph"></i> {{ markdown().length }} chars
+        <i class="bi bi-text-paragraph"></i> {{ markdown().length + title().length }} chars
       </div>
       <div class="footer-item success" *ngIf="isUploading()">
         <span class="spinner-grow spinner-grow-sm"></span> Syncing to cloud...

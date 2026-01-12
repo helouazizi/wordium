@@ -5,7 +5,6 @@ import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -48,11 +47,10 @@ public class PublicPostController {
                         @ApiResponse(responseCode = "400", description = "Invalid request", content = @Content(schema = @Schema(implementation = ProblemDetail.class))),
                         @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(implementation = ProblemDetail.class)))
         })
-        @PostMapping(consumes = "multipart/form-data")
+        @PostMapping()
         public ResponseEntity<PostResponse> createPost(
                         @RequestHeader("User-Id") Long userId,
-
-                        @Valid @ModelAttribute PostRequest request) {
+                       @RequestBody @Valid PostRequest request) {
                 PostResponse post = postService.createPost(userId, request);
                 return ResponseEntity.status(201).body(post);
         }

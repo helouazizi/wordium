@@ -59,7 +59,6 @@
 .editor-canvas {
   background: var(--color-bg-paper);
   border: 1px solid var(--color-border-medium);
-  border-radius: var(--radius-lg);
   box-shadow: var(--shadow-lg);
   overflow: hidden;
 }
@@ -164,7 +163,7 @@
   line-height: 1.8;
 }
 
-.preview-content ::ng-deep img {
+.preview-content  ::ng-deep img {
   max-width: 100%;
   height: auto;
   display: block;

@@ -7,7 +7,6 @@ import {
   OnDestroy,
   OnInit,
   ViewChild,
-  effect,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { BlogEditor } from '../editor/blog-editor/blog-editor';
@@ -16,18 +15,21 @@ import { FeedSkeleton } from '../../../shared/components/feed-skeleton/feed-skel
 import { UserProfile } from '../../../shared/components/user-profile/user-profile';
 import { Post } from '../../../core/apis/posts/modles';
 import { EmptyState } from '../../../shared/components/empty-state/empty-state';
+import { Router } from '@angular/router';
+import { PostCard } from '../../../shared/components/post-card/post-card';
 
 @Component({
   selector: 'app-feed',
   standalone: true,
-  imports: [CommonModule, FeedSkeleton, UserProfile, BlogEditor, EmptyState],
+  imports: [CommonModule, FeedSkeleton, PostCard, BlogEditor, EmptyState],
   templateUrl: './feed.html',
   styleUrls: ['./feed.scss'],
-  providers: [FeedFacade],
+  // providers: [FeedFacade],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Feed implements OnInit, AfterViewInit, OnDestroy {
   private readonly facade = inject(FeedFacade);
+  private readonly router = inject(Router);
 
   readonly posts = this.facade.posts;
   readonly loading = this.facade.loading;
@@ -53,12 +55,6 @@ export class Feed implements OnInit, AfterViewInit, OnDestroy {
     );
 
     this.observer.observe(this.sentinel.nativeElement);
-
-    // effect(() => {
-    //   if (!this.hasMore() && this.observer) {
-    //     this.observer.disconnect();
-    //   }
-    // });
   }
 
   ngOnDestroy() {
@@ -67,5 +63,9 @@ export class Feed implements OnInit, AfterViewInit, OnDestroy {
 
   trackByPostId(_: number, post: Post) {
     return post.id;
+  }
+
+  goToPost(postId: number) {
+    this.router.navigate(['/posts/', postId]);
   }
 }

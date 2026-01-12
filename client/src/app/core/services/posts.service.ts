@@ -28,8 +28,11 @@ export class PostsService {
   getFeed(params: PageRequest): Observable<PageResponse<Post>> {
     return this.client.feed(params);
   }
-
+  
   createPost(post: CreatePostRequest): Observable<Post> {
     return this.client.createPost(post);
+  }
+  getPostById(id: number): Observable<Post> {
+    return this.client.getPostById(id);
   }
 }

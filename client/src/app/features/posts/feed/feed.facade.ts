@@ -3,7 +3,7 @@ import { PostsService } from '../../../core/services/posts.service';
 import { Post } from '../../../core/apis/posts/modles';
 import { PageRequest } from '../../../shared/models/page-request.model';
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class FeedFacade {
   private readonly postsService = inject(PostsService);
 
@@ -51,5 +51,15 @@ export class FeedFacade {
 
   addPost(post: Post) {
     this.posts.update((p) => [post, ...p]);
+  }
+
+  getPostById(id: number): Post | undefined {
+    console.log(this.posts.length,"posts");
+    
+    return this.posts().find((p) => p.id === id);
+  }
+
+  loadPostById(id: number) {
+    // return this.postsService.getPostById(id);
   }
 }

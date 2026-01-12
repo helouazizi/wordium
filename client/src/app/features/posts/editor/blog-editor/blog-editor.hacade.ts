@@ -18,7 +18,6 @@ export class PostsEditorFacade {
   }
 
   createPost(postData: { title: string; content: string }) {
-    // --- Validate title & content ---
     if (!postData.title?.trim()) {
       this.validationError.set('Title cannot be empty');
       return;
@@ -58,6 +57,7 @@ export class PostsEditorFacade {
       content: postData.content.trim(),
     };
 
+    this.isSubmitting.set(true);
     this.postsService.createPost(request).subscribe({
       next: (newPost) => {
         this.feedFacade.addPost(newPost);
@@ -68,6 +68,7 @@ export class PostsEditorFacade {
         this.validationError.set('Failed to create post. Try again later.');
         this.isSubmitting.set(false);
       },
+      complete: () => this.isSubmitting.set(false),
     });
   }
 }

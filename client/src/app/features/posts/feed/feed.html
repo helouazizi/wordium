@@ -1,44 +1,12 @@
 <div class="feed-container">
+  <app-blog-editor></app-blog-editor>
   @if (loading()) {
   <app-feed-skeleton></app-feed-skeleton>
   }
 
-  <app-blog-editor></app-blog-editor>
-
   <div class="posts-list">
     @for (post of posts(); track post.id) {
-    <article class="card feed-post">
-      <div class="post-header">
-        <app-user-profile
-          size="md"
-          [showEmail]="false"
-          [showName]="true"
-          [user]="post.actor"
-          [showTime]="true"
-          [time]="post.createdAt"
-        >
-        </app-user-profile>
-      </div>
-
-      <div class="post-content">
-        <h2>{{ post.title }}</h2>
-        <p>{{ post.content }}</p>
-
-        @if (post.images.length > 0) {
-        <div class="post-images">
-          @for (img of post.images; track img.id ?? img.url) {
-          <img [src]="img.url" class="post-image" />
-          }
-        </div>
-        }
-      </div>
-
-      <div class="post-footer post-stats">
-        <span><i class="bi bi-heart"></i> {{ post.likesCount }}</span>
-        <span><i class="bi bi-chat-left-text"></i> {{ post.commentsCount }}</span>
-        <span class="text-danger"> <i class="bi bi-flag"></i> {{ post.reportsCount }} </span>
-      </div>
-    </article>
+    <app-post-card [post]="post" [showContent]="false" (open)="goToPost($event)" />
     }
 
     <!-- Infinite scroll sentinel -->
@@ -51,7 +19,14 @@
       </div>
     </div>
 
-    } @if (!hasMore()) {
+    } @if ( posts().length == 0) {
+    <app-empty-state
+      icon="bi-journal-text"
+      title="No Blogs Yet"
+      description="You've to craete  New blogs"
+    >
+    </app-empty-state>
+    } @if (!hasMore() && posts().length > 0) {
     <app-empty-state
       icon="bi-journal-text"
       title="You're all caught up"

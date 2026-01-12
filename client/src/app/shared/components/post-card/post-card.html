@@ -1,0 +1,25 @@
+<article class=" feed-post" (click)="openPost()">
+  <div class="post-header">
+    <app-user-profile
+      size="md"
+      [showEmail]="false"
+      [showName]="true"
+      [user]="post.actor"
+      [showTime]="true"
+      [time]="post.createdAt"
+    />
+  </div>
+
+  <div class="post-content">
+    <h2 class="post-title">{{ post.title }}</h2>
+    @if (showContent) {
+    <div [innerHTML]="post.content | safeHtml | async"></div>
+    }
+  </div>
+
+  <div class="post-footer post-stats">
+    <span><i class="bi bi-heart"></i> {{ post.likesCount }}</span>
+    <span><i class="bi bi-chat-left-text"></i> {{ post.commentsCount }}</span>
+    <span class="text-danger"><i class="bi bi-flag"></i> {{ post.reportsCount }}</span>
+  </div>
+</article>

@@ -1,18 +1,12 @@
 package com.wordium.posts.models;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.OrderBy;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
@@ -53,9 +47,7 @@ public class Post {
     @Column(nullable = false)
     private LocalDateTime updatedAt;
 
-    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    @OrderBy("displayOrder ASC")
-    private List<PostImage> images = new ArrayList<>();
+
 
     @PrePersist
     protected void onCreate() {
@@ -68,16 +60,6 @@ public class Post {
         updatedAt = LocalDateTime.now();
     }
 
-    // Helper methods for images
-    public void addImage(PostImage image) {
-        images.add(image);
-        image.setPost(this);
-    }
-
-    public void removeImage(PostImage image) {
-        images.remove(image);
-        image.setPost(null);
-    }
 
     // Getters and Setters
     public Long getId() {
@@ -167,11 +149,5 @@ public class Post {
         this.updatedAt = updatedAt;
     }
 
-    public List<PostImage> getImages() {
-        return images;
-    }
 
-    public void setImages(List<PostImage> images) {
-        this.images = images;
-    }
 }

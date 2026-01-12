@@ -20,6 +20,11 @@ export const routes: Routes = [
         loadComponent: () => import('./features/posts/feed/feed').then((c) => c.Feed),
       },
       {
+        path: 'posts/:id',
+        loadComponent: () =>
+          import('./features/posts/post-details/post-details').then((c) => c.PostDetails),
+      },
+      {
         path: 'dashboard',
         canActivate: [roleGuard],
         data: { roles: ['ADMIN'] },
