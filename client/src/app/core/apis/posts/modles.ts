@@ -34,3 +34,8 @@ export interface SignatureData {
 export interface SignatureResponse {
   data: SignatureData;
 }
+
+export interface CreatePostRequest {
+  title: string;
+  content: String;
+}

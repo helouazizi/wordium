@@ -3,7 +3,7 @@ import { Injectable, inject } from '@angular/core';
 import { map, Observable, switchMap } from 'rxjs';
 import { PostsClient } from '../apis/posts/posts.client';
 import { PageResponse } from '../../shared/models/pagination.model';
-import { Post, SignatureResponse } from '../apis/posts/modles';
+import { CreatePostRequest, Post, SignatureResponse } from '../apis/posts/modles';
 import { PageRequest } from '../../shared/models/page-request.model';
 
 @Injectable({ providedIn: 'root' })
@@ -27,5 +27,9 @@ export class PostsService {
 
   getFeed(params: PageRequest): Observable<PageResponse<Post>> {
     return this.client.feed(params);
+  }
+
+  createPost(post: CreatePostRequest): Observable<Post> {
+    return this.client.createPost(post);
   }
 }

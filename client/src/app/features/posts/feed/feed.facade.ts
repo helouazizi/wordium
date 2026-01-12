@@ -1,70 +1,55 @@
-import { Injectable, inject } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
-import { finalize } from 'rxjs/operators';
+import { Injectable, inject, signal } from '@angular/core';
 import { PostsService } from '../../../core/services/posts.service';
 import { Post } from '../../../core/apis/posts/modles';
 import { PageRequest } from '../../../shared/models/page-request.model';
-import { PageResponse } from '../../../shared/models/pagination.model';
 
 @Injectable()
 export class FeedFacade {
   private readonly postsService = inject(PostsService);
 
-  private readonly postsSubject = new BehaviorSubject<Post[]>([]);
-  readonly posts$ = this.postsSubject.asObservable();
-
-  private readonly loadingSubject = new BehaviorSubject<boolean>(false);
-  readonly loading$ = this.loadingSubject.asObservable();
-
-  private readonly loadingMoreSubject = new BehaviorSubject<boolean>(false);
-  readonly loadingMore$ = this.loadingMoreSubject.asObservable();
-
-  private readonly hasMoreSubject = new BehaviorSubject<boolean>(true);
-  readonly hasMore$ = this.hasMoreSubject.asObservable();
+  readonly posts = signal<Post[]>([]);
+  readonly loading = signal(false);
+  readonly loadingMore = signal(false);
+  readonly hasMore = signal(true);
 
   private page = 0;
   private size = 10;
 
-  loadFeed(): void {
+  loadFeed() {
     this.page = 0;
-    this.hasMoreSubject.next(true);
-    this.fetchPosts(false);
+    this.hasMore.set(true);
+    this.fetch(false);
   }
 
-  loadNext(): void {
-    if (!this.hasMoreSubject.value || this.loadingMoreSubject.value) return;
+  loadNext() {
+    if (!this.hasMore() || this.loadingMore()) return;
 
     this.page++;
-    this.fetchPosts(true);
+    this.fetch(true);
   }
 
-  private fetchPosts(append: boolean): void {
-    if (append) {
-      this.loadingMoreSubject.next(true);
-    } else {
-      this.loadingSubject.next(true);
-    }
+  private fetch(append: boolean) {
+    append ? this.loadingMore.set(true) : this.loading.set(true);
 
     const params: PageRequest = { page: this.page, size: this.size };
 
-    this.postsService
-      .getFeed(params)
-      .pipe(
-        finalize(() => {
-          this.loadingSubject.next(false);
-          this.loadingMoreSubject.next(false);
-        })
-      )
-      .subscribe({
-        next: (res: PageResponse<Post>) => {
-          const current = this.postsSubject.value;
-          const newPosts = append ? [...current, ...res.data] : res.data;
-          this.postsSubject.next(newPosts);
-          this.hasMoreSubject.next(res.hasNext);
-        },
-        error: () => {
-          this.hasMoreSubject.next(false);
-        },
-      });
+    this.postsService.getFeed(params).subscribe({
+      next: (res) => {
+        this.posts.update((current) => (append ? [...current, ...res.data] : res.data));
+
+        this.hasMore.set(res.hasNext);
+      },
+      error: () => {
+        this.hasMore.set(false);
+      },
+      complete: () => {
+        this.loading.set(false);
+        this.loadingMore.set(false);
+      },
+    });
+  }
+
+  addPost(post: Post) {
+    this.posts.update((p) => [post, ...p]);
   }
 }

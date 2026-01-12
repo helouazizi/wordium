@@ -1,16 +1,73 @@
 import { Injectable, inject } from '@angular/core';
 import { PostsService } from '../../../../core/services/posts.service';
+import { FeedFacade } from '../../feed/feed.facade';
+import { CreatePostRequest } from '../../../../core/apis/posts/modles';
+import { signal } from '@angular/core';
 
 @Injectable()
 export class PostsEditorFacade {
   private postsService = inject(PostsService);
+  private feedFacade = inject(FeedFacade);
+
+  // Signals for errors & state
+  validationError = signal<string | null>(null);
+  isSubmitting = signal(false);
 
   uploadImage(file: File) {
     return this.postsService.uploadImage(file);
   }
 
-  savePostContent(json: any) {
-    // later you’ll call postsService.createPost(json)
-    console.log('Facade received content', json);
+  createPost(postData: { title: string; content: string }) {
+    // --- Validate title & content ---
+    if (!postData.title?.trim()) {
+      this.validationError.set('Title cannot be empty');
+      return;
+    }
+
+    if (postData.title.length < 5) {
+      this.validationError.set('Title must be at least 5 characters');
+      return;
+    }
+
+    if (postData.title.length > 100) {
+      this.validationError.set('Title cannot exceed 100 characters');
+      return;
+    }
+
+    if (!postData.content?.trim()) {
+      this.validationError.set('Content cannot be empty');
+      return;
+    }
+
+    if (postData.content.length < 20) {
+      this.validationError.set('Content must be at least 20 characters');
+      return;
+    }
+
+    if (postData.content.length > 10000) {
+      this.validationError.set('Content is too long');
+      return;
+    }
+
+    // Clear previous errors
+    this.validationError.set(null);
+    this.isSubmitting.set(true);
+
+    const request: CreatePostRequest = {
+      title: postData.title.trim(),
+      content: postData.content.trim(),
+    };
+
+    this.postsService.createPost(request).subscribe({
+      next: (newPost) => {
+        this.feedFacade.addPost(newPost);
+        this.isSubmitting.set(false);
+      },
+      error: (err) => {
+        console.error('Create post failed', err);
+        this.validationError.set('Failed to create post. Try again later.');
+        this.isSubmitting.set(false);
+      },
+    });
   }
 }

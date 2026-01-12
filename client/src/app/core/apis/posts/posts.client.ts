@@ -5,7 +5,8 @@ import { Observable } from 'rxjs';
 import { API_CONFIG } from '../api.config';
 import { PageResponse } from '../../../shared/models/pagination.model';
 import { PageRequest } from '../../../shared/models/page-request.model';
-import { Post, SignatureData, SignatureResponse } from './modles';
+import { CreatePostRequest, Post, SignatureData, SignatureResponse } from './modles';
+import { appConfig } from '../../../app.config';
 
 @Injectable({ providedIn: 'root' })
 export class PostsClient {
@@ -52,5 +53,9 @@ export class PostsClient {
     const url = `https://api.cloudinary.com/v1_1/${sigData.cloudName}/auto/upload`;
 
     return this.http.post(url, formData);
+  }
+
+  createPost(post: CreatePostRequest): Observable<Post> {
+    return this.http.post<Post>(`${this.config.postsBaseUrl}`, post);
   }
 }

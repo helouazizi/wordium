@@ -1,8 +1,13 @@
 <div class="feed-container">
-  <app-feed-skeleton *ngIf="loading$ | async"></app-feed-skeleton>
+  @if (loading()) {
+  <app-feed-skeleton></app-feed-skeleton>
+  }
+
   <app-blog-editor></app-blog-editor>
+
   <div class="posts-list">
-    <article class="card feed-post" *ngFor="let post of posts$ | async; trackBy: trackByPostId">
+    @for (post of posts(); track post.id) {
+    <article class="card feed-post">
       <div class="post-header">
         <app-user-profile
           size="md"
@@ -11,36 +16,48 @@
           [user]="post.actor"
           [showTime]="true"
           [time]="post.createdAt"
-        ></app-user-profile>
+        >
+        </app-user-profile>
       </div>
 
       <div class="post-content">
         <h2>{{ post.title }}</h2>
         <p>{{ post.content }}</p>
 
-        <div class="post-images" *ngIf="post.images.length">
-          <img *ngFor="let img of post.images" [src]="img.url" class="post-image" />
+        @if (post.images.length > 0) {
+        <div class="post-images">
+          @for (img of post.images; track img.id ?? img.url) {
+          <img [src]="img.url" class="post-image" />
+          }
         </div>
+        }
       </div>
 
       <div class="post-footer post-stats">
         <span><i class="bi bi-heart"></i> {{ post.likesCount }}</span>
         <span><i class="bi bi-chat-left-text"></i> {{ post.commentsCount }}</span>
-        <span class="text-danger"><i class="bi bi-flag"></i> {{ post.reportsCount }}</span>
+        <span class="text-danger"> <i class="bi bi-flag"></i> {{ post.reportsCount }} </span>
       </div>
     </article>
+    }
 
-    <!-- Sentinel always in DOM -->
+    <!-- Infinite scroll sentinel -->
     <div #sentinel class="sentinel"></div>
 
-    <div class="loading-more" *ngIf="loadingMore$ | async">
+    @if (loadingMore()) {
+    <div class="loading-more text-center my-3">
       <div class="spinner-border text-primary" role="status" style="width: 2.5rem; height: 2.5rem">
         <span class="visually-hidden">Loading more...</span>
       </div>
     </div>
 
-    <div class="end-of-feed" *ngIf="!(hasMore$ | async)">
-      <p>You're all no more posts</p>
-    </div>
+    } @if (!hasMore()) {
+    <app-empty-state
+      icon="bi-journal-text"
+      title="You're all caught up"
+      description="You've reached the end of the feed. New posts will appear here when available."
+    >
+    </app-empty-state>
+    }
   </div>
 </div>

@@ -7,20 +7,20 @@ import {
   OnDestroy,
   OnInit,
   ViewChild,
+  effect,
 } from '@angular/core';
-import { AsyncPipe, CommonModule } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { BlogEditor } from '../editor/blog-editor/blog-editor';
-
 import { FeedFacade } from './feed.facade';
-import { Subject } from 'rxjs';
 import { FeedSkeleton } from '../../../shared/components/feed-skeleton/feed-skeleton';
 import { UserProfile } from '../../../shared/components/user-profile/user-profile';
 import { Post } from '../../../core/apis/posts/modles';
+import { EmptyState } from '../../../shared/components/empty-state/empty-state';
 
 @Component({
   selector: 'app-feed',
   standalone: true,
-  imports: [CommonModule, FeedSkeleton, UserProfile, AsyncPipe ,BlogEditor],
+  imports: [CommonModule, FeedSkeleton, UserProfile, BlogEditor, EmptyState],
   templateUrl: './feed.html',
   styleUrls: ['./feed.scss'],
   providers: [FeedFacade],
@@ -28,43 +28,44 @@ import { Post } from '../../../core/apis/posts/modles';
 })
 export class Feed implements OnInit, AfterViewInit, OnDestroy {
   private readonly facade = inject(FeedFacade);
-  private readonly destroy$ = new Subject<void>();
 
-  readonly posts$ = this.facade.posts$;
-  readonly loading$ = this.facade.loading$;
-  readonly loadingMore$ = this.facade.loadingMore$;
-  readonly hasMore$ = this.facade.hasMore$;
+  readonly posts = this.facade.posts;
+  readonly loading = this.facade.loading;
+  readonly loadingMore = this.facade.loadingMore;
+  readonly hasMore = this.facade.hasMore;
 
   @ViewChild('sentinel') private sentinel!: ElementRef;
 
-  private isLoadingMore = false;
+  private observer!: IntersectionObserver;
 
-  ngOnInit(): void {
+  ngOnInit() {
     this.facade.loadFeed();
-    this.loadingMore$.subscribe((val) => (this.isLoadingMore = val));
   }
 
-  ngAfterViewInit(): void {
-    const observer = new IntersectionObserver(
+  ngAfterViewInit() {
+    this.observer = new IntersectionObserver(
       (entries) => {
-        if (entries[0].isIntersecting && !this.isLoadingMore) {
+        if (entries[0].isIntersecting && !this.loadingMore()) {
           this.facade.loadNext();
         }
       },
       { rootMargin: '400px' }
     );
 
-    observer.observe(this.sentinel.nativeElement);
+    this.observer.observe(this.sentinel.nativeElement);
 
-    this.destroy$.subscribe(() => observer.disconnect());
+    // effect(() => {
+    //   if (!this.hasMore() && this.observer) {
+    //     this.observer.disconnect();
+    //   }
+    // });
   }
 
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
+  ngOnDestroy() {
+    this.observer?.disconnect();
   }
 
-  trackByPostId(_: number, post: Post): number {
+  trackByPostId(_: number, post: Post) {
     return post.id;
   }
 }
