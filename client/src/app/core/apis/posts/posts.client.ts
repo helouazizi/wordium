@@ -5,7 +5,7 @@ import { Observable } from 'rxjs';
 import { API_CONFIG } from '../api.config';
 import { PageResponse } from '../../../shared/models/pagination.model';
 import { PageRequest } from '../../../shared/models/page-request.model';
-import { CreatePostRequest, Post, SignatureData, SignatureResponse } from './modles';
+import { CreatePostRequest, Post, Reaction, SignatureData, SignatureResponse } from './modles';
 import { appConfig } from '../../../app.config';
 
 @Injectable({ providedIn: 'root' })
@@ -38,15 +38,12 @@ export class PostsClient {
   uploadToCloudinary(file: File, sigData: SignatureData) {
     const formData = new FormData();
 
-    // File
     formData.append('file', file);
 
-    // Required for signed upload
     formData.append('api_key', sigData.apiKey);
     formData.append('timestamp', sigData.timestamp.toString());
     formData.append('signature', sigData.signature);
 
-    // Must match backend signature
     formData.append('folder', sigData.folder);
     formData.append('upload_preset', sigData.upload_preset);
 
@@ -61,5 +58,18 @@ export class PostsClient {
   }
   getPostById(id: number): Observable<Post> {
     return this.http.get<Post>(`${this.config.postsBaseUrl}/${id}`);
+  }
+
+  deletePost(postId: number): Observable<void> {
+    return this.http.delete<void>(`${this.config.postsBaseUrl}/${postId}`);
+  }
+  reactPost(postId: number, reaction: Reaction): Observable<void> {
+    return this.http.post<void>(`${this.config.postsBaseUrl}/${postId}/react`, { reaction });
+  }
+  commentPost(postId: number, content: string): Observable<void> {
+    return this.http.post<void>(`${this.config.postsBaseUrl}/${postId}/comments`, { content });
+  }
+  reportPost(postId: number, reason: string): Observable<void> {
+    return this.http.post<void>(`${this.config.postsBaseUrl}/${postId}/reports`, { reason });
   }
 }

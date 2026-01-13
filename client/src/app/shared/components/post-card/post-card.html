@@ -20,7 +20,7 @@
       @if (isMenuOpen) {
       <div class="dropdown-menu">
         <button (click)="reportPost()"><i class="bi bi-flag"></i> Report</button>
-        @if (isOwner) {
+        @if (isOwner ) {
         <button class="text-danger" (click)="deletePost()">
           <i class="bi bi-trash"></i> Delete
         </button>
@@ -46,11 +46,12 @@
     [class.detail-post-footer]="showContent"
   >
     <div class="post-stats">
-      <button class="stat-item" [attr.aria-pressed]="true">
-        <i class="bi" [class.bi-heart-fill]="true" [class.bi-heart]="!true"></i>
+      <button class="stat-item" [attr.aria-pressed]="post.isLiked" (click)="reactPost()">
+        <i class="bi" [class.bi-heart-fill]="post.isLiked" [class.bi-heart]="!post.isLiked"></i>
         {{ post.likesCount }}
       </button>
-      <button class="stat-item">
+
+      <button class="stat-item" (click)="openPost()">
         <i class="bi bi-chat-left-text"></i>
         {{ post.commentsCount }}
       </button>

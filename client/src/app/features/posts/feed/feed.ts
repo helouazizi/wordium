@@ -12,8 +12,6 @@ import { CommonModule } from '@angular/common';
 import { BlogEditor } from '../editor/blog-editor/blog-editor';
 import { FeedFacade } from './feed.facade';
 import { FeedSkeleton } from '../../../shared/components/feed-skeleton/feed-skeleton';
-import { UserProfile } from '../../../shared/components/user-profile/user-profile';
-import { Post } from '../../../core/apis/posts/modles';
 import { EmptyState } from '../../../shared/components/empty-state/empty-state';
 import { Router } from '@angular/router';
 import { PostCard } from '../../../shared/components/post-card/post-card';
@@ -62,11 +60,6 @@ export class Feed implements OnInit, AfterViewInit, OnDestroy {
   ngOnDestroy() {
     this.observer?.disconnect();
   }
-
-  trackByPostId(_: number, post: Post) {
-    return post.id;
-  }
-
   goToPost(postId: number) {
     this.router.navigate(['/posts/', postId]);
   }

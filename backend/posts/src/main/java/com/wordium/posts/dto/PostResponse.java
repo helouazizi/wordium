@@ -11,6 +11,7 @@ public record PostResponse(
         long likesCount,
         long commentsCount,
         long reportsCount,
+        boolean isLiked ,
         boolean isReported,
         boolean isFlagged,
         LocalDateTime createdAt,

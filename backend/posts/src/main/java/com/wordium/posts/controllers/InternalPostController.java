@@ -31,15 +31,15 @@ public class InternalPostController {
     }
 
     @GetMapping
-    public ResponseEntity<PaginatedResponse<PostResponse>> getAllPosts(@Valid PaginationRequest paginationRequest) {
+    public ResponseEntity<PaginatedResponse<PostResponse>> getAllPosts(@Valid PaginationRequest paginationRequest,@RequestHeader("User-Id") Long userId) {
         Pageable pageable = paginationRequest.toPageable();
-        var page = postService.getAllposts(pageable);
+        var page = postService.getAllposts(userId,pageable);
         return ResponseEntity.ok(PaginatedResponse.fromPage(page));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<PostResponse> getPostById(@PathVariable Long id) {
-        return ResponseEntity.ok(postService.getPostById(id));
+    public ResponseEntity<PostResponse> getPostById(@PathVariable Long id,@RequestHeader("User-Id") Long userId) {
+        return ResponseEntity.ok(postService.getPostById(userId,id));
     }
 
     @DeleteMapping("/{id}")

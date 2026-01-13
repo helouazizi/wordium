@@ -61,9 +61,9 @@ public class PublicPostController {
                         @ApiResponse(responseCode = "400", description = "Invalid pagination parameters", content = @Content(schema = @Schema(implementation = ProblemDetail.class)))
         })
         @GetMapping
-        public ResponseEntity<PaginatedResponse<PostResponse>> getFeed(@Valid PaginationRequest paginationRequest) {
+        public ResponseEntity<PaginatedResponse<PostResponse>> getFeed( @Valid PaginationRequest paginationRequest, @RequestHeader("User-Id") Long userId) {
                 Pageable pageable = paginationRequest.toPageable();
-                var page = postService.getFeed(pageable);
+                var page = postService.getFeed(pageable,userId);
                 return ResponseEntity.ok(PaginatedResponse.fromPage(page));
         }
 
@@ -73,8 +73,8 @@ public class PublicPostController {
                         @ApiResponse(responseCode = "404", description = "Post not found", content = @Content(schema = @Schema(implementation = ProblemDetail.class)))
         })
         @GetMapping("/{id}")
-        public ResponseEntity<PostResponse> getPost(@PathVariable Long id) {
-                return ResponseEntity.ok(postService.getPostById(id));
+        public ResponseEntity<PostResponse> getPost(@PathVariable Long id , @RequestHeader("User-Id") Long userId) {
+                return ResponseEntity.ok(postService.getPostById(userId,id));
         }
 
         @Operation(summary = "React to a post (like/unlike)")

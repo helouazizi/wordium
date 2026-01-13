@@ -55,35 +55,35 @@ public class PostServiceImpl implements PostService {
         post.setContent(request.content());
 
         Post saved = postRepository.save(post);
-        return mapToResponse(saved, new UserProfile(userId, null, null, "null", null, "null", null));
+        return mapToResponse(saved, new UserProfile(userId, null, null, "null", null, "null", null), null);
     }
 
     @Override
-    public PostResponse getPostById(Long id) {
+    public PostResponse getPostById(Long userId, Long id) {
         Post post = postRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Post not found"));
         return userEnrichmentHelper.enrichSingle(
                 post,
                 Post::getUserId,
-                this::mapToResponse);
+                (p, userProfile) -> mapToResponse(p, userProfile, userId));
     }
 
     @Override
-    public Page<PostResponse> getFeed(Pageable pageable) {
+    public Page<PostResponse> getFeed(Pageable pageable, Long userId) {
         Page<Post> page = postRepository.findByFlaggedFalse(pageable);
         return userEnrichmentHelper.enrichPage(
                 page,
                 Post::getUserId,
-                this::mapToResponse);
+                (post, userProfile) -> mapToResponse(post, userProfile, userId));
     }
 
     @Override
-    public Page<PostResponse> getAllposts(Pageable pageable) {
+    public Page<PostResponse> getAllposts(Long userId, Pageable pageable) {
         Page<Post> page = postRepository.findAll(pageable);
         return userEnrichmentHelper.enrichPage(
                 page,
                 Post::getUserId,
-                this::mapToResponse);
+                (post, userProfile) -> mapToResponse(post, userProfile, userId));
     }
 
     @Override
@@ -92,7 +92,7 @@ public class PostServiceImpl implements PostService {
         return userEnrichmentHelper.enrichPage(
                 page,
                 Post::getUserId,
-                this::mapToResponse);
+                (post, userProfile) -> mapToResponse(post, userProfile, null));
     }
 
     @Override
@@ -112,10 +112,8 @@ public class PostServiceImpl implements PostService {
             post.setContent(request.content());
         }
 
-  
-
         Post updated = postRepository.save(post);
-        return mapToResponse(updated, new UserProfile(userId, null, null, "null", null, "null", null));
+        return mapToResponse(updated, new UserProfile(userId, null, null, "null", null, "null", null), null);
     }
 
     @Override
@@ -183,9 +181,11 @@ public class PostServiceImpl implements PostService {
         }
     }
 
-    private PostResponse mapToResponse(Post post, UserProfile userProfile) {
-  
+    private PostResponse mapToResponse(Post post, UserProfile userProfile, Long userId) {
 
+        Optional<PostReaction> reaction = reactionRepository.findByPostIdAndUserId(userId, post.getId());
+
+        boolean isLiked = reaction.isPresent();
         return new PostResponse(
                 post.getId(),
                 post.getTitle(),
@@ -194,6 +194,7 @@ public class PostServiceImpl implements PostService {
                 post.getLikesCount(),
                 post.getCommentsCount(),
                 post.getRportCount(),
+                isLiked,
                 post.isReported(),
                 post.isFlagged(),
                 post.getCreatedAt(),

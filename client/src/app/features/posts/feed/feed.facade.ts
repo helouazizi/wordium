@@ -1,6 +1,6 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { PostsService } from '../../../core/services/posts.service';
-import { Post } from '../../../core/apis/posts/modles';
+import { Post, Reaction } from '../../../core/apis/posts/modles';
 import { PageRequest } from '../../../shared/models/page-request.model';
 import { SessionService } from '../../../core/services/session.service';
 
@@ -48,6 +48,7 @@ export class FeedFacade {
       complete: () => {
         this.loading.set(false);
         this.loadingMore.set(false);
+        console.log(this.posts());
       },
     });
   }
@@ -59,5 +60,71 @@ export class FeedFacade {
 
   getPostById(id: number): Post | undefined {
     return this.posts().find((p) => p.id === id);
+  }
+
+  deletePost(postId: number) {
+    this.postsService.deletePost(postId).subscribe({
+      error: () => {
+        // If delete failed, reload feed or handle error
+        console.error('Failed to delete post');
+      },
+    });
+
+    this.posts.update((p) => p.filter((post) => post.id !== postId));
+  }
+
+  reactPost(postId: number, reaction: Reaction) {
+    const post = this.getPostById(postId);
+    if (!post) return;
+
+    // Optimistic UI update
+    if (reaction === 'like') {
+      post.isLiked = true;
+      post.likesCount++;
+    } else {
+      post.isLiked = false;
+      post.likesCount--;
+    }
+
+    this.posts.update((p) => [...p]); // trigger signal
+
+    this.postsService.reactPost(postId, reaction).subscribe({
+      error: () => {
+        // rollback on error
+        if (reaction === 'like') {
+          post.isLiked = false;
+          post.likesCount--;
+        } else {
+          post.isLiked = true;
+          post.likesCount++;
+        }
+        this.posts.update((p) => [...p]);
+      },
+    });
+  }
+  addComment(postId: number, content: string) {
+    const post = this.getPostById(postId);
+    if (!post) return;
+
+    this.postsService.commentPost(postId, content).subscribe({
+      next: () => {
+        post.commentsCount = (post.commentsCount || 0) + 1;
+        this.posts.update((p) => [...p]);
+      },
+      error: () => console.error('Failed to add comment'),
+    });
+  }
+
+  reportPost(postId: number, content: string) {
+    this.postsService.reportPost(postId, content).subscribe({
+      next: () => {
+        const post = this.getPostById(postId);
+        if (post) {
+          post.reportsCount = (post.reportsCount || 0) + 1;
+          this.posts.update((p) => [...p]);
+        }
+      },
+      error: () => console.error('Failed to report post'),
+    });
   }
 }

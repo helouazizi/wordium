@@ -5,21 +5,14 @@ export interface Post {
   title: string;
   content: string;
   actor: User;
-  images: PostImage[];
   likesCount: number;
   commentsCount: number;
   reportsCount: number;
+  isLiked: boolean;
   isReported: boolean;
   isFlagged: boolean;
   createdAt: string;
   updatedAt: string;
-}
-
-export interface PostImage {
-  id: number;
-  url: string;
-  altText: string;
-  displayOrder: number;
 }
 
 export interface SignatureData {
@@ -39,3 +32,5 @@ export interface CreatePostRequest {
   title: string;
   content: String;
 }
+
+export type Reaction = 'like' | 'unlike';
