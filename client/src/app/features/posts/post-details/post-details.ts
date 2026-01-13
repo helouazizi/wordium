@@ -9,7 +9,7 @@ import { PostCard } from '../../../shared/components/post-card/post-card';
 @Component({
   selector: 'app-post-details',
   templateUrl: './post-details.html',
-    styleUrls: ['./post-details.scss'], 
+  styleUrls: ['./post-details.scss'],
   standalone: true,
   imports: [PostCard],
 })
@@ -21,13 +21,9 @@ export class PostDetails implements OnInit {
 
   ngOnInit() {
     const id = Number(this.route.snapshot.paramMap.get('id'));
-    console.log(id , "ididididididid");
-    
 
-    // Try to get post from state first
     const cachedPost = this.feedFacade.getPostById(id);
-    console.log(cachedPost,"cahchahchahchahchah");
-    
+
     if (cachedPost) {
       this.post.set(cachedPost);
     } else {

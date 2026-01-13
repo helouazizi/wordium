@@ -6,7 +6,7 @@
 
   <div class="posts-list">
     @for (post of posts(); track post.id) {
-    <app-post-card [post]="post" [showContent]="false" (open)="goToPost($event)" [mode]="'feed'"/>
+    <app-post-card [user]="user" [post]="post" [showContent]="false" (open)="goToPost($event)" [mode]="'feed'"/>
     }
 
     <!-- Infinite scroll sentinel -->

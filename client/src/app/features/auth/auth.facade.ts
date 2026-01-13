@@ -1,91 +1,86 @@
-import { inject, Injectable, signal } from '@angular/core';
-import { toObservable } from '@angular/core/rxjs-interop';
-import { SessionService } from '../../core/services/session.service';
-import { AuthService } from '../../core/services/auth.service';
+import { inject, Injectable, signal, computed } from '@angular/core';
 import { Router } from '@angular/router';
+import { AuthService } from '../../core/services/auth.service';
+import { SessionService } from '../../core/services/session.service';
 import { LoginRequest, SignupRequest } from '../../core/apis/auth/models';
-import { catchError, finalize, map, Observable, throwError } from 'rxjs';
 import { ProblemDetail } from '../../shared/models/problem-detail';
 
 @Injectable({ providedIn: 'root' })
 export class AuthFacade {
-  private readonly loading = signal(false);
-  private readonly error = signal<string | null>(null);
-  private readonly fieldErrors = signal<Record<string, string>>({});
-
-  readonly loading$ = toObservable(this.loading);
-  readonly error$ = toObservable(this.error);
-  readonly fieldErrors$ = toObservable(this.fieldErrors);
-
+  private authService = inject(AuthService);
   private session = inject(SessionService);
   private router = inject(Router);
-  private authService = inject(AuthService);
 
-  readonly user$ = this.session.user$;
+  private _loading = signal(false);
+  private _error = signal<string | null>(null);
+  private _fieldErrors = signal<Record<string, string>>({});
+
+  readonly loading = this._loading.asReadonly();
+  readonly error = this._error.asReadonly();
+  readonly fieldErrors = this._fieldErrors.asReadonly();
+
+  readonly user = this.session.user; // already a signal
+  readonly isLoggedIn = this.session.isLoggedIn;
 
   constructor() {
     this.router.events.subscribe(() => this.clearErrors());
   }
 
-  signup(payload: SignupRequest): Observable<void> {
+  signup(payload: SignupRequest) {
     this.resetState();
 
-    return this.authService.signup(payload).pipe(
-      map(() => void 0),
-      catchError((err) => {
-        this.handleProblemDetail(err);
-        return throwError(() => err);
-      }),
-      finalize(() => this.loading.set(false))
-    );
+    this.authService.signup(payload).subscribe({
+      next: () => {},
+      error: (err) => this.handleProblemDetail(err),
+      complete: () => this._loading.set(false),
+    });
   }
 
-  login(payload: LoginRequest): Observable<void> {
+  login(payload: LoginRequest) {
     this.resetState();
 
-    return this.authService.login(payload).pipe(
-      map(() => void 0),
-      catchError((err) => {
-        this.handleProblemDetail(err);
-        return throwError(() => err);
-      }),
-      finalize(() => this.loading.set(false))
-    );
+    this.authService.login(payload).subscribe({
+      next: () => {},
+      error: (err) => this.handleProblemDetail(err),
+      complete: () => this._loading.set(false),
+    });
   }
 
-  logout(): void {
+  logout() {
     this.authService.logout();
     this.clearErrors();
   }
 
   private resetState() {
-    this.loading.set(true);
-    this.error.set(null);
-    this.fieldErrors.set({});
+    this._loading.set(true);
+    this._error.set(null);
+    this._fieldErrors.set({});
   }
 
   private handleProblemDetail(err: unknown) {
     const problem = err as ProblemDetail;
 
-    this.error.set(problem?.detail ?? problem?.title ?? 'Request failed');
+    this._error.set(problem?.detail ?? problem?.title ?? 'Request failed');
 
     if (Array.isArray(problem?.fieldErrors)) {
-      const fieldErrorMap: Record<string, string> = {};
+      const map: Record<string, string> = {};
 
-      problem.fieldErrors.forEach((item) => {
+      for (const item of problem.fieldErrors) {
         if (item.field && item.message) {
-          fieldErrorMap[item.field] = item.message;
+          map[item.field] = item.message;
         }
-      });
+      }
 
-      this.fieldErrors.set(fieldErrorMap);
+      this._fieldErrors.set(map);
     } else {
-      this.fieldErrors.set({});
+      this._fieldErrors.set({});
     }
+
+    this._loading.set(false);
   }
 
   clearErrors() {
-    this.error.set(null);
-    this.fieldErrors.set({});
+    this._error.set(null);
+    this._fieldErrors.set({});
   }
 }

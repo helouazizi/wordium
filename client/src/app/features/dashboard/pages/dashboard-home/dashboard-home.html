@@ -1,6 +1,5 @@
 <p>dashboard-home works!</p>
 
-<div *ngIf="user$ | async as user">
-  Welcome {{ user.username }}
-</div>
-
+@if (user) {
+<div>Welcome {{ user.username }}</div>
+}

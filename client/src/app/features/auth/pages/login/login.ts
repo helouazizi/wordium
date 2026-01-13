@@ -9,7 +9,7 @@ import { SessionService } from '../../../../core/services/session.service';
 
 @Component({
   selector: 'app-login',
-  imports: [ReactiveFormsModule, NgIf, RouterLink],
+  imports: [ReactiveFormsModule, RouterLink],
   templateUrl: './login.html',
   styleUrl: './login.scss',
 })

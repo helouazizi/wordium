@@ -12,7 +12,7 @@ import { TimeAgo } from '../../pipes/time-ago.pipe';
   styleUrls: ['./user-profile.scss'],
 })
 export class UserProfile {
-  @Input() user: User = {} as User; 
+  @Input() user: User | null = null;
   @Input() time: string = '';
 
   @Input() size: 'sm' | 'md' | 'lg' = 'md';
@@ -21,7 +21,7 @@ export class UserProfile {
   @Input() showTime = false;
 
   get initial(): string {
-    return this.user?.username?.charAt(0)?.toUpperCase() || '?';
+    return this.user?.username?.charAt(0)?.toUpperCase() ?? '?';
   }
 
   get hasAvatar(): boolean {

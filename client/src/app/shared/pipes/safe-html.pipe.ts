@@ -11,7 +11,10 @@ export class SafeHtmlPipe implements PipeTransform {
   constructor(private sanitizer: DomSanitizer) {}
 
   async transform(markdown: string): Promise<SafeHtml> {
-    const raw = await marked.parse(markdown,{breaks:true});
+    if (markdown === null || markdown === undefined) {
+      markdown = ''; // Default to an empty string
+    }
+    const raw = await marked.parse(markdown, { breaks: true });
     const clean = DOMPurify.sanitize(raw);
     return this.sanitizer.bypassSecurityTrustHtml(clean);
   }

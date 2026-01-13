@@ -12,7 +12,7 @@ import { Sidebar } from '../sidebar/sidebar';
 @Component({
   selector: 'app-app-layout',
   standalone: true,
-  imports: [CommonModule, RouterModule,Header,Sidebar],
+  imports: [CommonModule, RouterModule, Header, Sidebar],
   templateUrl: './app-layout.html',
 })
 export class AppLayout {
@@ -20,7 +20,7 @@ export class AppLayout {
   private session = inject(SessionService);
   private theme = inject(ThemeService);
 
-  readonly user$: Observable<User | null> = this.session.user$;
+  readonly user = this.session.getUser();
   readonly isMobile = this.responsive.isHandset$;
   readonly isTablet = this.responsive.isTablet$;
 

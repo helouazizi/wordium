@@ -5,14 +5,17 @@
       <p class="text-center text-muted mb-4">Join Wordium in seconds</p>
 
       <!-- Global backend error -->
-      <div *ngIf="error$ | async as error" class="alert alert-danger py-2">
-        {{ error }}
-      </div>
+      @if (error()) {
+        <div class="alert alert-danger py-2">
+          {{ error() }}
+        </div>
+      }
 
       <form [formGroup]="form" (ngSubmit)="signup()" class="d-grid gap-3" novalidate>
-        <!-- Avatar preview -->
+        <!-- Avatar -->
         <div class="text-center">
           <label for="avatarInput" class="d-block mb-2 fw-semibold">Avatar</label>
+
           <input
             #avatarInput
             type="file"
@@ -20,24 +23,24 @@
             class="form-control form-control-sm"
             (change)="onAvatarChange($event)"
           />
-          <div class="position-relative d-inline-block mt-2">
-            <img
-              *ngIf="avatarPreview"
-              [src]="avatarPreview"
-              class="rounded-circle avatar-preview"
-              style="width: 80px; height: 80px; object-fit: cover"
-            />
-            <button
-              *ngIf="avatarPreview"
-              type="button"
-              class="btn-close position-absolute top-0 end-500 rounded-circle"
-              style="width: 20px; height: 20px"
-              aria-label="Remove"
-              (click)="
-                avatarPreview = null; form.patchValue({ avatar: null }); avatarInput.value = ''
-              "
-            ></button>
-          </div>
+
+          @if (avatarPreview) {
+            <div class="position-relative d-inline-block mt-2">
+              <img
+                [src]="avatarPreview"
+                class="rounded-circle avatar-preview"
+                style="width: 80px; height: 80px; object-fit: cover"
+              />
+
+              <button
+                type="button"
+                class="btn-close position-absolute top-0 end-0 rounded-circle"
+                style="width: 20px; height: 20px"
+                aria-label="Remove"
+                (click)="avatarPreview = null; form.patchValue({ avatar: null }); avatarInput.value = ''"
+              ></button>
+            </div>
+          }
         </div>
 
         <!-- Username -->
@@ -48,31 +51,36 @@
             class="form-control"
             placeholder="Username"
           />
+
           <small class="text-danger">
-            <span
-              *ngIf="form.controls.username.errors?.['required'] && form.controls.username.touched"
-            >
+            @if (form.controls.username.errors?.['required'] && form.controls.username.touched) {
               Username is required
-            </span>
-            <span *ngIf="form.controls.username.errors?.['backend']">
+            }
+            @if (form.controls.username.errors?.['backend']) {
               {{ form.controls.username.errors?.['backend'] }}
-            </span>
+            }
           </small>
         </div>
 
         <!-- Email -->
         <div>
-          <input type="email" formControlName="email" class="form-control" placeholder="Email" />
+          <input
+            type="email"
+            formControlName="email"
+            class="form-control"
+            placeholder="Email"
+          />
+
           <small class="text-danger">
-            <span *ngIf="form.controls.email.errors?.['required'] && form.controls.email.touched">
+            @if (form.controls.email.errors?.['required'] && form.controls.email.touched) {
               Email is required
-            </span>
-            <span *ngIf="form.controls.email.errors?.['email'] && form.controls.email.touched">
+            }
+            @if (form.controls.email.errors?.['email'] && form.controls.email.touched) {
               Invalid email
-            </span>
-            <span *ngIf="form.controls.email.errors?.['backend']">
+            }
+            @if (form.controls.email.errors?.['backend']) {
               {{ form.controls.email.errors?.['backend'] }}
-            </span>
+            }
           </small>
         </div>
 
@@ -84,15 +92,14 @@
             class="form-control"
             placeholder="Password"
           />
+
           <small class="text-danger">
-            <span
-              *ngIf="form.controls.password.errors?.['required'] && form.controls.password.touched"
-            >
+            @if (form.controls.password.errors?.['required'] && form.controls.password.touched) {
               Password is required
-            </span>
-            <span *ngIf="form.controls.password.errors?.['backend']">
+            }
+            @if (form.controls.password.errors?.['backend']) {
               {{ form.controls.password.errors?.['backend'] }}
-            </span>
+            }
           </small>
         </div>
 
@@ -103,9 +110,12 @@
             class="form-control"
             placeholder="Bio (optional)"
           ></textarea>
-          <small *ngIf="form.controls.bio.errors?.['backend']" class="text-danger">
-            {{ form.controls.bio.errors?.['backend'] }}
-          </small>
+
+          @if (form.controls.bio.errors?.['backend']) {
+            <small class="text-danger">
+              {{ form.controls.bio.errors?.['backend'] }}
+            </small>
+          }
         </div>
 
         <!-- Location -->
@@ -116,19 +126,24 @@
             class="form-control"
             placeholder="Location (optional)"
           />
-          <small *ngIf="form.controls.location.errors?.['backend']" class="text-danger">
-            {{ form.controls.location.errors?.['backend'] }}
-          </small>
+
+          @if (form.controls.location.errors?.['backend']) {
+            <small class="text-danger">
+              {{ form.controls.location.errors?.['backend'] }}
+            </small>
+          }
         </div>
 
         <!-- Submit -->
         <button
           type="submit"
           class="btn btn-dark w-100"
-          [disabled]="form.invalid || (loading$ | async)"
+          [disabled]="form.invalid || loading()"
         >
           Sign up
-          <span *ngIf="loading$ | async" class="spinner-border spinner-border-sm"></span>
+          @if (loading()) {
+            <span class="spinner-border spinner-border-sm ms-2"></span>
+          }
         </button>
       </form>
 

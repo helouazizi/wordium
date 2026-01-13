@@ -1,5 +1,9 @@
-<article [class.feed-post]="mode === 'feed'" [class.detail-post]="mode === 'detail'">
-  <div class="post-header">
+<article
+  [class.feed-post]="mode === 'feed'"
+  [class.detail-post]="mode === 'detail'"
+  class="post-card"
+>
+  <header class="post-header">
     <app-user-profile
       [user]="post.actor"
       [showName]="true"
@@ -7,18 +11,75 @@
       [showTime]="true"
       [time]="post.createdAt"
     />
-  </div>
 
-  <div class="post-content" (click)="openPost()">
-    <h2 class="post-title">{{ post.title }}</h2>
-    @if (showContent) {
-    <div [innerHTML]="post.content | safeHtml | async"></div>
+    <div class="post-actions" (click)="toggleMenu($event)">
+      <button class="btn-icon" aria-label="More actions">
+        <i class="bi bi-three-dots-vertical"></i>
+      </button>
+
+      @if (isMenuOpen) {
+      <div class="dropdown-menu">
+        <button (click)="reportPost()"><i class="bi bi-flag"></i> Report</button>
+        @if (isOwner) {
+        <button class="text-danger" (click)="deletePost()">
+          <i class="bi bi-trash"></i> Delete
+        </button>
+        }
+      </div>
+      }
+    </div>
+  </header>
+
+  <div class="post-body" (click)="openPost()">
+    <h2 class="post-title" [class.clickable]="!showContent">{{ post.title }}</h2>
+
+    @if (!showContent) {
+    <span class="read-more">Read more...</span>
+    } @else {
+    <div class="post-content" [innerHTML]="post.content | safeHtml | async"></div>
     }
   </div>
 
-  <div class="post-footer post-stats">
-    <span><i class="bi bi-heart"></i> {{ post.likesCount }}</span>
-    <span><i class="bi bi-chat-left-text"></i> {{ post.commentsCount }}</span>
-    <span class="text-danger"><i class="bi bi-flag"></i> {{ post.reportsCount }}</span>
-  </div>
+  <footer
+    class="post-footer"
+    [class.feed-post-footer]="!showContent"
+    [class.detail-post-footer]="showContent"
+  >
+    <div class="post-stats">
+      <button class="stat-item" [attr.aria-pressed]="true">
+        <i class="bi" [class.bi-heart-fill]="true" [class.bi-heart]="!true"></i>
+        {{ post.likesCount }}
+      </button>
+      <button class="stat-item">
+        <i class="bi bi-chat-left-text"></i>
+        {{ post.commentsCount }}
+      </button>
+      @if (post.reportsCount > 0) {
+      <span class="stat-item text-danger">
+        <i class="bi bi-flag"></i> {{ post.reportsCount }}
+      </span>
+      }
+    </div>
+
+    <div class="post-comment-input">
+      <div class="input-wrapper">
+        <input
+          #commentInput
+          type="text"
+          [(ngModel)]="commentText"
+          placeholder="Add a comment..."
+          (keyup.enter)="sendComment()"
+          aria-label="Write a comment"
+        />
+        <button
+          class="send-btn"
+          [disabled]="!commentText.trim()"
+          (click)="sendComment()"
+          aria-label="Send comment"
+        >
+          <i class="bi bi-send-fill"></i>
+        </button>
+      </div>
+    </div>
+  </footer>
 </article>

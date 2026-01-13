@@ -6,19 +6,21 @@ import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-header',
-  imports: [RouterLink, UserProfile,CommonModule],
+  imports: [RouterLink, UserProfile, CommonModule],
   templateUrl: './header.html',
   styleUrl: './header.scss',
 })
 export class Header {
   private session = inject(SessionService);
-  user$ = this.session.user$;
+  user = this.session.getUser();
 
-  
   private theme: 'light' | 'dark' = 'light';
+  isMenuOpen = false;
 
   isDark = () => this.theme === 'dark';
-
+  toggleMenu() {
+    this.isMenuOpen = !this.isMenuOpen;
+  }
   toggleTheme() {
     this.theme = this.theme === 'light' ? 'dark' : 'light';
     document.documentElement.setAttribute('data-bs-theme', this.theme);

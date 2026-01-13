@@ -1,19 +1,27 @@
-<div class="user-profile" [ngClass]="size">
-  <div class="avatar">
-    <img
-      *ngIf="hasAvatar"
-      [src]="user.avatar"
-      alt="avatar"
-    />
+@if (user) {
+  <div class="user-profile" [class]="size">
+    <div class="avatar">
+      @if (hasAvatar) {
+        <img [src]="user.avatar" alt="avatar" />
+      } @else {
+        <span class="avatar-fallback">
+          {{ initial }}
+        </span>
+      }
+    </div>
 
-    <span *ngIf="!hasAvatar" class="avatar-fallback">
-      {{ initial }}
-    </span>
-  </div>
+    <div class="info">
+      @if (showName) {
+        <div class="username">{{ user.username }}</div>
+      }
 
-  <div class="info">
-    <div  *ngIf="showName"  class="username">{{ user.username }}</div>
-    <div *ngIf="showEmail" class="email">{{ user.email }}</div>
-    <div *ngIf="showTime" class="email">{{ time | timeAgo}}</div>
+      @if (showEmail) {
+        <div class="email">{{ user.email }}</div>
+      }
+
+      @if (showTime) {
+        <div class="email">{{ time | timeAgo }}</div>
+      }
+    </div>
   </div>
-</div>
+}

@@ -17,6 +17,7 @@ import { Post } from '../../../core/apis/posts/modles';
 import { EmptyState } from '../../../shared/components/empty-state/empty-state';
 import { Router } from '@angular/router';
 import { PostCard } from '../../../shared/components/post-card/post-card';
+import { SessionService } from '../../../core/services/session.service';
 
 @Component({
   selector: 'app-feed',
@@ -24,13 +25,14 @@ import { PostCard } from '../../../shared/components/post-card/post-card';
   imports: [CommonModule, FeedSkeleton, PostCard, BlogEditor, EmptyState],
   templateUrl: './feed.html',
   styleUrls: ['./feed.scss'],
-  // providers: [FeedFacade],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Feed implements OnInit, AfterViewInit, OnDestroy {
   private readonly facade = inject(FeedFacade);
   private readonly router = inject(Router);
+  private readonly session = inject(SessionService);
 
+  readonly user = this.session.getUser();
   readonly posts = this.facade.posts;
   readonly loading = this.facade.loading;
   readonly loadingMore = this.facade.loadingMore;

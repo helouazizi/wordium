@@ -5,6 +5,8 @@
       <p class="text-center text-muted mb-4">Sign in to your account</p>
 
       <form [formGroup]="form" (ngSubmit)="login()" class="d-grid gap-3" novalidate>
+
+        <!-- Identifier -->
         <div>
           <input
             type="text"
@@ -13,14 +15,14 @@
             formControlName="identifier"
           />
 
-          <small
-            class="text-danger"
-            *ngIf="form.controls.identifier.touched && form.controls.identifier.invalid"
-          >
-            Email or username is required
-          </small>
+          @if (form.controls.identifier.touched && form.controls.identifier.invalid) {
+            <small class="text-danger">
+              Email or username is required
+            </small>
+          }
         </div>
 
+        <!-- Password -->
         <div>
           <input
             type="password"
@@ -29,22 +31,29 @@
             formControlName="password"
           />
 
-          <small
-            class="text-danger"
-            *ngIf="form.controls.password.touched && form.controls.password.invalid"
-          >
-            Password is required
-          </small>
+          @if (form.controls.password.touched && form.controls.password.invalid) {
+            <small class="text-danger">
+              Password is required
+            </small>
+          }
         </div>
 
-        <div *ngIf="errorMessage as error" class="alert alert-danger py-2">
-          {{ error }}
-        </div>
+        <!-- Backend error -->
+        @if (errorMessage) {
+          <div class="alert alert-danger py-2">
+            {{ errorMessage }}
+          </div>
+        }
 
-        <button type="submit" class="btn btn-dark w-100" [disabled]="form.invalid">
+        <!-- Submit -->
+        <button type="submit" class="btn btn-dark w-100" [disabled]="form.invalid || isSubmitting">
           Sign in
-          <span *ngIf="isSubmitting" class="spinner-border spinner-border-sm"></span>
+
+          @if (isSubmitting) {
+            <span class="spinner-border spinner-border-sm ms-2"></span>
+          }
         </button>
+
       </form>
 
       <p class="text-center mt-4 mb-0">

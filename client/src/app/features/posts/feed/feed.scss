@@ -3,7 +3,7 @@
     margin: 0 auto;
     padding: 1rem 0.75rem;
 
-    height: 80vh;
+    height: 85vh;
     overflow-y: auto;
     display: flex;
     flex-direction: column;
@@ -13,13 +13,6 @@
 
 }
 
-// .ProseMirror p.is-editor-empty:first-child::before {
-//     content: attr(data-placeholder);
-//     float: left;
-//     color: #adb5bd;
-//     pointer-events: none;
-//     height: 0;
-// }
 
 .feed-container::-webkit-scrollbar {
     width: 0px;
@@ -35,7 +28,6 @@
 
 
 
-/* Infinite scroll helpers */
 .sentinel {
     height: 1px;
 }

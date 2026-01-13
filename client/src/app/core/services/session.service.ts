@@ -1,35 +1,41 @@
-import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, tap } from 'rxjs';
+import { Injectable, signal, computed, inject } from '@angular/core';
+import { Router } from '@angular/router';
 import { UsresClient } from '../apis/users/users.client';
 import { User } from '../../shared/models/user';
-import { Router } from '@angular/router';
+import { tap } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class SessionService {
-  private userSubject = new BehaviorSubject<User | null>(null);
-  user$ = this.userSubject.asObservable();
+  private readonly usersApi = inject(UsresClient);
+  private readonly router = inject(Router);
 
-  constructor(private usersApi: UsresClient, private router: Router) {}
+  private readonly _user = signal<User | null>(null);
 
-  loadUser(): Observable<User> {
-    return this.usersApi.me().pipe(tap((user: User) => this.userSubject.next(user)));
+  readonly user = this._user.asReadonly();
+
+  readonly isLoggedIn = computed(() => this._user() !== null);
+
+  readonly role = computed(() => this._user()?.role ?? null);
+
+  loadUser() {
+    return this.usersApi.me().pipe(tap((user) => this._user.set(user)));
   }
 
-  hasAnyRole(roles: string[]): boolean {
-    const user = this.userSubject.value;
-    console.log('Session user :', user);
-    return !!user && roles.includes(user.role);
-  }
   getUser(): User | null {
-    return this.userSubject.value;
+    return this._user();
   }
 
   setUser(user: User | null) {
-    this.userSubject.next(user);
+    this._user.set(user);
   }
 
   clear() {
-    this.userSubject.next(null);
+    this._user.set(null);
+  }
+
+  hasAnyRole(roles: string[]): boolean {
+    const user = this._user();
+    return !!user && roles.includes(user.role);
   }
 
   logout() {

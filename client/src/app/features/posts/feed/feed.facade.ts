@@ -58,12 +58,6 @@ export class FeedFacade {
   }
 
   getPostById(id: number): Post | undefined {
-    console.log(this.posts.length, 'posts');
-
     return this.posts().find((p) => p.id === id);
-  }
-
-  loadPostById(id: number) {
-    // return this.postsService.getPostById(id);
   }
 }

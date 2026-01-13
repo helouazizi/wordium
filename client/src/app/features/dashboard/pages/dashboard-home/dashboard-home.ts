@@ -4,11 +4,12 @@ import { AsyncPipe, NgIf } from '@angular/common';
 
 @Component({
   selector: 'app-dashboard-home',
-  imports: [NgIf,AsyncPipe],
+  imports: [],
   templateUrl: './dashboard-home.html',
   styleUrl: './dashboard-home.scss',
 })
 export class DashboardHome {
-  user$ = inject(SessionService).user$;
+  session = inject(SessionService);
+  user = this.session.getUser();
   
 }
