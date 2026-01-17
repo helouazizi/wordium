@@ -6,6 +6,7 @@ import { NgIf } from '@angular/common';
 import { LoginRequest } from '../../../../core/apis/auth/models';
 import { ProblemDetail } from '../../../../shared/models/problem-detail';
 import { SessionService } from '../../../../core/services/session.service';
+import { AuthFacade } from '../../auth.facade';
 
 @Component({
   selector: 'app-login',
@@ -15,7 +16,7 @@ import { SessionService } from '../../../../core/services/session.service';
 })
 export class Login {
   constructor(private cd: ChangeDetectorRef) {}
-  private auth = inject(AuthService);
+  private authFacade = inject(AuthFacade);
   private router = inject(Router);
   private fb = inject(FormBuilder);
   private session = inject(SessionService);
@@ -45,7 +46,7 @@ export class Login {
 
     this.errorMessage = null;
 
-    this.auth.login(payload).subscribe({
+    this.authFacade.login(payload).subscribe({
       next: () => {
         this.router.navigate(['/']);
       },

@@ -4,6 +4,8 @@ import { AuthService } from '../../core/services/auth.service';
 import { SessionService } from '../../core/services/session.service';
 import { LoginRequest, SignupRequest } from '../../core/apis/auth/models';
 import { ProblemDetail } from '../../shared/models/problem-detail';
+import { User } from '../../shared/models/user';
+import { Observable, tap } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class AuthFacade {
@@ -26,26 +28,43 @@ export class AuthFacade {
     this.router.events.subscribe(() => this.clearErrors());
   }
 
-  signup(payload: SignupRequest) {
+  signup(payload: SignupRequest): Observable<User> {
     this.resetState();
 
-    this.authService.signup(payload).subscribe({
-      next: () => {},
-      error: (err) => this.handleProblemDetail(err),
-      complete: () => this._loading.set(false),
-    });
+    // Return the observable so the component can react to success
+    return this.authService.signup(payload).pipe(
+      tap({
+        next: (user) => {
+          this._loading.set(false);
+          // The signal is already set by SessionService via AuthService
+        },
+        error: (err) => {
+          this.handleProblemDetail(err);
+          this._loading.set(false);
+        },
+      })
+    );
   }
 
-  login(payload: LoginRequest) {
+
+
+  login(payload: LoginRequest): Observable<User> {
     this.resetState();
 
-    this.authService.login(payload).subscribe({
-      next: () => {},
-      error: (err) => this.handleProblemDetail(err),
-      complete: () => this._loading.set(false),
-    });
+    // Return the observable so the component can react to success
+    return this.authService.login(payload).pipe(
+      tap({
+        next: (user) => {
+          this._loading.set(false);
+          // The signal is already set by SessionService via AuthService
+        },
+        error: (err) => {
+          this.handleProblemDetail(err);
+          this._loading.set(false);
+        },
+      })
+    );
   }
-
   logout() {
     this.authService.logout();
     this.clearErrors();

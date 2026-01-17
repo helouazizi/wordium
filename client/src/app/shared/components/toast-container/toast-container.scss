@@ -1,0 +1,44 @@
+/* toast-container.scss */
+.toast-wrapper {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  pointer-events: none;
+}
+
+.toast-card {
+  pointer-events: auto;
+  min-width: 300px;
+  max-width: 400px;
+  padding: 16px;
+  border-radius: 12px;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  backdrop-filter: blur(8px);
+  color: white;
+  transition: all 0.3s ease;
+
+  &.success { background: rgba(16, 185, 129, 0.9); border: 1px solid #059669; }
+  &.error { background: rgba(239, 68, 68, 0.9); border: 1px solid #dc2626; }
+  &.info { background: rgba(59, 130, 246, 0.9); border: 1px solid #2563eb; }
+
+  .icon svg { width: 20px; height: 20px; }
+
+  .content {
+    flex: 1;
+    strong { display: block; font-size: 0.9rem; margin-bottom: 2px; }
+    p { margin: 0; font-size: 0.85rem; opacity: 0.9; }
+  }
+
+  .close-btn {
+    background: none; border: none; color: white; cursor: pointer;
+    font-size: 1.2rem; line-height: 1; opacity: 0.6;
+    &:hover { opacity: 1; }
+  }
+}

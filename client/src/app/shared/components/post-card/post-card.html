@@ -1,15 +1,15 @@
 <article
-  [class.feed-post]="mode === 'feed'"
-  [class.detail-post]="mode === 'detail'"
+  [class.feed-post]="mode() === 'feed'"
+  [class.detail-post]="mode() === 'detail'"
   class="post-card"
 >
   <header class="post-header">
     <app-user-profile
-      [user]="post.actor"
+      [user]="post().actor"
       [showName]="true"
       [showEmail]="false"
       [showTime]="true"
-      [time]="post.createdAt"
+      [time]="post().createdAt"
     />
 
     <div class="post-actions" (click)="toggleMenu($event)">
@@ -17,48 +17,48 @@
         <i class="bi bi-three-dots-vertical"></i>
       </button>
 
-      @if (isMenuOpen) {
-      <div class="dropdown-menu">
-        <button (click)="reportPost()"><i class="bi bi-flag"></i> Report</button>
-        @if (isOwner ) {
-        <button class="text-danger" (click)="deletePost()">
-          <i class="bi bi-trash"></i> Delete
-        </button>
-        }
-      </div>
+      @if (isMenuOpen()) {
+        <div class="dropdown-menu">
+          <button (click)="onReportClick()"><i class="bi bi-flag"></i> Report</button>
+          @if (canDelete()) {
+            <button class="text-danger" (click)="onDeleteClick()">
+              <i class="bi bi-trash"></i> Delete
+            </button>
+          }
+        </div>
       }
     </div>
   </header>
 
   <div class="post-body" (click)="openPost()">
-    <h2 class="post-title" [class.clickable]="!showContent">{{ post.title }}</h2>
+    <h2 class="post-title" [class.clickable]="!showContent()">{{ post().title }}</h2>
 
-    @if (!showContent) {
-    <span class="read-more">Read more...</span>
+    @if (!showContent()) {
+      <span class="read-more">Read more...</span>
     } @else {
-    <div class="post-content" [innerHTML]="post.content | safeHtml | async"></div>
+      <div class="post-content" [innerHTML]="post().content | safeHtml | async"></div>
     }
   </div>
 
   <footer
     class="post-footer"
-    [class.feed-post-footer]="!showContent"
-    [class.detail-post-footer]="showContent"
+    [class.feed-post-footer]="!showContent()"
+    [class.detail-post-footer]="showContent()"
   >
     <div class="post-stats">
-      <button class="stat-item" [attr.aria-pressed]="post.isLiked" (click)="reactPost()">
-        <i class="bi" [class.bi-heart-fill]="post.isLiked" [class.bi-heart]="!post.isLiked"></i>
-        {{ post.likesCount }}
+      <button class="stat-item" [attr.aria-pressed]="post().isLiked" (click)="onLikeClick($event)">
+        <i class="bi" [class.bi-heart-fill]="post().isLiked" [class.bi-heart]="!post().isLiked"></i>
+        {{ post().likesCount }}
       </button>
 
       <button class="stat-item" (click)="openPost()">
         <i class="bi bi-chat-left-text"></i>
-        {{ post.commentsCount }}
+        {{ post().commentsCount }}
       </button>
-      @if (post.reportsCount > 0) {
-      <span class="stat-item text-danger">
-        <i class="bi bi-flag"></i> {{ post.reportsCount }}
-      </span>
+      @if (post().reportsCount > 0) {
+        <span class="stat-item text-danger">
+          <i class="bi bi-flag"></i> {{ post().reportsCount }}
+        </span>
       }
     </div>
 
@@ -69,13 +69,13 @@
           type="text"
           [(ngModel)]="commentText"
           placeholder="Add a comment..."
-          (keyup.enter)="sendComment()"
+          (keyup.enter)="submitComment()"
           aria-label="Write a comment"
         />
         <button
           class="send-btn"
-          [disabled]="!commentText.trim()"
-          (click)="sendComment()"
+          [disabled]="!commentText().trim()"
+          (click)="submitComment()"
           aria-label="Send comment"
         >
           <i class="bi bi-send-fill"></i>

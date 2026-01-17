@@ -2,8 +2,9 @@ import { Component, inject, signal, effect } from '@angular/core';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { marked } from 'marked';
 import DOMPurify from 'dompurify';
-import { PostsEditorFacade } from './blog-editor.hacade';
 import { CommonModule } from '@angular/common';
+import { PostsEditorFacade } from './blog-editor.hacade';
+import { ToastService } from '../../../../core/services/toast.service';
 
 @Component({
   selector: 'app-blog-editor',
@@ -13,10 +14,10 @@ import { CommonModule } from '@angular/common';
   styleUrls: ['./blog-editor.scss'],
   providers: [PostsEditorFacade],
 })
-
 export class BlogEditor {
   private facade = inject(PostsEditorFacade);
   private sanitizer = inject(DomSanitizer);
+  private toast = inject(ToastService);
 
   isOpen = signal(false);
   viewMode = signal<'write' | 'preview'>('write');
@@ -52,7 +53,6 @@ export class BlogEditor {
     this.previewHtml.set(this.sanitizer.bypassSecurityTrustHtml(clean));
   }
 
-
   onMediaUpload(event: Event) {
     const file = (event.target as HTMLInputElement).files?.[0];
     if (!file) return;
@@ -69,7 +69,10 @@ export class BlogEditor {
         this.markdown.update((m) => m + block);
         this.isUploading.set(false);
       },
-      error: () => this.isUploading.set(false),
+      error: () => {
+        this.isUploading.set(false);
+        this.toast.error('Feiald to upload media');
+      },
     });
   }
 
@@ -88,13 +91,15 @@ export class BlogEditor {
       content: this.markdown(),
     };
 
-    this.facade.createPost(postData);
-
-    if (!this.validationError()) {
-      this.savedTitle.set(this.title());
-      this.savedMarkdown.set(this.markdown());
-      this.resetEditor();
-    }
+    this.facade.createPost(postData).subscribe({
+      next: () => {
+        this.savedTitle.set(this.title());
+        this.savedMarkdown.set(this.markdown());
+        this.title.set('');
+        this.markdown.set('');
+        this.resetEditor();
+      },
+    });
   }
 
   cancelEdit() {

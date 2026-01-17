@@ -1,9 +1,10 @@
-import { Component, inject, effect } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule, Validators, FormGroup } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { SignupRequest } from '../../../../core/apis/auth/models';
+import { User } from '../../../../shared/models/user';
+import { Component, effect, inject } from '@angular/core';
+import { AuthFacade } from '../../auth.facade';
 import { Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { SignupRequest } from '../../../../core/apis/auth/models';
-import { AuthFacade } from '../../auth.facade';
 
 @Component({
   selector: 'app-signup',
@@ -17,6 +18,7 @@ export class Signup {
   private auth = inject(AuthFacade);
   private router = inject(Router);
 
+  // Connect to Facade signals
   readonly loading = this.auth.loading;
   readonly error = this.auth.error;
   readonly fieldErrors = this.auth.fieldErrors;
@@ -49,9 +51,7 @@ export class Signup {
   onAvatarChange(event: Event) {
     const file = (event.target as HTMLInputElement)?.files?.[0];
     if (!file) return;
-
     this.form.patchValue({ avatar: file });
-
     const reader = new FileReader();
     reader.onload = () => (this.avatarPreview = reader.result);
     reader.readAsDataURL(file);
@@ -63,14 +63,22 @@ export class Signup {
       return;
     }
 
-    this.auth.signup(this.form.getRawValue() as SignupRequest);
+    const payload = this.form.getRawValue() as SignupRequest;
+
+    this.auth.signup(payload).subscribe({
+      next: (user: User) => {
+        // console.log('Signup successful, user state updated:', user);
+        // Navigation is handled by the effect() above,
+        // or you can manually call this.router.navigate(['/']) here.
+      },
+    });
   }
 
   private applyBackendErrors(form: FormGroup, errors: Record<string, string>) {
     Object.entries(errors).forEach(([field, message]) => {
       const control = form.get(field);
       if (control) {
-        control.setErrors({ ...control.errors, backend: message });
+        control.setErrors({ backend: message });
       }
     });
   }

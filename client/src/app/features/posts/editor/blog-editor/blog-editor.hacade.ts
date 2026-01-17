@@ -1,51 +1,33 @@
 import { Injectable, inject } from '@angular/core';
 import { PostsService } from '../../../../core/services/posts.service';
 import { FeedFacade } from '../../feed/feed.facade';
-import { CreatePostRequest } from '../../../../core/apis/posts/modles';
+import { CreatePostRequest, Post } from '../../../../core/apis/posts/modles';
 import { signal } from '@angular/core';
 import { SessionService } from '../../../../core/services/session.service';
+import { ToastService } from '../../../../core/services/toast.service';
+import { EMPTY, Observable, tap } from 'rxjs';
 
 @Injectable()
 export class PostsEditorFacade {
   private postsService = inject(PostsService);
-  private feedFacade = inject(FeedFacade);
+  private session = inject(SessionService);
+  private toast = inject(ToastService);
 
   validationError = signal<string | null>(null);
   isSubmitting = signal(false);
+  private user = this.session.getUser();
 
   uploadImage(file: File) {
     return this.postsService.uploadImage(file);
   }
-
-  createPost(postData: { title: string; content: string }) {
-    if (!postData.title?.trim()) {
-      this.validationError.set('Title cannot be empty');
-      return;
+  createPost(postData: { title: string; content: string }): Observable<Post> {
+    if (!postData.title?.trim() || postData.title.length < 3) {
+      this.validationError.set('Title is too short');
+      return EMPTY; 
     }
-
-    if (postData.title.length < 3) {
-      this.validationError.set('Title must be at least 3 characters');
-      return;
-    }
-
-    if (postData.title.length > 500) {
-      this.validationError.set('Title cannot exceed 500 characters');
-      return;
-    }
-
-    if (!postData.content?.trim()) {
-      this.validationError.set('Content cannot be empty');
-      return;
-    }
-
-    if (postData.content.length < 3) {
-      this.validationError.set('Content must be at least 3 characters');
-      return;
-    }
-
-    if (postData.content.length > 10000) {
-      this.validationError.set('Content is too long');
-      return;
+    if (!postData.content?.trim() || postData.content.length < 3) {
+      this.validationError.set('Content is too short');
+      return EMPTY;
     }
 
     this.validationError.set(null);
@@ -56,18 +38,19 @@ export class PostsEditorFacade {
       content: postData.content.trim(),
     };
 
-    this.isSubmitting.set(true);
-    this.postsService.createPost(request).subscribe({
-      next: (newPost) => {
-        this.feedFacade.addPost(newPost);
-        this.isSubmitting.set(false);
-      },
-      error: (err) => {
-        console.error('Create post failed', err);
-        this.validationError.set('Failed to create post. Try again later.');
-        this.isSubmitting.set(false);
-      },
-      complete: () => this.isSubmitting.set(false),
-    });
+    return this.postsService.createPost(request).pipe(
+      tap({
+        next: (res) => {
+          res.actor = this.user!
+          this.isSubmitting.set(false);
+          this.toast.success('Blog created successfully');
+        },
+        error: (err) => {
+          this.isSubmitting.set(false);
+          this.validationError.set('Failed to create blog. Try again.');
+          this.toast.error('Creation failed');
+        },
+      }),
+    );
   }
 }

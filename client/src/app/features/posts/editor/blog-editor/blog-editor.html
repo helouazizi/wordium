@@ -4,100 +4,116 @@
       <h2 class="editor-title">{{ isOpen() ? 'Drafting' : 'Blogs' }}</h2>
 
       <div class="d-flex align-items-center gap-2">
-        <button *ngIf="!isOpen()" class="btn-modern-primary" (click)="isOpen.set(true)">
-          <i class="bi bi-plus-lg"></i><span>New Blog</span>
-        </button>
-
-        <ng-container *ngIf="isOpen()">
+        @if (!isOpen()) {
+          <button class="btn-modern-primary" (click)="isOpen.set(true)">
+            <i class="bi bi-plus-lg"></i><span>New Blog</span>
+          </button>
+        } @else {
           <button class="btn-modern-ghost" (click)="cancelEdit()">Discard</button>
           <button
             class="btn-modern-primary"
             [disabled]="isSubmitting() || isUploading()"
             (click)="saveBlog()"
           >
-            <span *ngIf="!isSubmitting()">Publish</span>
-            <span *ngIf="isSubmitting()" class="spinner-border spinner-border-sm"></span>
+            @if (!isSubmitting()) {
+              <span>Publish</span>
+            } @else {
+              <span class="spinner-border spinner-border-sm"></span>
+            }
           </button>
-        </ng-container>
+        }
       </div>
     </div>
   </header>
 
-  <div *ngIf="isOpen()" class="editor-canvas animate-fade-in">
-    <div class="title-section">
-      <input
-        type="text"
-        class="title-input"
-        placeholder="Blog Title..."
-        [value]="title()"
-        (input)="title.set($any($event.target).value)"
-      />
-      <div class="title-underline"></div>
-      <small *ngIf="validationError()" class="validation-msg">
-        <i class="bi bi-exclamation-circle"></i> {{ validationError() }}
-      </small>
-    </div>
-
-    <div class="editor-toolbar">
-      <div class="tab-group">
-        <button [class.active]="viewMode() === 'write'" (click)="viewMode.set('write')">
-          <i class="bi bi-pencil-square"></i> Write
-        </button>
-        <button [class.active]="viewMode() === 'preview'" (click)="viewMode.set('preview')">
-          <i class="bi bi-eye"></i> Preview
-        </button>
+  @if (isOpen()) {
+    <div class="editor-canvas animate-fade-in">
+      <div class="title-section">
+        <input
+          type="text"
+          class="title-input"
+          placeholder="Blog Title..."
+          [value]="title()"
+          (input)="title.set($any($event.target).value)"
+        />
+        <div class="title-underline"></div>
+        
+        @if (validationError()) {
+          <small class="validation-msg">
+            <i class="bi bi-exclamation-circle"></i> {{ validationError() }}
+          </small>
+        }
       </div>
 
-      <div class="toolbar-actions" *ngIf="viewMode() === 'write'">
-        <label class="toolbar-btn" title="Upload Media">
-          <i class="bi bi-image"></i>
-          <input type="file" accept="image/*,video/*" (change)="onMediaUpload($event)" hidden />
-        </label>
-        <div class="v-divider"></div>
-        <button class="toolbar-btn" (click)="insertFormat('bold')">
-          <i class="bi bi-type-bold"></i>
-        </button>
-        <button class="toolbar-btn" (click)="insertFormat('italic')">
-          <i class="bi bi-type-italic"></i>
-        </button>
-        <button class="toolbar-btn" (click)="insertFormat('list')">
-          <i class="bi bi-list-ul"></i>
-        </button>
-      </div>
-    </div>
-
-    <div class="editor-body">
-      <textarea
-        *ngIf="viewMode() === 'write'"
-        class="main-textarea animate-fade-in"
-        [value]="markdown()"
-        (input)="markdown.set($any($event.target).value)"
-        placeholder="Whrite down a blog..."
-        spellcheck="true"
-      ></textarea>
-
-      <div *ngIf="viewMode() === 'preview'" class="preview-area animate-fade-in">
-        <h1 class="preview-title" *ngIf="title()">{{ title() }}</h1>
-        <h1 class="preview-title-placeholder" *ngIf="!title()">Untitled Story</h1>
-
-        <hr class="preview-divider" *ngIf="title() || markdown()" />
-
-        <div class="preview-content" [innerHTML]="previewHtml()"></div>
-
-        <div class="text-center py-5" *ngIf="!title() && !markdown()">
-          <i class="bi bi-eye text-muted" style="font-size: 2rem"></i>
-          <p class="text-muted">Nothing to preview yet.</p>
+      <div class="editor-toolbar">
+        <div class="tab-group">
+          <button [class.active]="viewMode() === 'write'" (click)="viewMode.set('write')">
+            <i class="bi bi-pencil-square"></i> Write
+          </button>
+          <button [class.active]="viewMode() === 'preview'" (click)="viewMode.set('preview')">
+            <i class="bi bi-eye"></i> Preview
+          </button>
         </div>
-      </div>
-    </div>
 
-    <footer class="editor-footer">
-      <div class="footer-item">
-        <i class="bi bi-text-paragraph"></i> {{ markdown().length + title().length }} chars
+        @if (viewMode() === 'write') {
+          <div class="toolbar-actions">
+            <label class="toolbar-btn" title="Upload Media">
+              <i class="bi bi-image"></i>
+              <input type="file" accept="image/*,video/*" (change)="onMediaUpload($event)" hidden />
+            </label>
+            <div class="v-divider"></div>
+            <button class="toolbar-btn" (click)="insertFormat('bold')">
+              <i class="bi bi-type-bold"></i>
+            </button>
+            <button class="toolbar-btn" (click)="insertFormat('italic')">
+              <i class="bi bi-type-italic"></i>
+            </button>
+            <button class="toolbar-btn" (click)="insertFormat('list')">
+              <i class="bi bi-list-ul"></i>
+            </button>
+          </div>
+        }
       </div>
-      <div class="footer-item success" *ngIf="isUploading()">
-        <span class="spinner-grow spinner-grow-sm"></span> Syncing to cloud...
+
+      <div class="editor-body">
+        @if (viewMode() === 'write') {
+          <textarea
+            class="main-textarea animate-fade-in"
+            [value]="markdown()"
+            (input)="markdown.set($any($event.target).value)"
+            placeholder="Write down a blog..."
+            spellcheck="true"
+          ></textarea>
+        } @else {
+          <div class="preview-area animate-fade-in">
+            <h1 class="preview-title">{{ title() || 'Untitled Story' }}</h1>
+
+            @if (title() || markdown()) {
+              <hr class="preview-divider" />
+            }
+
+            <div class="preview-content" [innerHTML]="previewHtml()"></div>
+
+            @if (!title() && !markdown()) {
+              <div class="text-center py-5">
+                <i class="bi bi-eye text-muted" style="font-size: 2rem"></i>
+                <p class="text-muted">Nothing to preview yet.</p>
+              </div>
+            }
+          </div>
+        }
       </div>
-    </footer>
-  </div>
+
+      <footer class="editor-footer">
+        <div class="footer-item">
+          <i class="bi bi-text-paragraph"></i> {{ markdown().length + title().length }} chars
+        </div>
+        @if (isUploading()) {
+          <div class="footer-item success">
+            <span class="spinner-grow spinner-grow-sm"></span> Syncing to cloud...
+          </div>
+        }
+      </footer>
+    </div>
+  }
 </div>

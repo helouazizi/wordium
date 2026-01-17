@@ -1,0 +1,24 @@
+<!-- toast-container.html -->
+<div class="toast-wrapper">
+  @for (toast of toasts(); track toast.id) {
+    <div class="toast-card" [class]="toast.type" @toastAnimation>
+      <div class="icon">
+        <!-- Success Icon -->
+        @if (toast.type === 'success') {
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+        }
+        <!-- Error Icon -->
+        @if (toast.type === 'error') {
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+        }
+      </div>
+
+      <div class="content">
+        @if (toast.title) { <strong>{{ toast.title }}</strong> }
+        <p>{{ toast.message }}</p>
+      </div>
+
+      <button class="close-btn" (click)="toastService.remove(toast.id)">&times;</button>
+    </div>
+  }
+</div>

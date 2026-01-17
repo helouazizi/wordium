@@ -1,48 +1,49 @@
 import { Component, inject, signal, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-import { PostsService } from '../../../core/services/posts.service';
-import { Post } from '../../../core/apis/posts/modles';
-import { FeedFacade } from '../feed/feed.facade';
+import { ActivatedRoute, Router } from '@angular/router';
 import { PostCard } from '../../../shared/components/post-card/post-card';
+import { PostDetailsFacade } from './post-detals.facade';
 import { NotFound } from '../../../shared/components/not-found/not-found';
-import { SessionService } from '../../../core/services/session.service';
+import { Loading } from '../../../shared/components/global-loader/global-loader';
 
 @Component({
   selector: 'app-post-details',
   templateUrl: './post-details.html',
   styleUrls: ['./post-details.scss'],
   standalone: true,
-  imports: [PostCard, NotFound],
+  imports: [PostCard,NotFound,Loading],
+  providers: [PostDetailsFacade],
 })
 export class PostDetails implements OnInit {
+  protected facade = inject(PostDetailsFacade);
   private route = inject(ActivatedRoute);
-  private feedFacade = inject(FeedFacade);
-  private postsService = inject(PostsService);
-  private session = inject(SessionService);
-  post = signal<Post>({} as Post);
-  user = this.session.getUser();
-  notFound = signal<boolean>(false);
+  private router = inject(Router);
+  readonly notFound = this.facade.error;
+
+  readonly post = this.facade.post;
 
   ngOnInit() {
     const id = Number(this.route.snapshot.paramMap.get('id'));
-
-    const cachedPost = this.feedFacade.getPostById(id);
-
-    if (cachedPost) {
-      this.post.set(cachedPost);
-    } else {
-      this.postsService.getPostById(id).subscribe({
-        next: (p) => {
-          if (p) {
-            this.post.set(p);
-          } else {
-            this.notFound.set(true);
-          }
-        },
-        error: () => {
-          this.notFound.set(true);
-        },
-      });
+    if (id) {
+      this.facade.setPostId(id);
     }
+  }
+
+  onLike(postId: number) {
+    this.facade.reactPost(postId);
+  }
+
+  onComment(postId: number, content: string) {
+    this.facade.addComment(postId, content);
+  }
+
+  onReport(postId: number, reason: string) {
+    this.facade.reportPost(postId, reason);
+  }
+
+  
+  onDelete() {
+    this.facade.delete().subscribe(() => {
+      this.router.navigate(['/']); 
+    });
   }
 }

@@ -15,7 +15,7 @@ import { FeedSkeleton } from '../../../shared/components/feed-skeleton/feed-skel
 import { EmptyState } from '../../../shared/components/empty-state/empty-state';
 import { Router } from '@angular/router';
 import { PostCard } from '../../../shared/components/post-card/post-card';
-import { SessionService } from '../../../core/services/session.service';
+
 
 @Component({
   selector: 'app-feed',
@@ -24,16 +24,14 @@ import { SessionService } from '../../../core/services/session.service';
   templateUrl: './feed.html',
   styleUrls: ['./feed.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  providers: [FeedFacade], // Component-scoped facade
 })
 export class Feed implements OnInit, AfterViewInit, OnDestroy {
   private readonly facade = inject(FeedFacade);
   private readonly router = inject(Router);
-  private readonly session = inject(SessionService);
 
-  readonly user = this.session.getUser();
   readonly posts = this.facade.posts;
   readonly loading = this.facade.loading;
-  readonly loadingMore = this.facade.loadingMore;
   readonly hasMore = this.facade.hasMore;
 
   @ViewChild('sentinel') private sentinel!: ElementRef;
@@ -47,7 +45,7 @@ export class Feed implements OnInit, AfterViewInit, OnDestroy {
   ngAfterViewInit() {
     this.observer = new IntersectionObserver(
       (entries) => {
-        if (entries[0].isIntersecting && !this.loadingMore()) {
+        if (entries[0].isIntersecting && this.facade.hasMore()) {
           this.facade.loadNext();
         }
       },
@@ -63,4 +61,22 @@ export class Feed implements OnInit, AfterViewInit, OnDestroy {
   goToPost(postId: number) {
     this.router.navigate(['/posts/', postId]);
   }
+
+  onLike(postId: number) {
+    this.facade.reactPost(postId);
+  }
+
+  onComment(postId: number, content: string) {
+    this.facade.addComment(postId, content);
+  }
+
+  onReport(postId: number, reason: string) {
+    this.facade.reportPost(postId, reason);
+  }
+
+  onDelete(postId: number) {
+    this.facade.deletePost(postId);
+  }
+
+
 }

@@ -1,61 +1,53 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { PostsService } from '../../../core/services/posts.service';
 import { Post, Reaction } from '../../../core/apis/posts/modles';
-import { PageRequest } from '../../../shared/models/page-request.model';
 import { SessionService } from '../../../core/services/session.service';
+import { catchError, EMPTY, Observable } from 'rxjs';
+import { ToastService } from '../../../core/services/toast.service';
 
-@Injectable({ providedIn: 'root' })
+@Injectable()
 export class FeedFacade {
   private readonly postsService = inject(PostsService);
-
   private session = inject(SessionService);
-  private user = this.session.getUser();
-  readonly posts = signal<Post[]>([]);
-  readonly loading = signal(false);
-  readonly loadingMore = signal(false);
-  readonly hasMore = signal(true);
+  private toast = inject(ToastService);
 
-  private page = 0;
-  private size = 10;
+  // ui state
+  readonly _loading = signal(false);
+  readonly _loadingMore = signal(false);
+  readonly _hasMore = signal(true);
+  private _page = signal(0);
 
-  loadFeed() {
-    this.page = 0;
-    this.hasMore.set(true);
-    this.fetch(false);
+  readonly posts = this.postsService.posts; // Pulls from global source of truth
+  readonly loading = this._loading.asReadonly();
+  readonly hasMore = this._hasMore.asReadonly();
+
+  private size = 20;
+
+  loadFeed() {    
+    this._page.set(0);
+    this._fetchPosts();
   }
 
   loadNext() {
-    if (!this.hasMore() || this.loadingMore()) return;
-
-    this.page++;
-    this.fetch(true);
-  }
-
-  private fetch(append: boolean) {
-    append ? this.loadingMore.set(true) : this.loading.set(true);
-
-    const params: PageRequest = { page: this.page, size: this.size };
-
-    this.postsService.getFeed(params).subscribe({
-      next: (res) => {
-        this.posts.update((current) => (append ? [...current, ...res.data] : res.data));
-
-        this.hasMore.set(res.hasNext);
-      },
-      error: () => {
-        this.hasMore.set(false);
-      },
-      complete: () => {
-        this.loading.set(false);
-        this.loadingMore.set(false);
-        console.log(this.posts());
-      },
-    });
+    if (this._loading() || !this._hasMore()) return;
+    this._page.update((c) => c + 1);
+    this._fetchPosts();
   }
 
   addPost(post: Post) {
-    post.actor = this.user!;
-    this.posts.update((p) => [post, ...p]);
+    return this.postsService.createPost(post).pipe(
+      catchError((err) => {
+        return this._handleFormError(err, 'Failed to create post');
+      })
+    );
+  }
+
+  getPostDetails(id: number): Observable<Post> {
+    return this.postsService
+      .getPostById(id)
+      .pipe
+      // handle post not fpound
+      ();
   }
 
   getPostById(id: number): Post | undefined {
@@ -63,68 +55,83 @@ export class FeedFacade {
   }
 
   deletePost(postId: number) {
-    this.postsService.deletePost(postId).subscribe({
-      error: () => {
-        // If delete failed, reload feed or handle error
-        console.error('Failed to delete post');
-      },
-    });
-
-    this.posts.update((p) => p.filter((post) => post.id !== postId));
+    this.postsService
+      .deletePost(postId)
+      .pipe(
+        catchError((err) => {
+          this.toast.error('Failed to delete post');
+          return EMPTY;
+        })
+      )
+      .subscribe();
   }
 
-  reactPost(postId: number, reaction: Reaction) {
+  reactPost(postId: number) {
     const post = this.getPostById(postId);
     if (!post) return;
 
-    // Optimistic UI update
-    if (reaction === 'like') {
-      post.isLiked = true;
-      post.likesCount++;
-    } else {
-      post.isLiked = false;
-      post.likesCount--;
-    }
+    // Determine reaction: toggle like
+    const reaction: Reaction = post.isLiked ? 'unlike' : 'like';
 
-    this.posts.update((p) => [...p]); // trigger signal
-
-    this.postsService.reactPost(postId, reaction).subscribe({
-      error: () => {
-        // rollback on error
-        if (reaction === 'like') {
-          post.isLiked = false;
-          post.likesCount--;
-        } else {
-          post.isLiked = true;
-          post.likesCount++;
-        }
-        this.posts.update((p) => [...p]);
-      },
-    });
+    this.postsService
+      .reactPost(postId, reaction)
+      .pipe(
+        catchError((err) => {
+          // PostsService already rolls back, we just show a toast
+          this.toast.error('Failed to update reaction');
+          return EMPTY;
+        })
+      )
+      .subscribe({
+        next: () => {
+          const message = reaction === 'like' ? 'Post liked!' : 'Like removed!';
+          this.toast.success(message);
+        },
+      });
   }
+
   addComment(postId: number, content: string) {
-    const post = this.getPostById(postId);
-    if (!post) return;
-
-    this.postsService.commentPost(postId, content).subscribe({
-      next: () => {
-        post.commentsCount = (post.commentsCount || 0) + 1;
-        this.posts.update((p) => [...p]);
-      },
-      error: () => console.error('Failed to add comment'),
-    });
+    this.postsService
+      .commentPost(postId, content)
+      .pipe(
+        catchError((err) => {
+          this.toast.error('Failed to add comment');
+          return EMPTY;
+        })
+      )
+      .subscribe({
+        next: () => this.toast.success('Comment added!'),
+      });
   }
 
-  reportPost(postId: number, content: string) {
-    this.postsService.reportPost(postId, content).subscribe({
-      next: () => {
-        const post = this.getPostById(postId);
-        if (post) {
-          post.reportsCount = (post.reportsCount || 0) + 1;
-          this.posts.update((p) => [...p]);
-        }
+  reportPost(postId: number, reason: string) {
+    this.postsService
+      .reportPost(postId, reason)
+      .pipe(
+        catchError((err) => {
+          this.toast.error('Failed to report post');
+          return EMPTY;
+        })
+      )
+      .subscribe({
+        next: () => this.toast.success('Post reported!'),
+      });
+  }
+
+  private _fetchPosts() {
+    this._loading.set(true);
+    this.postsService.getFeed({ page: this._page(), size: this.size }).subscribe({
+      next: (res) => {
+        this._hasMore.set(!res.isLast);
+        this._loading.set(false);
       },
-      error: () => console.error('Failed to report post'),
+      error: () => this._loading.set(false),
     });
+  }
+  private _handleFormError(err: any, defaultMessage: string) {
+    // Here you can inspect err for validation errors from backend
+    const message = err?.message || defaultMessage;
+    this.toast.error(message);
+    return EMPTY;
   }
 }

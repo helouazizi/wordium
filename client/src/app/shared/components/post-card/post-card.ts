@@ -1,13 +1,11 @@
-import { Component, Input, Output, EventEmitter, inject } from '@angular/core';
+import { Component, inject, input, output, computed, signal } from '@angular/core';
 import { Post } from '../../../core/apis/posts/modles';
 import { UserProfile } from '../user-profile/user-profile';
 import { CommonModule } from '@angular/common';
 import { SafeHtmlPipe } from '../../pipes/safe-html.pipe';
 import { FormsModule } from '@angular/forms';
 import { User } from '../../models/user';
-
-import { Reaction } from '../../../core/apis/posts/modles';
-import { FeedFacade } from '../../../features/posts/feed/feed.facade';
+import { SessionService } from '../../../core/services/session.service';
 
 @Component({
   selector: 'app-post-card',
@@ -17,57 +15,68 @@ import { FeedFacade } from '../../../features/posts/feed/feed.facade';
   styleUrl: './post-card.scss',
 })
 export class PostCard {
-  private facade = inject(FeedFacade);
-  @Input({ required: true }) post!: Post;
-  @Input({ required: true }) user: User | null = null;
-  @Input() showContent = false;
-  @Input() mode: 'feed' | 'detail' = 'feed';
+  private session = inject(SessionService);
 
-  @Output() open = new EventEmitter<number>();
+  post = input.required<Post>();
+  readonly currentUser = this.session.user;
+  showContent = input(false);
+  mode = input<'feed' | 'detail'>('feed');
 
-  isMenuOpen = false;
-  commentText = '';
+  open = output<number>();
+  like = output<void>();
+  comment = output<string>();
+  delete = output<void>();
+  report = output<string>();
 
-  get isOwner(): boolean {
-    return this.user ? this.post.actor.id === this.user.id : false;
-  }
+  isMenuOpen = signal(false);
+  commentText = signal('');
+  reportText = signal('');
 
-  get isAdmin(): boolean {
-    return this.user ? this.user.role === 'ADMIN' : false;
-  }
+  readonly canDelete = computed(() => {
+    const user = this.currentUser();
+    const post = this.post();
+
+    if (!user || !post) return false;
+
+    const isOwner = String(post.actor.id) === String(user.id);
+    const isAdmin = user.role === 'ADMIN';
+
+    return isOwner || isAdmin;
+  });
 
   toggleMenu(event: Event) {
     event.stopPropagation();
-    this.isMenuOpen = !this.isMenuOpen;
+    this.isMenuOpen.update((v) => !v);
+  }
+
+  onLikeClick(event: Event) {
+    event.stopPropagation();
+    this.like.emit();
+  }
+
+  submitComment() {
+    const text = this.commentText().trim();
+    if (text) {
+      this.comment.emit(text);
+      this.commentText.set('');
+    }
+  }
+
+  onDeleteClick() {
+    if (confirm('Are you sure you want to delete this post?')) {
+      this.delete.emit();
+    }
   }
 
   openPost() {
-    this.open.emit(this.post.id);
-  }
-  reactPost() {
-    if (!this.user) return;
-    const reaction: Reaction = this.post.isLiked ? 'unlike' : 'like';
-    this.facade.reactPost(this.post.id, reaction);
+    this.open.emit(this.post().id);
   }
 
-  sendComment() {
-    if (!this.user) return;
-    if (!this.commentText.trim()) return;
-    this.facade.addComment(this.post.id, this.commentText);
-    this.commentText = '';
-  }
-
-  reportPost() {
-    if (!this.user) return;
-    this.facade.reportPost(this.post.id, 'Inappropriate content');
-    this.isMenuOpen = false;
-  }
-
-  deletePost() {
-    if (!this.user) return;
-    if (confirm('Are you sure you want to delete this post?')) {
-      this.facade.deletePost(this.post.id);
+  onReportClick() {
+    const text = this.reportText().trim();
+    if (text) {
+      this.report.emit(text);
+      this.reportText.set('');
     }
-    this.isMenuOpen = false;
   }
 }

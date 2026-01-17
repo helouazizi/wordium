@@ -190,7 +190,7 @@ public class PostServiceImpl implements PostService {
                 post.getId(),
                 post.getTitle(),
                 post.getContent(),
-                new UserProfile(null, null, null, userProfile.username(), null, userProfile.avatar(), null),
+                new UserProfile(userProfile.id(), null, null, userProfile.username(), null, userProfile.avatar(), null),
                 post.getLikesCount(),
                 post.getCommentsCount(),
                 post.getRportCount(),

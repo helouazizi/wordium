@@ -6,20 +6,22 @@
 
   <div class="posts-list">
     @for (post of posts(); track post.id) {
-    <app-post-card [user]="user" [post]="post" [showContent]="false" (open)="goToPost($event)" [mode]="'feed'"/>
+    <app-post-card
+      [post]="post"
+      [showContent]="false"
+      [mode]="'feed'"
+      (click)="goToPost(post.id)"
+      (like)="onLike(post.id)"
+      (comment)="onComment(post.id, $event)"
+      (report)="onReport(post.id, $event)"
+      (delete)="onDelete(post.id)"
+    />
     }
 
     <!-- Infinite scroll sentinel -->
     <div #sentinel class="sentinel"></div>
 
-    @if (loadingMore()) {
-    <div class="loading-more text-center my-3">
-      <div class="spinner-border text-primary" role="status" style="width: 2.5rem; height: 2.5rem">
-        <span class="visually-hidden">Loading more...</span>
-      </div>
-    </div>
-
-    } @if ( posts().length == 0) {
+    @if ( posts().length == 0) {
     <app-empty-state
       icon="bi-journal-text"
       title="No Blogs Yet"

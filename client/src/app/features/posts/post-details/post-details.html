@@ -1,7 +1,19 @@
 <div class="post-detail">
-  @if (notFound()) {
-  <app-not-found [link]="'/'" [resource]="'Post'"></app-not-found>
-  } @else if (!notFound()) {
-  <app-post-card [user]="user" [post]="post()" [showContent]="true" [mode]="'detail'" />
+  @if (facade.loading()) {
+    <app-loading></app-loading>
+
+  } @else if (notFound()) {
+    <app-not-found [link]="'/'" [resource]="'Post'"></app-not-found>
+
+  } @else if (post(); as p) {
+    <app-post-card
+      [post]="p"
+      [showContent]="true"
+      [mode]="'detail'"
+      (like)="onLike(p.id)"
+      (comment)="onComment(p.id, $event)"
+      (report)="onReport(p.id, $event)"
+      (delete)="onDelete()"
+    />
   }
 </div>
