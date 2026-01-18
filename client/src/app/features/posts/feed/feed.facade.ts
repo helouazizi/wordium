@@ -8,7 +8,6 @@ import { ToastService } from '../../../core/services/toast.service';
 @Injectable()
 export class FeedFacade {
   private readonly postsService = inject(PostsService);
-  private session = inject(SessionService);
   private toast = inject(ToastService);
 
   // ui state

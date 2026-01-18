@@ -3,7 +3,13 @@ import { Injectable, inject, signal } from '@angular/core';
 import { catchError, map, Observable, of, switchMap, tap } from 'rxjs';
 import { PostsClient } from '../apis/posts/posts.client';
 import { PageResponse } from '../../shared/models/pagination.model';
-import { CreatePostRequest, Post, Reaction, SignatureResponse } from '../apis/posts/modles';
+import {
+  Comment,
+  CreatePostRequest,
+  Post,
+  Reaction,
+  SignatureResponse,
+} from '../apis/posts/modles';
 import { PageRequest } from '../../shared/models/page-request.model';
 
 @Injectable({ providedIn: 'root' })
@@ -140,5 +146,11 @@ export class PostsService {
       }
       return [newPost, ...currentList];
     });
+  }
+
+  getCommentsByPost(postId: number, params: PageRequest): Observable<PageResponse<Comment>> {
+  
+    
+    return this.client.getCommentsByPost(postId, params);
   }
 }

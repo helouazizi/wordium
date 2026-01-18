@@ -7,21 +7,22 @@
     <app-user-profile
       [user]="post().actor"
       [showName]="true"
-      [showEmail]="false"
       [showTime]="true"
       [time]="post().createdAt"
     />
 
-    <div class="post-actions" (click)="toggleMenu($event)">
-      <button class="btn-icon" aria-label="More actions">
+    <div class="post-actions">
+      <button class="btn-icon" (click)="toggleMenu($event)" aria-label="More actions">
         <i class="bi bi-three-dots-vertical"></i>
       </button>
 
       @if (isMenuOpen()) {
         <div class="dropdown-menu">
-          <button (click)="onReportClick()"><i class="bi bi-flag"></i> Report</button>
+          <button type="button" (click)="isReporting.set(true); isMenuOpen.set(false)">
+            <i class="bi bi-flag"></i> Report
+          </button>
           @if (canDelete()) {
-            <button class="text-danger" (click)="onDeleteClick()">
+            <button type="button" class="text-danger" (click)="onDeleteClick()">
               <i class="bi bi-trash"></i> Delete
             </button>
           }
@@ -31,8 +32,7 @@
   </header>
 
   <div class="post-body" (click)="openPost()">
-    <h2 class="post-title" [class.clickable]="!showContent()">{{ post().title }}</h2>
-
+    <h2 class="post-title" [class.clickable]="mode() === 'feed'">{{ post().title }}</h2>
     @if (!showContent()) {
       <span class="read-more">Read more...</span>
     } @else {
@@ -40,47 +40,86 @@
     }
   </div>
 
-  <footer
-    class="post-footer"
-    [class.feed-post-footer]="!showContent()"
-    [class.detail-post-footer]="showContent()"
-  >
+  <footer class="post-footer">
     <div class="post-stats">
-      <button class="stat-item" [attr.aria-pressed]="post().isLiked" (click)="onLikeClick($event)">
+      <button class="stat-item" (click)="like.emit()">
         <i class="bi" [class.bi-heart-fill]="post().isLiked" [class.bi-heart]="!post().isLiked"></i>
-        {{ post().likesCount }}
+        <span>{{ post().likesCount }}</span>
       </button>
 
-      <button class="stat-item" (click)="openPost()">
+      <button class="stat-item" (click)="toggleComments()">
         <i class="bi bi-chat-left-text"></i>
-        {{ post().commentsCount }}
+        <span>{{ post().commentsCount }}</span>
       </button>
+
       @if (post().reportsCount > 0) {
-        <span class="stat-item text-danger">
-          <i class="bi bi-flag"></i> {{ post().reportsCount }}
-        </span>
+        <span class="stat-item text-danger"
+          ><i class="bi bi-flag"></i> {{ post().reportsCount }}</span
+        >
       }
     </div>
 
-    <div class="post-comment-input">
-      <div class="input-wrapper">
-        <input
-          #commentInput
-          type="text"
-          [(ngModel)]="commentText"
-          placeholder="Add a comment..."
-          (keyup.enter)="submitComment()"
-          aria-label="Write a comment"
-        />
-        <button
-          class="send-btn"
-          [disabled]="!commentText().trim()"
-          (click)="submitComment()"
-          aria-label="Send comment"
-        >
-          <i class="bi bi-send-fill"></i>
-        </button>
+    @if (isReporting()) {
+      <div class="report-box">
+        <textarea [(ngModel)]="reportText" placeholder="Reason for reporting..."></textarea>
+        <div class="report-actions">
+          <button class="btn-sm btn-text" (click)="isReporting.set(false)">Cancel</button>
+          <button
+            class="btn-sm btn-danger"
+            [disabled]="!reportText().trim()"
+            (click)="onReportSubmit()"
+          >
+            Submit Report
+          </button>
+        </div>
       </div>
-    </div>
+    }
+
+    @if (showComments()) {
+      <div class="comments-section">
+        <div class="post-comment-input">
+          <div class="input-wrapper">
+            <input
+              type="text"
+              [(ngModel)]="commentText"
+              placeholder="Add a comment..."
+              (keyup.enter)="submitComment()"
+            />
+            <button class="send-btn" [disabled]="!commentText().trim()" (click)="submitComment()">
+              <i class="bi bi-send-fill"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="comments-list">
+          @for (c of comments(); track c.id) {
+            <div class="comment-item">
+              <app-user-profile
+                [user]="c.actor"
+                [showName]="true"
+                [showTime]="true"
+                [time]="c.createdAt"
+                size="sm"
+              />
+              <div class="comment-bubble">{{ c.content }}</div>
+            </div>
+          } @empty {
+            @if (!isLoadingComments()) {
+              <div class="empty-state">No comments yet.</div>
+            }
+          }
+
+          @if (isLoadingComments()) {
+            <div class="loading-trigger"><div class="spinner-border spinner-border-sm"></div></div>
+          } @else if (hasMore()) {
+            <button class="btn-load-more" (click)="loadComments(true)">
+              Load previous comments
+            </button>
+          } @else if (comments().length > 0) {
+            <div class="end-of-list">No more comments</div>
+          }
+        </div>
+      </div>
+    }
   </footer>
 </article>

@@ -25,6 +25,11 @@ export const routes: Routes = [
           import('./features/posts/post-details/post-details').then((c) => c.PostDetails),
       },
       {
+        path: 'profiles/:id',
+        loadComponent: () =>
+          import('./features/posts/post-details/post-details').then((c) => c.PostDetails),
+      },
+      {
         path: 'dashboard',
         canActivate: [roleGuard],
         data: { roles: ['ADMIN'] },

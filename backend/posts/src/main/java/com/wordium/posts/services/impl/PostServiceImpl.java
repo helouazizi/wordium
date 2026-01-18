@@ -3,6 +3,8 @@ package com.wordium.posts.services.impl;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -55,44 +57,37 @@ public class PostServiceImpl implements PostService {
         post.setContent(request.content());
 
         Post saved = postRepository.save(post);
-        return mapToResponse(saved, new UserProfile(userId, null, null, "null", null, "null", null), null);
+        return mapToResponse(saved, new UserProfile(userId, null, null, "null", null, "null", null), false);
     }
 
     @Override
     public PostResponse getPostById(Long userId, Long id) {
         Post post = postRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Post not found"));
+        boolean isLiked = userId != null && reactionRepository.findByPostIdAndUserId(post.getId(), userId).isPresent();
+
         return userEnrichmentHelper.enrichSingle(
                 post,
                 Post::getUserId,
-                (p, userProfile) -> mapToResponse(p, userProfile, userId));
+                (p, userProfile) -> mapToResponse(p, userProfile, isLiked));
     }
 
     @Override
     public Page<PostResponse> getFeed(Pageable pageable, Long userId) {
         Page<Post> page = postRepository.findByFlaggedFalse(pageable);
-        return userEnrichmentHelper.enrichPage(
-                page,
-                Post::getUserId,
-                (post, userProfile) -> mapToResponse(post, userProfile, userId));
+        return enrichWithLikes(page, userId);
     }
 
     @Override
     public Page<PostResponse> getAllposts(Long userId, Pageable pageable) {
         Page<Post> page = postRepository.findAll(pageable);
-        return userEnrichmentHelper.enrichPage(
-                page,
-                Post::getUserId,
-                (post, userProfile) -> mapToResponse(post, userProfile, userId));
+        return enrichWithLikes(page, userId);
     }
 
     @Override
-    public Page<PostResponse> getPostsByUser(Long userId, Pageable pageable) {
-        Page<Post> page = postRepository.findByUserId(userId, pageable);
-        return userEnrichmentHelper.enrichPage(
-                page,
-                Post::getUserId,
-                (post, userProfile) -> mapToResponse(post, userProfile, null));
+    public Page<PostResponse> getPostsByUser(Long targetUserId, Pageable pageable) {
+        Page<Post> page = postRepository.findByUserId(targetUserId, pageable);
+        return enrichWithLikes(page, targetUserId);
     }
 
     @Override
@@ -113,7 +108,7 @@ public class PostServiceImpl implements PostService {
         }
 
         Post updated = postRepository.save(post);
-        return mapToResponse(updated, new UserProfile(userId, null, null, "null", null, "null", null), null);
+        return mapToResponse(updated, new UserProfile(userId, null, null, "null", null, "null", null), false);
     }
 
     @Override
@@ -181,11 +176,8 @@ public class PostServiceImpl implements PostService {
         }
     }
 
-    private PostResponse mapToResponse(Post post, UserProfile userProfile, Long userId) {
+    private PostResponse mapToResponse(Post post, UserProfile userProfile, boolean isliked) {
 
-        Optional<PostReaction> reaction = reactionRepository.findByPostIdAndUserId(userId, post.getId());
-
-        boolean isLiked = reaction.isPresent();
         return new PostResponse(
                 post.getId(),
                 post.getTitle(),
@@ -194,11 +186,31 @@ public class PostServiceImpl implements PostService {
                 post.getLikesCount(),
                 post.getCommentsCount(),
                 post.getRportCount(),
-                isLiked,
+                isliked,
                 post.isReported(),
                 post.isFlagged(),
                 post.getCreatedAt(),
                 post.getUpdatedAt());
+    }
+
+    private Page<PostResponse> enrichWithLikes(Page<Post> page, Long currentUserId) {
+        if (page.isEmpty()) {
+            return Page.empty();
+        }
+
+        Set<Long> postIds = page.getContent().stream().map(Post::getId).collect(Collectors.toSet());
+
+        Set<Long> likedPostIds = (currentUserId != null)
+                ? reactionRepository.findLikedPostIdsByUserIdAndPostIdIn(currentUserId, postIds)
+                : Set.of();
+
+        return userEnrichmentHelper.enrichPage(
+                page,
+                Post::getUserId,
+                (post, userProfile) -> {
+                    boolean isLiked = likedPostIds.contains(post.getId());
+                    return mapToResponse(post, userProfile, isLiked);
+                });
     }
 
     private CommentResponse mapCommentToResponse(Comment comment, UserProfile userProfile) {
@@ -242,7 +254,7 @@ public class PostServiceImpl implements PostService {
         if (!postRepository.existsById(postId)) {
             throw new NotFoundException("Post not found");
         }
-        Page<Comment> page = commentRepository.findByPostIdOrderByCreatedAtAsc(postId, pageable);
+        Page<Comment> page = commentRepository.findByPostIdOrderByCreatedAtDesc(postId, pageable);
 
         return userEnrichmentHelper.enrichPage(
                 page,
@@ -270,11 +282,12 @@ public class PostServiceImpl implements PostService {
     public Map<String, Object> getSignature() {
 
         long timestamp = System.currentTimeMillis() / 1000L;
-
+        String status = "PENDING";
         Map<String, Object> params = new HashMap<>();
         params.put("timestamp", timestamp);
         params.put("folder", "posts");
-        params.put("upload_preset", "ml_default"); // must match Angular
+        params.put("upload_preset", "ml_default");
+        params.put("context", "status=" + status);
 
         // Generate the signature
         String signature = cloudinary.apiSignRequest(params, cloudinary.config.apiSecret);
@@ -287,6 +300,7 @@ public class PostServiceImpl implements PostService {
         response.put("apiKey", cloudinary.config.apiKey);
         response.put("folder", "posts");
         response.put("upload_preset", "ml_default");
+        response.put("context", "status=" + status);
 
         return response;
     }

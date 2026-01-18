@@ -34,3 +34,11 @@ export interface CreatePostRequest {
 }
 
 export type Reaction = 'like' | 'unlike';
+
+export interface Comment {
+  id: number;
+  postId: number;
+  content: string;
+  createdAt: string;
+  actor: User;
+}

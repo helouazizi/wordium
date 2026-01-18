@@ -10,7 +10,7 @@ import com.wordium.posts.models.Comment;
 
 public interface CommentRepository extends JpaRepository<Comment, Long> {
 
-    Page<Comment> findByPostIdOrderByCreatedAtAsc(Long postId, Pageable pageable);
+    Page<Comment> findByPostIdOrderByCreatedAtDesc(Long postId, Pageable pageable);
 
     void deleteByIdAndUserId(Long commentId, Long userId);
     Optional<Comment> findByIdAndPostId(Long id, Long postId);

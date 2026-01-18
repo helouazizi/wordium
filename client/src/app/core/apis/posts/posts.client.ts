@@ -5,7 +5,14 @@ import { Observable } from 'rxjs';
 import { API_CONFIG } from '../api.config';
 import { PageResponse } from '../../../shared/models/pagination.model';
 import { PageRequest } from '../../../shared/models/page-request.model';
-import { CreatePostRequest, Post, Reaction, SignatureData, SignatureResponse } from './modles';
+import {
+  Comment,
+  CreatePostRequest,
+  Post,
+  Reaction,
+  SignatureData,
+  SignatureResponse,
+} from './modles';
 import { appConfig } from '../../../app.config';
 
 @Injectable({ providedIn: 'root' })
@@ -71,5 +78,22 @@ export class PostsClient {
   }
   reportPost(postId: number, reason: string): Observable<void> {
     return this.http.post<void>(`${this.config.postsBaseUrl}/${postId}/reports`, { reason });
+  }
+
+  getCommentsByPost(id: number, params?: PageRequest): Observable<PageResponse<Comment>> {
+    let httpParams = new HttpParams();
+
+    if (params?.page !== undefined) {
+      httpParams = httpParams.set('page', params.page);
+    }
+    if (params?.size !== undefined) {
+      httpParams = httpParams.set('size', params.size);
+    }
+    if (params?.sort) {
+      httpParams = httpParams.set('sort', params.sort);
+    }
+    return this.http.get<PageResponse<Comment>>(`${this.config.postsBaseUrl}/${id}/comments`,{
+      params: httpParams,
+    });
   }
 }
