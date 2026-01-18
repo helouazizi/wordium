@@ -20,6 +20,10 @@ export const routes: Routes = [
         loadComponent: () => import('./features/posts/feed/feed').then((c) => c.Feed),
       },
       {
+        path: 'write', //  whrite blog
+        loadComponent: () => import('./features/posts/editor/blog-editor/blog-editor').then((c) => c.BlogEditor),
+      },
+      {
         path: 'posts/:id',
         loadComponent: () =>
           import('./features/posts/post-details/post-details').then((c) => c.PostDetails),

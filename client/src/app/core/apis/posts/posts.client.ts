@@ -53,6 +53,7 @@ export class PostsClient {
 
     formData.append('folder', sigData.folder);
     formData.append('upload_preset', sigData.upload_preset);
+    formData.append('context', sigData.context)
 
     const url = `https://api.cloudinary.com/v1_1/${sigData.cloudName}/auto/upload`;
 

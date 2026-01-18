@@ -22,6 +22,7 @@ export interface SignatureData {
   cloudName: string;
   timestamp: number;
   upload_preset: string;
+  context : string
 }
 
 export interface SignatureResponse {

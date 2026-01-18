@@ -189,3 +189,29 @@
         }
     }
 }
+
+
+/* In header.component.scss */
+@media (max-width: 576px) {
+  .search-container {
+    width: 40px; /* Collapse into a circle */
+    padding-left: 30px;
+    cursor: pointer;
+    background: transparent;
+    border: none;
+  }
+  
+  .search-input:focus {
+    width: 150px; /* Expand when clicked */
+    background: white;
+    border: 1px solid #ddd;
+  }
+  
+  .logo-text {
+    font-size: 1.2rem;
+  }
+  
+  .navbar-actions {
+    gap: 5px;
+  }
+}
