@@ -15,3 +15,10 @@ cd ..
 cd backend/wsgateway && ./mvnw package -DskipTests
 cd ..
 cd ..
+cd backend/eurika-server && ./mvnw package -DskipTests
+cd ..
+cd ..
+
+cd backend/test-service && ./mvnw package -DskipTests
+cd ..
+cd ..
