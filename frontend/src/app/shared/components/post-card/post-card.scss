@@ -1,0 +1,44 @@
+
+.post-card {
+  margin-bottom: 24px;
+  background-color: var(--mat-sys-surface);
+  border-radius: 12px;
+  box-shadow: none; // Using border-subtle instead
+
+  // Markdown Styling
+  .markdown-body {
+    padding: 16px;
+    color: var(--mat-sys-on-surface);
+    font-size: 1rem;
+    line-height: 1.6;
+
+    // Fix for markdown images in posts
+    ::ng-deep img {
+      max-width: 100%;
+      border-radius: 8px;
+      margin: 8px 0;
+      border: 1px solid var(--mat-sys-outline-variant);
+    }
+
+    ::ng-deep blockquote {
+      border-left: 4px solid var(--mat-sys-primary);
+      padding-left: 16px;
+      color: var(--mat-sys-on-surface-variant);
+      margin: 12px 0;
+    }
+
+    ::ng-deep p { margin-bottom: 12px; }
+  }
+
+  .counter {
+    margin-left: 8px;
+    font-weight: 500;
+  }
+
+  .active-btn {
+    color: var(--mat-sys-primary) !important;
+    mat-icon { color: var(--mat-sys-primary); }
+  }
+}
+
+.spacer { flex: 1 1 auto; }

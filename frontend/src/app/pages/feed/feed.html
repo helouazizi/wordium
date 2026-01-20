@@ -1,29 +1,45 @@
-<div class="social-grid">
-  <!-- <aside class="left-column">
-    <mat-card>
-      <mat-card-content>
-        <h3>Your Name</h3>
-        <p>Software Engineer</p>
-      </mat-card-content>
-    </mat-card>
-  </aside> -->
+<div class="feed-layout">
+  <div class="posts-column">
+    @for (post of postService.posts(); track post.id) {
+      <app-post-card
+        [post]="post"
+        (onReact)="handleReaction(post.id)"
+        (onDelete)="handleDelete(post.id)"
+        (onReport)="handleReport(post.id, $event)"
+        (onComment)="handleComment(post.id, $event)"
+      >
+      </app-post-card>
+    }
+
+    @if (postService.loading()) {
+      <div class="loader-container">
+        <mat-spinner diameter="40"></mat-spinner>
+      </div>
+    }
+
+    @if (!isLastPage() && !postService.loading() && !postService.isEmpty()) {
+      <div class="pagination-container">
+        <button mat-stroked-button color="primary" (click)="loadMore()">Load More Posts</button>
+      </div>
+    }
+
+    @if (postService.isEmpty()) {
+      <div class="empty-state">
+        <mat-icon>auto_awesome</mat-icon>
+        <p>No posts found. Start following people!</p>
+      </div>
+    }
+  </div>
+</div>
+
+<!-- <div class="social-grid">
+
 
   <main class="feed-column">
     <div class="posts-container">
-       <!-- We will add posts here later -->
         ffffffffffffffffffffffffffff
     </div>
   </main>
 
-  <!-- <aside class="right-column">
-    <mat-card>
-      <mat-card-header>
-        <mat-card-title>Trending News</mat-card-title>
-      </mat-card-header>
-      <mat-card-content>
-        <p>#Angular21 is out!</p>
-        <p>#Signals are fast</p>
-      </mat-card-content>
-    </mat-card>
-  </aside> -->
-</div>
+
+</div> -->

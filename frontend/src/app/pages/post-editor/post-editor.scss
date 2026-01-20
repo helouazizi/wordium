@@ -1,0 +1,125 @@
+.editor-shell {
+  display: flex;
+  flex-direction: column;
+  background-color: var(--mat-sys-surface);
+  height: 80vh;
+  max-width: 900px;
+  margin: 20px auto;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+.editor-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 24px;
+  background: var(--mat-sys-surface-container-low);
+  border-bottom: 1px solid var(--mat-sys-outline-variant);
+
+  .active {
+    background: var(--mat-sys-primary-container);
+    color: var(--mat-sys-on-primary-container);
+  }
+}
+
+.editor-workspace {
+  flex: 1;
+//   overflow-y: auto;
+  padding: 40px 60px;
+  @media (max-width: 600px) { padding: 20px; }
+}
+
+.write-surface {
+  display: flex;
+  flex-direction: column;
+  height: 90%;
+
+  .title-input {
+    font-size: 2.5rem;
+    font-weight: 800;
+    border: none;
+    outline: none;
+    background: transparent;
+    color: var(--mat-sys-on-surface);
+    margin-bottom: 24px;
+    width: 100%;
+
+    &::placeholder { color: var(--mat-sys-outline); }
+  }
+
+  .floating-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--mat-sys-surface-container-high);
+    padding: 6px 12px;
+    border-radius: 12px;
+    width: fit-content;
+    margin-bottom: 20px;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+
+    mat-divider { height: 24px; margin: 0 4px; }
+  }
+
+  .content-input {
+    flex: 1;
+    border: none;
+    outline: none;
+    background: transparent;
+    color: var(--mat-sys-on-surface);
+    font-family: 'Inter', sans-serif;
+    font-size: 1.2rem;
+    line-height: 1.8;
+    resize: none;
+    min-height: 400px;
+  }
+}
+
+.preview-surface {
+  .preview-title {
+    font-size: 3rem;
+    font-weight: 800;
+    margin-bottom: 30px;
+    color: var(--mat-sys-on-surface);
+  }
+
+  .empty-preview {
+    text-align: center;
+    padding: 100px 0;
+    color: var(--mat-sys-outline);
+    mat-icon { font-size: 64px; width: 64px; height: 64px; margin-bottom: 16px; }
+  }
+}
+
+.editor-info {
+  display: flex;
+  gap: 20px;
+  padding: 12px 24px;
+  font-size: 0.8rem;
+  color: var(--mat-sys-on-surface-variant);
+  background: var(--mat-sys-surface-container-low);
+  border-top: 1px solid var(--mat-sys-outline-variant);
+}
+
+.upload-progress {
+  margin-bottom: 15px;
+  border-radius: 4px;
+}
+
+// Deep styling for Markdown content
+::ng-deep .markdown-body {
+  img, video {
+    max-width: 100%;
+    border-radius: 12px;
+    margin: 20px 0;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+  }
+  
+  p { margin-bottom: 1.5rem; }
+  h2 { margin-top: 2rem; font-weight: 700; }
+}

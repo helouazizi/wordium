@@ -1,0 +1,47 @@
+<mat-card class="post-card border-subtle">
+  <mat-card-header>
+    <!-- Your custom UserAvatar component -->
+    <app-user-avatar 
+      [user]="post().actor" 
+      [action]="'profile'" 
+      [size]="'md'" 
+      [showName]="true" 
+      [time]="post().createdAt"> 
+    </app-user-avatar>
+    
+    <span class="spacer"></span>
+    
+    <button mat-icon-button [matMenuTriggerFor]="postMenu" aria-label="Post Options">
+      <mat-icon>more_vert</mat-icon>
+    </button>
+  </mat-card-header>
+
+  <mat-card-content class="markdown-body">
+    <markdown [data]="post().content"></markdown>
+  </mat-card-content>
+
+  <mat-card-actions>
+    <button mat-button (click)="handleLike()" [class.active-btn]="post().isLiked">
+      <mat-icon>{{ post().isLiked ? 'thumb_up' : 'thumb_up_off_alt' }}</mat-icon>
+      <span class="counter">{{ post().likesCount }}</span>
+    </button>
+
+    <button mat-button (click)="handleComment()">
+      <mat-icon>chat_bubble_outline</mat-icon>
+      <span class="counter">{{ post().commentsCount }}</span>
+    </button>
+
+    <span class="spacer"></span>
+
+    <button mat-icon-button (click)="handleReport()" matTooltip="Report post">
+      <mat-icon>outlined_flag</mat-icon>
+    </button>
+  </mat-card-actions>
+</mat-card>
+
+<mat-menu #postMenu="matMenu">
+  <button mat-menu-item (click)="handleDelete()">
+    <mat-icon>delete_outline</mat-icon>
+    <span>Delete Post</span>
+  </button>
+</mat-menu>

@@ -50,11 +50,13 @@
   overflow-y: auto;
   overflow-x: hidden;
   scrollbar-width: thin;
+  max-width: 900px;
+  margin: 0% auto;
   background-color: var(--mat-sys-surface);
 
-  // Padding adjustment for mobile bar
   @media (max-width: 767px) {
     padding-bottom: 80px;
+    width: 90%;
   }
 }
 
