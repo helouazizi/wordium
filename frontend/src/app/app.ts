@@ -1,6 +1,7 @@
-import { Component, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { LayoutComponent } from './layout/layout.component';
+import { AuthService } from './core/services/auth.service';
 
 @Component({
   selector: 'app-root',
@@ -10,4 +11,10 @@ import { LayoutComponent } from './layout/layout.component';
 })
 export class App {
   protected readonly title = signal('frontend');
+  auth = inject(AuthService)
+
+  ngOnInit(){
+    console.log(this.auth.user());
+    
+  }
 }

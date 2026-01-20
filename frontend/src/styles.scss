@@ -50,19 +50,6 @@ html {
   @include mat.all-component-colors($dark-theme);
   color-scheme: dark;
 
-  // --- DARK MODE OVERRIDES (The "LinkedIn Dark" look) ---
-  // --mat-sys-background: #050505;               // Deep black background
-  // --mat-sys-surface: #1e1e1f;                  // Sidebar background
-
-  // --mat-sys-surface-container-low: #1a1a1b;    // Card backgrounds
-  // --mat-sys-surface-container-high: #2a2a2b;   // Hover state in dark mode
-  // --mat-sys-surface-container-highest: #333333; // Dialogs / Active items
-
-  // --mat-sys-on-surface: #f5f5f5;               // Primary text in dark
-  // --mat-sys-on-surface-variant: #b0b3b8;       // Secondary text in dark
-
-  // --mat-sys-outline-variant: #333333;          // Subtle dark borders
-  // --mat-sys-outline: #4e4f50;                  // Stronger borders for inputs
 
 
   --mat-sys-background: #1a1b1e;               // Soft Charcoal
@@ -138,4 +125,50 @@ app-root {
 * {
   scrollbar-width: thin;
   scrollbar-color: var(--mat-sys-outline-variant) transparent;
+}
+
+a , button {
+  cursor: pointer;
+}
+
+
+
+/* src/styles.scss */
+
+// Error Style
+.error-snackbar {
+  // Use !important because the M3 theme tokens are very "loud"
+  --mdc-snackbar-container-color: #f44336 !important;
+  --mdc-snackbar-supporting-text-color: #ffffff !important;
+  --mat-snack-bar-button-color: #ffffff !important;
+
+  // For older versions or browsers that don't respect the tokens above:
+  .mdc-snackbar__surface {
+    background-color: #f44336 !important;
+  }
+  
+  .mdc-snackbar__label {
+    color: #ffffff !important;
+  }
+
+  border-radius: 8px !important;
+  box-shadow: 0 4px 12px rgba(244, 67, 54, 0.4) !important;
+}
+
+// Success Style
+.success-snackbar {
+  --mdc-snackbar-container-color: #4caf50 !important;
+  --mdc-snackbar-supporting-text-color: #ffffff !important;
+  --mat-snack-bar-button-color: #ffffff !important;
+
+  .mdc-snackbar__surface {
+    background-color: #4caf50 !important;
+  }
+
+  .mdc-snackbar__label {
+    color: #ffffff !important;
+  }
+
+  border-radius: 8px !important;
+  box-shadow: 0 4px 12px rgba(76, 175, 80, 0.4) !important;
 }

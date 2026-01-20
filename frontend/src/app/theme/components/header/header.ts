@@ -23,7 +23,7 @@ import { AuthService } from '../../../core/services/auth.service';
 })
 export class Header {
   session = inject(AuthService);
-  user = this.session.currentUser();
+  user = this.session.user();
 
   openSettings = output<void>();
 

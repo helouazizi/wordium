@@ -1,1 +1,43 @@
-<p>login works!</p>
+<div class="auth-container">
+  <mat-card class="auth-card">
+    <mat-card-header>
+      <mat-card-title>Welcome Back</mat-card-title>
+      <mat-card-subtitle>Login to your account</mat-card-subtitle>
+    </mat-card-header>
+
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+      <mat-card-content>
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Email</mat-label>
+          <input matInput formControlName="email" type="email" placeholder="email@example.com">
+          <mat-icon matSuffix>email</mat-icon>
+          @if (loginForm.controls.email.errors?.['email']) {
+            <mat-error>Please enter a valid email</mat-error>
+          }
+          @if (loginForm.controls.email.errors?.['required']) {
+            <mat-error>Email is required</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Password</mat-label>
+          <input matInput formControlName="password" [type]="hidePassword() ? 'password' : 'text'">
+          <button type="button" mat-icon-button matSuffix (click)="hidePassword.set(!hidePassword())">
+            <mat-icon>{{ hidePassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
+          </button>
+          <mat-error>Password is required (min 6 chars)</mat-error>
+        </mat-form-field>
+      </mat-card-content>
+
+      <mat-card-actions>
+        <button mat-flat-button color="primary" class="full-width" [disabled]="loginForm.invalid || isLoading()">
+          {{ isLoading() ? 'Logging in...' : 'Login' }}
+        </button>
+      </mat-card-actions>
+    </form>
+
+    <div class="auth-footer">
+      Don't have an account? <a routerLink="/register">Sign Up</a>
+    </div>
+  </mat-card>
+</div>

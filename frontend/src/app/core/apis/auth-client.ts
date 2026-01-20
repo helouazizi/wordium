@@ -3,7 +3,6 @@ import { API_CONFIG } from '../config/apis.config';
 import { HttpClient } from '@angular/common/http';
 import { LoginRequest, LoginResponse, SignupRequest } from './auth.models';
 import { Observable } from 'rxjs';
-import { P } from '@angular/cdk/keycodes';
 import { User } from '../../shared/models/user.model';
 
 @Injectable({
