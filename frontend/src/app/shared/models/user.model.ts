@@ -8,3 +8,9 @@ export interface User {
   bio?: string;
   location?: string;
 }
+
+export enum UserRole {
+  ADMIN = 'ADMIN',
+  USER = 'USER',
+  EDITOR = 'EDITOR',
+}
