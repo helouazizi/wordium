@@ -3,8 +3,8 @@
        [class.clickable]="action() !== 'none'"
        (click)="navigateToProfile(); avatarClick.emit($event)">
     
-    @if (user()?.avatarUrl) {
-      <img [src]="user()?.avatarUrl" [alt]="user()?.username" class="img">
+    @if (user()?.avatar) {
+      <img [src]="user()?.avatar" [alt]="user()?.username" class="img">
     } @else {
       <div class="placeholder">
         <mat-icon>account_circle</mat-icon>

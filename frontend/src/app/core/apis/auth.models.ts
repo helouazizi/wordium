@@ -14,5 +14,5 @@ export interface SignupRequest {
   password: string;
   bio?: string;
   location?: string;
-  avatar?: File;
+  avatar?: File | null;
 }

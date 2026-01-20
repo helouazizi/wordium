@@ -1,6 +1,6 @@
 .header-toolbar {
   background-color: var(--mat-sys-surface);
-  border-bottom: 1px solid var(--mat-sys-outline-variant);
+  // border-bottom: 1px solid var(--mat-sys-outline-variant);
   height: 64px;
   position: sticky;
   top: 0;
@@ -13,7 +13,7 @@
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  max-width: 1250px; // Aligns with your Social Grid width
+  max-width: 1250px; 
   margin: 0 auto;
   padding: 0 16px;
 }
