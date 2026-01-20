@@ -1,0 +1,55 @@
+.header-toolbar {
+  background-color: var(--mat-sys-surface);
+  border-bottom: 1px solid var(--mat-sys-outline-variant);
+  height: 64px;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  padding: 0;
+}
+
+.header-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 1250px; // Aligns with your Social Grid width
+  margin: 0 auto;
+  padding: 0 16px;
+}
+
+.logo-text {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--mat-sys-primary);
+  letter-spacing: -0.5px;
+}
+
+.right-section {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.nav-icon {
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.profile-trigger {
+  margin-left: 8px;
+  padding: 2px;
+  border-radius: 50%;
+  cursor: pointer;
+  &:hover { background: var(--mat-sys-surface-container-low); }
+}
+
+.menu-user-info {
+  padding: 16px;
+  .name { margin: 0; font-weight: 700; font-size: 14px; }
+  .email { margin: 0; font-size: 12px; color: var(--mat-sys-outline); }
+}
+
+.logout-item {
+  color: var(--mat-sys-error);
+  mat-icon { color: inherit; }
+}

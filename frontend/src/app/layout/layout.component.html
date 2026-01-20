@@ -1,0 +1,55 @@
+<mat-sidenav-container class="sidenav-container" autosize>
+  <mat-sidenav
+    #drawer
+    class="sidenav"
+    [mode]="(isHandset$ | async) ? 'over' : 'side'"
+    [opened]="!(isHandset$ | async)"
+    disableClose="false"
+  >
+    <div class="sidenav-theme">
+      <button mat-icon-button (click)="togleTheme()" aria-label="Toggle theme">
+        <mat-icon>{{ themeService.isDark() ? 'light_mode' : 'dark_mode' }}</mat-icon>
+      </button>
+    </div>
+
+    <mat-nav-list>
+      @for (link of navLinks; track link.route) {
+        <a
+          mat-list-item
+          [routerLink]="link.route"
+          routerLinkActive="active-link"
+          [routerLinkActiveOptions]="{ exact: true }"
+        >
+          <mat-icon matListItemIcon>{{ link.icon }}</mat-icon>
+          <span matListItemTitle>{{ link.label }}</span>
+        </a>
+      }
+    </mat-nav-list>
+  </mat-sidenav>
+
+  <mat-sidenav-content class="content-wrapper">
+    <!-- Header handles the Burger Menu via inputs if needed -->
+    <app-header />
+
+    <main class="page-body">
+      <router-outlet></router-outlet>
+    </main>
+
+    <!-- Bottom Nav for Mobile -->
+    @if (isHandset$ | async) {
+      <nav class="mobile-bottom-nav">
+        @for (link of navLinks; track link.route) {
+          <a
+            [routerLink]="link.route"
+            routerLinkActive="active"
+            [routerLinkActiveOptions]="{ exact: true }"
+            class="nav-item"
+          >
+            <mat-icon>{{ link.icon }}</mat-icon>
+            <!-- <span>{{ link.label }}</span> -->
+          </a>
+        }
+      </nav>
+    }
+  </mat-sidenav-content>
+</mat-sidenav-container>

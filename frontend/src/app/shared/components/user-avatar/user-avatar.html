@@ -1,0 +1,28 @@
+<div class="avatar-wrapper" [class]="'size-' + size()">
+  <div class="avatar-circle" 
+       [class.clickable]="action() !== 'none'"
+       (click)="navigateToProfile(); avatarClick.emit($event)">
+    
+    @if (user()?.avatarUrl) {
+      <img [src]="user()?.avatarUrl" [alt]="user()?.username" class="img">
+    } @else {
+      <div class="placeholder">
+        <mat-icon>account_circle</mat-icon>
+      </div>
+    }
+  </div>
+
+  @if (showName() || showHandle() || time()) {
+    <div class="info-content">
+      @if (showName()) {
+        <span class="user-name">{{ user()?.username }}</span>
+      }
+      @if (showHandle()) {
+        <span class="user-handle">{{ user()?.handle }}</span>
+      }
+      @if (time()) {
+        <span class="post-time">{{ time() }}</span>
+      }
+    </div>
+  }
+</div>

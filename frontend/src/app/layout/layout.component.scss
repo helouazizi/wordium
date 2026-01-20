@@ -1,0 +1,107 @@
+:host {
+  display: block;
+  height: 100vh;
+}
+
+.sidenav-container {
+  height: 100%;
+  background-color: var(--mat-sys-surface);
+}
+
+.sidenav {
+  width: 220px;
+  border-right: 1px solid var(--mat-sys-outline-variant);
+
+  // :host-context(.dark-mode) & {
+  background-color: var(--mat-sys-outline-variant);
+  // }
+
+  .sidenav-theme {
+    height: 64px;
+    display: flex;
+    align-items: center;
+    padding: 0 16px;
+    background-color: transparent;
+    border-bottom: 1px solid var(--mat-sys-outline-variant);
+  }
+}
+
+.active-link {
+  background-color: var(--mat-sys-secondary-container) !important;
+  color: var(--mat-sys-on-secondary-container) !important;
+  border-radius: 0 28px 28px 0 !important;
+  margin-right: 12px;
+  width: calc(100% - 12px) !important;
+
+  mat-icon {
+    font-variation-settings: 'FILL' 1;
+  }
+}
+
+.content-wrapper {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+
+.page-body {
+  flex-grow: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: thin;
+  background-color: var(--mat-sys-surface);
+
+  // Padding adjustment for mobile bar
+  @media (max-width: 767px) {
+    padding-bottom: 80px;
+  }
+}
+
+.mobile-bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 50px;
+  background-color: rgba(var(--mat-sys-surface-container-rgb), 0.8);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  border-top: 1px solid var(--mat-sys-outline-variant);
+  z-index: 1001;
+  padding-bottom: env(safe-area-inset-bottom);
+
+  .nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-decoration: none;
+    color: var(--mat-sys-on-surface-variant);
+    font-size: 10px;
+    font-weight: 500;
+    flex: 1;
+    transition: all 0.2s ease;
+
+    mat-icon {
+      margin-bottom: 4px;
+      transition: transform 0.2s ease;
+    }
+
+    &.active {
+      color: var(--mat-sys-primary);
+
+      mat-icon {
+        transform: translateY(-2px);
+        font-variation-settings: 'FILL' 1;
+      }
+    }
+  }
+}
+
+.mat-drawer-transition .mat-drawer-content {
+  transition: margin-left 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}

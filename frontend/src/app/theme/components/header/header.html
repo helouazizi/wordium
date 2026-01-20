@@ -1,0 +1,48 @@
+<mat-toolbar class="header-toolbar">
+  <div class="header-container">
+    
+    <div class="left-section">
+      <span class="logo-text">Wordium</span>
+    </div>
+
+    <div class="middle-section">
+      <!-- Search Input can go here -->
+    </div>
+
+    <div class="right-section">
+      
+      <button mat-icon-button class="nav-icon">
+        <mat-icon>notifications_none</mat-icon>
+      </button>
+      
+      <button mat-icon-button class="nav-icon">
+        <mat-icon>chat_bubble_outline</mat-icon>
+      </button>
+
+      <div class="profile-trigger">
+        <app-user-avatar 
+          [user]="user" 
+          size="sm" 
+          action="menu"
+          [matMenuTriggerFor]="profileMenu" />
+      </div>
+
+      <mat-menu #profileMenu="matMenu" xPosition="before" class="social-menu">
+        <div class="menu-user-info">
+          <p class="name">{{ user?.username }}</p>
+          <p class="name">{{ user?.email }}</p>
+        </div>
+        <mat-divider></mat-divider>
+        <button mat-menu-item (click)="openSettings.emit()">
+          <mat-icon>settings</mat-icon>
+          <span>View Profile</span>
+        </button>
+        <button mat-menu-item (click)="logout()" class="logout-item">
+          <mat-icon>logout</mat-icon>
+          <span>Sign Out</span>
+        </button>
+      </mat-menu>
+    </div>
+
+  </div>
+</mat-toolbar>
