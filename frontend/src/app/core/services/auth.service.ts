@@ -3,7 +3,7 @@ import { User } from '../../shared/models/user.model';
 import { Router } from '@angular/router';
 import { AuthClient } from '../apis/auth-client';
 import { LoginRequest, LoginResponse, SignupRequest } from '../apis/auth.models';
-import { tap } from 'rxjs';
+import { switchMap, tap } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -43,38 +43,30 @@ export class AuthService {
     });
   }
 
-  // private hydrate() {
-  //   const token = localStorage.getItem(this.TOKEN_KEY);
-
-  //   if (!token) {
-  //     this._isLoading.set(false);
-  //     return;
-  //   }
-
-  //   this.client.getProfile().subscribe({
-  //     next: (user) => {
-  //       this._user.set(user);
-  //       this._isLoading.set(false);
-  //     },
-  //     error: () => {
-  //       this.logout();
-  //       this._isLoading.set(false);
-  //     },
-  //   });
-  // }
-
   login(credentials: LoginRequest) {
     return this.client.login(credentials).pipe(
-      tap((res) => {
-        this.setSession(res);
+      switchMap((res: LoginResponse) => {
+        localStorage.setItem(this.TOKEN_KEY, res.token);
+        return this.client.getProfile();
+      }),
+      tap((user: User) => {
+        this._user.set(user);
+        this._isLoading.set(false);
+        this.router.navigate(['/feed']);
       }),
     );
   }
 
   register(data: SignupRequest) {
     return this.client.signup(data).pipe(
-      tap((res) => {
-        this.setSession(res);
+      switchMap((res: LoginResponse) => {
+        localStorage.setItem(this.TOKEN_KEY, res.token);
+        return this.client.getProfile();
+      }),
+      tap((user: User) => {
+        this._user.set(user);
+        this._isLoading.set(false);
+        this.router.navigate(['/feed']);
       }),
     );
   }
