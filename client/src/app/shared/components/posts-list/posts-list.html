@@ -1,0 +1,16 @@
+    <div class="posts-container">
+      @for (post of posts(); track post.id) {
+        <app-post-card
+          [post]="post"
+          (like)="onLike(post.id)"
+          (delete)="onDelete(post.id)"
+          (comment)="onComment(post.id, $event)"
+        />
+      } @empty {
+        @if (!isLoading()) { <p>No posts found.</p> }
+      }
+
+      @if (isLoading()) {
+        <div class="loader">Loading posts...</div>
+      }
+    </div>

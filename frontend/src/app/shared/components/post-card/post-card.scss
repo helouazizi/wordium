@@ -1,20 +1,18 @@
 
 .post-card {
   margin-bottom: 24px;
-  background-color: var(--mat-sys-surface);
-  border-radius: 12px;
-  box-shadow: none; // Using border-subtle instead
+  background-color: var(--mat-sys-surface) ;
+  box-shadow: none;
 
-  // Markdown Styling
   .markdown-body {
     padding: 16px;
     color: var(--mat-sys-on-surface);
     font-size: 1rem;
     line-height: 1.6;
 
-    // Fix for markdown images in posts
-    ::ng-deep img {
+    ::ng-deep img , ::ng-deep video {
       max-width: 100%;
+      min-width: 50%;
       border-radius: 8px;
       margin: 8px 0;
       border: 1px solid var(--mat-sys-outline-variant);

@@ -1,9 +1,6 @@
 @use '@angular/material' as mat;
 
-// ==========================================================
-// 1. THEME DEFINITION
-// ==========================================================
-
+// Define palettes — keep Azure for primary (good for links/buttons)
 $light-theme: mat.define-theme((color: (theme-type: light,
         primary: mat.$azure-palette,
         tertiary: mat.$blue-palette,
@@ -21,57 +18,50 @@ $dark-theme: mat.define-theme((color: (theme-type: dark,
       density: (scale: 0),
     ));
 
-// ==========================================================
-// 2. TOKEN DEFINITIONS (The "Pro" Color Palette)
-// ==========================================================
-
 html {
   height: 100%;
   @include mat.all-component-themes($light-theme);
 
-  // --- LIGHT MODE OVERRIDES ---
-  --mat-sys-background: #f3f4f6f6;               // Softer, more tinted background
-  --mat-sys-surface: #ffffff;                  // Pure white cards pop softly on grey
-  --mat-sys-surface-container-low: #ffffff;    
-  --mat-sys-surface-container-high: #e5e7eb;   // Hover state (more visible but soft)
-  
-  --mat-sys-on-surface: #111827;               // Deep slate (easier to read than black)
-  --mat-sys-on-surface-variant: #4b5563;       // Soft grey for secondary text
-  
-  --mat-sys-outline-variant: #e5e7eb;          // Very soft, elegant borders
-  --mat-sys-outline: #d1d5db;                  // Focused borders
+  // Light mode system colors
+  --mat-sys-background: #eef0f1; // App background (outside cards)
+  --mat-sys-surface: #ffffff; // Cards, posts, dialogs
+  --mat-sys-surface-container-low: #ffffff;
+  --mat-sys-surface-container-high: #f1f5f9; // Elevated sections
 
+  --mat-sys-on-surface: #0f172a; // Main text
+  --mat-sys-on-surface-variant: #64748b; // Meta text, dates, subtitles
 
-  // Glassmorphism helper
-  --mat-sys-surface-container-rgb: 243, 244, 246;
+  --mat-sys-outline: #e2e8f0; // Borders, dividers
+  --mat-sys-outline-variant: #cbd5e1; // Stronger separators
+
+  --mat-sys-primary: #{mat.get-theme-color($light-theme, primary, 50)};
+  --mat-sys-secondary: #6366f1;
+  --mat-sys-error: #ef4444;
+
 }
 
+// Dark mode override
 .dark-mode {
   @include mat.all-component-colors($dark-theme);
   color-scheme: dark;
 
+  // Dark mode system colors
+  --mat-sys-background: #0f172a;
+  --mat-sys-surface: #1e293b;
+  --mat-sys-surface-container-low: #1e293b;
+  --mat-sys-surface-container-high: #334155;
 
+  --mat-sys-on-surface: #f1f5f9;
+  --mat-sys-on-surface-variant: #94a3b8;
 
-  --mat-sys-background: #1a1b1e;               // Soft Charcoal
-  --mat-sys-surface: #25262b;                  // Sidebar
-  --mat-sys-surface-container-low: #2c2e33;    // Cards
-  --mat-sys-surface-container-high: #373a40;   // Hover
-  --mat-sys-outline-variant: #373a40;          // Borders
-  --mat-sys-on-surface: #c1c2c5;               // Greyish-white text
-  --mat-sys-on-surface-variant: #909296;       // Muted text
+  --mat-sys-outline: #334155;
+  --mat-sys-outline-variant: #475569;
 
-  // Glassmorphism helper (Dark)
-  --mat-sys-surface-container-rgb: 28,
-    28,
-    30;
+  --mat-sys-primary: #{mat.get-theme-color($dark-theme, primary, 40)};
+  --mat-sys-secondary: #818cf8;
+  --mat-sys-error: #fca5a5;
 
-  // Error colors (For logout buttons or delete actions)
-  --mat-sys-error: #ffb4ab;
 }
-
-// ==========================================================
-// 3. GLOBAL RESET & BASE
-// ==========================================================
 
 body {
   margin: 0;
@@ -88,9 +78,6 @@ app-root {
   display: block;
 }
 
-// ==========================================================
-// 4. UTILITY CLASSES (Reuse these everywhere)
-// ==========================================================
 
 .text-secondary {
   color: var(--mat-sys-on-surface-variant) !important;
@@ -99,10 +86,6 @@ app-root {
 .border-subtle {
   border: 1px solid var(--mat-sys-outline-variant);
 }
-
-// ==========================================================
-// 5. SCROLLBAR
-// ==========================================================
 
 ::-webkit-scrollbar {
   width: 8px;
@@ -115,7 +98,7 @@ app-root {
 ::-webkit-scrollbar-thumb {
   background: var(--mat-sys-outline-variant);
   border-radius: 10px;
-  border: 2px solid var(--mat-sys-background); // Creates a "padding" effect
+  border: 2px solid var(--mat-sys-background);
 
   &:hover {
     background: var(--mat-sys-outline);
@@ -127,26 +110,20 @@ app-root {
   scrollbar-color: var(--mat-sys-outline-variant) transparent;
 }
 
-a , button {
+a,
+button {
   cursor: pointer;
 }
 
-
-
-/* src/styles.scss */
-
-// Error Style
 .error-snackbar {
-  // Use !important because the M3 theme tokens are very "loud"
   --mdc-snackbar-container-color: #f44336 !important;
   --mdc-snackbar-supporting-text-color: #ffffff !important;
   --mat-snack-bar-button-color: #ffffff !important;
 
-  // For older versions or browsers that don't respect the tokens above:
   .mdc-snackbar__surface {
     background-color: #f44336 !important;
   }
-  
+
   .mdc-snackbar__label {
     color: #ffffff !important;
   }
@@ -155,7 +132,6 @@ a , button {
   box-shadow: 0 4px 12px rgba(244, 67, 54, 0.4) !important;
 }
 
-// Success Style
 .success-snackbar {
   --mdc-snackbar-container-color: #4caf50 !important;
   --mdc-snackbar-supporting-text-color: #ffffff !important;

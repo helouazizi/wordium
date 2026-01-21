@@ -7,9 +7,20 @@
     disableClose="false"
   >
     <div class="sidenav-theme">
-      <button mat-icon-button (click)="togleTheme()" aria-label="Toggle theme">
-        <mat-icon>{{ themeService.isDark() ? 'light_mode' : 'dark_mode' }}</mat-icon>
-      </button>
+      <mat-button-toggle-group
+        class="theme-toggle-group"
+        [value]="themeService.isDark() ? 'dark' : 'light'"
+        (change)="toggleTheme()"
+        exclusive
+        aria-label="Toggle theme"
+      >
+        <mat-button-toggle value="light" aria-label="Light mode">
+          <mat-icon>light_mode</mat-icon>
+        </mat-button-toggle>
+        <mat-button-toggle value="dark" aria-label="Dark mode">
+          <mat-icon>dark_mode</mat-icon>
+        </mat-button-toggle>
+      </mat-button-toggle-group>
     </div>
 
     <mat-nav-list>

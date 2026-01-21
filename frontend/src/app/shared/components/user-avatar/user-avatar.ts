@@ -3,6 +3,7 @@ import { Router, RouterLink } from '@angular/router';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatIconModule } from '@angular/material/icon';
 import { User } from '../../models/user.model';
+import { TimeAgo } from '../../pipes/time-ago.pipe';
 
 export type AvatarSize = 'sm' | 'md' | 'lg';
 export type AvatarAction = 'profile' | 'menu' | 'none';
@@ -10,7 +11,7 @@ export type AvatarAction = 'profile' | 'menu' | 'none';
 @Component({
   selector: 'app-user-avatar',
   standalone: true,
-  imports: [ MatMenuModule, MatIconModule],
+  imports: [ MatMenuModule, MatIconModule,TimeAgo],
   templateUrl: './user-avatar.html',
   styleUrl: './user-avatar.scss',
 })

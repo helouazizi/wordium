@@ -12,6 +12,8 @@ import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { Header } from '../theme/components/header/header';
 import { NAV_LINKS } from '../core/config/navigation.config';
 import { ThemeService } from '../core/services/theme.service';
+import { MatSlideToggle } from '@angular/material/slide-toggle';
+import { MatButtonToggle, MatButtonToggleGroup } from '@angular/material/button-toggle';
 
 @Component({
   selector: 'app-layout',
@@ -27,6 +29,9 @@ import { ThemeService } from '../core/services/theme.service';
     RouterOutlet,
     RouterLink,
     RouterLinkActive,
+    // MatSlideToggle,
+    MatButtonToggleGroup,
+    MatButtonToggle,
     Header,
   ],
 })
@@ -39,7 +44,7 @@ export class LayoutComponent {
     shareReplay(),
   );
 
-  togleTheme() {
+  toggleTheme() {
     this.themeService.toggle();
   }
 }

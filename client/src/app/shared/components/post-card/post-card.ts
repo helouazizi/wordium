@@ -132,6 +132,8 @@ export class PostCard {
     }
   }
 
+  
+
   toggleMenu(event: Event) {
     event.preventDefault();
     event.stopPropagation();

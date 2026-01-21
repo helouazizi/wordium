@@ -21,7 +21,7 @@
         <span class="user-handle">{{ user()?.handle }}</span>
       }
       @if (time()) {
-        <span class="post-time">{{ time() }}</span>
+        <span class="post-time">{{ time() | timeAgo}}</span>
       }
     </div>
   }

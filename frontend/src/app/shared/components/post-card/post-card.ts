@@ -8,7 +8,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { UserAvatar } from '../user-avatar/user-avatar';
 import { MarkdownModule } from 'ngx-markdown';
 import { CommonModule } from '@angular/common';
-
+import { SafeHtmlPipe } from '../../pipes/safe-html.pipe';
 @Component({
   selector: 'app-post-card',
   standalone: true,
@@ -18,7 +18,7 @@ import { CommonModule } from '@angular/common';
     MatButtonModule,
     MatIconModule,
     MatMenuModule,
-
+    SafeHtmlPipe,
     UserAvatar,
     MarkdownModule,
   ],
@@ -42,11 +42,11 @@ export class PostCard {
   }
 
   handleComment() {
-    this.onComment.emit("");
+    this.onComment.emit('');
   }
 
   handleReport() {
-    this.onReport.emit("this.post().id");
+    this.onReport.emit('this.post().id');
   }
 
   handleDelete() {

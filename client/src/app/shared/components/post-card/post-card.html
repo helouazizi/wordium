@@ -18,9 +18,12 @@
 
       @if (isMenuOpen()) {
         <div class="dropdown-menu">
-          <button type="button" (click)="isReporting.set(true); isMenuOpen.set(false)">
-            <i class="bi bi-flag"></i> Report
-          </button>
+          @if (!canDelete()) {
+            <button type="button" (click)="isReporting.set(true); isMenuOpen.set(false)">
+              <i class="bi bi-flag"></i> Report
+            </button>
+          }
+
           @if (canDelete()) {
             <button type="button" class="text-danger" (click)="onDeleteClick()">
               <i class="bi bi-trash"></i> Delete

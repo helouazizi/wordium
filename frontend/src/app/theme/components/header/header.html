@@ -1,8 +1,10 @@
 <mat-toolbar class="header-toolbar">
   <div class="header-container">
-    
     <div class="left-section">
-      <span class="logo-text">Wordium</span>
+      <span class="logo">
+        <mat-icon class="logo-icon">edit_note</mat-icon>
+        <span class="logo-text">Wordium</span>
+      </span>
     </div>
 
     <div class="middle-section">
@@ -10,21 +12,16 @@
     </div>
 
     <div class="right-section">
-      
       <button mat-icon-button class="nav-icon">
         <mat-icon>notifications_none</mat-icon>
       </button>
-      
+
       <button mat-icon-button class="nav-icon">
         <mat-icon>chat_bubble_outline</mat-icon>
       </button>
 
       <div class="profile-trigger">
-        <app-user-avatar 
-          [user]="user" 
-          size="sm" 
-          action="menu"
-          [matMenuTriggerFor]="profileMenu" />
+        <app-user-avatar [user]="user" size="sm" action="menu" [matMenuTriggerFor]="profileMenu" />
       </div>
 
       <mat-menu #profileMenu="matMenu" xPosition="before" class="social-menu">
@@ -43,6 +40,5 @@
         </button>
       </mat-menu>
     </div>
-
   </div>
 </mat-toolbar>

@@ -1,23 +1,23 @@
 <mat-card class="post-card border-subtle">
   <mat-card-header>
-    <!-- Your custom UserAvatar component -->
-    <app-user-avatar 
-      [user]="post().actor" 
-      [action]="'profile'" 
-      [size]="'md'" 
-      [showName]="true" 
-      [time]="post().createdAt"> 
+    <app-user-avatar
+      [user]="post().actor"
+      [action]="'profile'"
+      [size]="'sm'"
+      [showName]="true"
+      [time]="post().createdAt"
+    >
     </app-user-avatar>
-    
+
     <span class="spacer"></span>
-    
+
     <button mat-icon-button [matMenuTriggerFor]="postMenu" aria-label="Post Options">
       <mat-icon>more_vert</mat-icon>
     </button>
   </mat-card-header>
 
-  <mat-card-content class="markdown-body">
-    <markdown [data]="post().content"></markdown>
+  <mat-card-content class="markdown-body" [innerHTML]="post().content | safeHtml |async">
+    
   </mat-card-content>
 
   <mat-card-actions>

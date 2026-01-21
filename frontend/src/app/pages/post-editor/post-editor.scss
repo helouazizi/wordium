@@ -26,7 +26,7 @@
 
 .editor-workspace {
   flex: 1;
-//   overflow-y: auto;
+  overflow-y: auto;
   padding: 40px 60px;
   @media (max-width: 600px) { padding: 20px; }
 }
