@@ -116,7 +116,7 @@
 .page-body {
   flex-grow: 1;
   overflow-y: auto;
-  overflow-x: hidden; // prevent any horizontal scroll
+  overflow-x: hidden; 
 
   max-width: 700px;
   margin: 0 auto;
@@ -125,18 +125,17 @@
   background-color: var(--mat-sys-background);
   color: var(--mat-sys-on-surface);
 
-  scrollbar-width: none; // Firefox
-  -ms-overflow-style: none; // IE/Edge
+  scrollbar-width: none; 
+  -ms-overflow-style: none; 
   &::-webkit-scrollbar {
-    display: none; // Chrome/Safari
+    display: none; 
   }
 
   @media (max-width: 767px) {
-    // Remove max-width limit and tiny margins
     max-width: none;
-    margin: 0;                    // no horizontal margin
-    padding: 24px 16px;           // keep safe side padding
-    padding-bottom: 96px;         // space for floating buttons/FAB
+    margin: 0;                   
+    padding: 24px 16px;           
+    padding-bottom: 96px;       
   }
 }
 

@@ -1,28 +1,87 @@
-// .social-grid {
-//   display: grid;
-//   grid-template-columns: 250px 1fr 300px; 
-//   gap: 24px;
-//   max-width: 1200px;
-//   margin: 24px auto;
-//   padding: 0 16px;
-//   align-items: start; 
-// }
+.feed-layout {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  min-height: 100%;           // helps with full-height feel
+  background: var(--mat-sys-background);
+}
 
-// @media (max-width: 1100px) {
-//   .social-grid {
-//     grid-template-columns: 250px 1fr; 
-//     .right-column { display: none; }
-//   }
-// }
+.posts-column {
+  width: 100%;
+  max-width: 720px;           // desktop comfortable reading width
+  margin: 0 auto;             // centers on wide screens
+  padding: 16px;              // safe padding on all sides (important!)
+  box-sizing: border-box;
 
-// @media (max-width: 768px) {
-//   .social-grid {
-//     grid-template-columns: 1fr;
-//     .left-column { display: none; }
-//   }
-// }
+  // Prevent any accidental horizontal overflow from children
+  overflow-x: hidden;
 
-// mat-card {
-//   margin-bottom: 16px;
-//   border-radius: 8px; 
-// }
+  // Better spacing between cards
+  display: flex;
+  flex-direction: column;
+  gap: 24px;                  // replaces margin-bottom on each card
+}
+
+.loader-container,
+.pagination-container,
+.empty-state {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 32px 16px;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.empty-state {
+  flex-direction: column;
+  gap: 12px;
+  text-align: center;
+  padding: 64px 16px;
+
+  mat-icon {
+    font-size: 48px;
+    height: 48px;
+    width: 48px;
+    color: var(--mat-sys-outline);
+  }
+
+  p {
+    margin: 0;
+    font-size: 1.1rem;
+  }
+}
+
+// ────────────────────────────────────────────────────────────────
+// Mobile-first adjustments
+// ────────────────────────────────────────────────────────────────
+
+@media (max-width: 767px) {
+  .posts-column {
+    max-width: none;              // use full available width
+    padding: 16px;                // keep consistent safe padding
+    gap: 20px;                    // slightly tighter on phones
+  }
+
+  // Optional: even more edge-to-edge feel (but still safe)
+  // padding: 12px 8px;
+  // gap: 16px;
+
+  .loader-container,
+  .pagination-container {
+    padding: 40px 16px;
+  }
+
+  .empty-state {
+    padding: 80px 24px;
+  }
+}
+
+// Optional: hide scrollbar more reliably across browsers
+.posts-column {
+  scrollbar-width: none;          // Firefox
+  -ms-overflow-style: none;       // Edge/IE
+
+  &::-webkit-scrollbar {
+    display: none;                // Chrome/Safari
+  }
+}
