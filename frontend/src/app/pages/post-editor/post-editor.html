@@ -1,87 +1,102 @@
-<div class="editor-shell border-subtle">
-  
-  <!-- 1. Header with Mode Toggle & Action -->
-  <header class="editor-nav">
-    <div class="mode-toggle">
-      <button mat-button [class.active]="viewMode() === 'edit'" (click)="viewMode.set('edit')">
-        <mat-icon>edit</mat-icon> Write
+<div class="editor-container" [class.preview-mode]="viewMode() === 'preview'">
+  <div class="editor-header">
+    <mat-form-field appearance="outline" class="title-input">
+      <mat-label>Post Title</mat-label>
+      <input
+        matInput
+        [(ngModel)]="title"
+        placeholder="Write a catchy title..."
+        autocomplete="off"
+        #titleInput
+      />
+    </mat-form-field>
+    <div class="toolbar">
+      <button
+        mat-icon-button
+        color="primary"
+        (click)="viewMode.set(viewMode() === 'edit' ? 'preview' : 'edit')"
+        matTooltip="{{ viewMode() === 'edit' ? 'Preview' : 'Edit' }}"
+      >
+        <mat-icon>{{ viewMode() === 'edit' ? 'visibility' : 'edit' }}</mat-icon>
       </button>
-      <button mat-button [class.active]="viewMode() === 'preview'" (click)="viewMode.set('preview')">
-        <mat-icon>visibility</mat-icon> Preview
+
+      <mat-divider vertical></mat-divider>
+
+      <button mat-icon-button (click)="insertFormat('bold')" matTooltip="Bold">
+        <mat-icon>format_bold</mat-icon>
       </button>
-    </div>
-    
-    <div class="nav-actions">
-      <button mat-button color="warn" (click)="content.set(''); title.set('')" [disabled]="isSubmitting()">Clear</button>
-      <button mat-flat-button color="primary" [disabled]="isSubmitting() || !content()" (click)="submitPost()">
-        {{ isSubmitting() ? 'Publishing...' : 'Publish' }}
+      <button mat-icon-button (click)="insertFormat('italic')" matTooltip="Italic">
+        <mat-icon>format_italic</mat-icon>
       </button>
-    </div>
-  </header>
+      <button mat-icon-button (click)="insertFormat('link')" matTooltip="Link">
+        <mat-icon>insert_link</mat-icon>
+      </button>
 
-  <!-- 2. The Editor Workspace -->
-  <div class="editor-workspace custom-scrollbar">
-    
-    @if (viewMode() === 'edit') {
-      <div class="write-surface">
-        <!-- Title Field -->
-        <input 
-          class="title-input" 
-          type="text" 
-          placeholder="New post title..." 
-          [(ngModel)]="title" 
-          maxlength="100">
+      <mat-divider vertical></mat-divider>
 
-        <!-- Toolbar -->
-        <div class="floating-toolbar">
-          <button mat-icon-button (click)="insertFormat('bold')" matTooltip="Bold"><mat-icon>format_bold</mat-icon></button>
-          <button mat-icon-button (click)="insertFormat('italic')" matTooltip="Italic"><mat-icon>format_italic</mat-icon></button>
-          <button mat-icon-button (click)="insertFormat('link')" matTooltip="Link"><mat-icon>link</mat-icon></button>
-          <mat-divider vertical></mat-divider>
-          <button mat-icon-button (click)="insertFormat('quote')" matTooltip="Quote"><mat-icon>format_quote</mat-icon></button>
-          <button mat-icon-button (click)="insertFormat('list')" matTooltip="List"><mat-icon>format_list_bulleted</mat-icon></button>
-          <button mat-icon-button (click)="insertFormat('code')" matTooltip="Code Block"><mat-icon>code</mat-icon></button>
-          <mat-divider vertical></mat-divider>
-          <button mat-icon-button (click)="mediaInput.click()" [disabled]="isUploading()" matTooltip="Image or Video">
-            <mat-icon>image</mat-icon>
-          </button>
-        </div>
+      <button mat-icon-button (click)="insertFormat('list')" matTooltip="Bullet list">
+        <mat-icon>format_list_bulleted</mat-icon>
+      </button>
+      <button mat-icon-button (click)="insertFormat('quote')" matTooltip="Quote">
+        <mat-icon>format_quote</mat-icon>
+      </button>
+      <button mat-icon-button (click)="insertFormat('code')" matTooltip="Code block">
+        <mat-icon>code</mat-icon>
+      </button>
 
-        @if (isUploading()) {
-          <mat-progress-bar mode="indeterminate" class="upload-progress"></mat-progress-bar>
-        }
-
-        <!-- Content Field -->
-        <textarea
-          #editorTextarea
-          [(ngModel)]="content"
-          placeholder="Write your story here..."
-          class="content-input"
-        ></textarea>
+      <div class="upload-wrapper">
+        <input
+          type="file"
+          #fileInput
+          accept="image/*,video/mp4,video/webm"
+          (change)="onMediaUpload($event)"
+          hidden
+        />
+        <button
+          mat-icon-button
+          color="accent"
+          (click)="fileInput.click()"
+          [disabled]="isUploading()"
+          matTooltip="Upload image or video"
+        >
+          <mat-icon *ngIf="!isUploading()">add_photo_alternate</mat-icon>
+          <mat-spinner *ngIf="isUploading()" diameter="20"></mat-spinner>
+        </button>
       </div>
-    } @else {
-      <!-- Preview Surface -->
-      <div class="preview-surface">
-        <h1 class="preview-title">{{ title() || 'Untitled Post' }}</h1>
-        <div class="markdown-body">
-          @if (content()) {
-            <markdown [data]="content()"></markdown>
-          } @else {
-            <div class="empty-preview">
-              <mat-icon>description</mat-icon>
-              <p>Nothing to preview yet. Start writing your masterpiece.</p>
-            </div>
-          }
-        </div>
-      </div>
-    }
+    </div>
   </div>
 
-  <!-- Footer Stats -->
-  <footer class="editor-info">
-    <span>{{ content().split(' ').length - 1 }} words</span>
-    <span>{{ content().length }} characters</span>
-  </footer>
+  <div class="editor-body">
+    <div class="edit-area" *ngIf="viewMode() === 'edit'">
+      <textarea
+        #editorTextarea
+        [(ngModel)]="content"
+        placeholder="Write your post here... (Markdown supported)"
+        rows="20"
+        spellcheck="true"
+        class="markdown-textarea"
+      ></textarea>
+    </div>
 
-  <input #mediaInput type="file" (change)="onMediaUpload($event)" hidden accept="image/*,video/*">
+    <div class="preview-area" *ngIf="viewMode() === 'preview'">
+      <div class="preview-content markdown-body" [innerHTML]="content() | safeHtml | async"></div>
+    </div>
+  </div>
+
+  <div class="editor-footer">
+    <div class="footer-actions">
+      <button mat-stroked-button (click)="cancel()" [disabled]="isSubmitting()">Cancel</button>
+
+      <button
+        mat-raised-button
+        color="primary"
+        [disabled]="isSubmitting() || !title().trim() || !content().trim()"
+        (click)="submitPost()"
+      >
+        <mat-icon *ngIf="isSubmitting()">hourglass_empty</mat-icon>
+        <span *ngIf="!isSubmitting()">Publish</span>
+        <span *ngIf="isSubmitting()">Publishing...</span>
+      </button>
+    </div>
+  </div>
 </div>

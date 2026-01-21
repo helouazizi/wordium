@@ -12,17 +12,28 @@ import { MarkdownModule } from 'ngx-markdown';
 import { PostService } from '../../core/services/post.service';
 import { NotificationService } from '../../core/services/notification.service';
 import { switchMap } from 'rxjs';
+import { MatSpinner } from '@angular/material/progress-spinner';
+import { SafeHtmlPipe } from '../../shared/pipes/safe-html.pipe';
 
 @Component({
   selector: 'app-post-editor',
   standalone: true,
   imports: [
-    CommonModule, FormsModule, MatButtonModule, MatIconModule, MatDividerModule,
-    MatFormFieldModule, MatInputModule, MatProgressBarModule, MatTooltipModule,
-    MarkdownModule
+    CommonModule,
+    FormsModule,
+    MatButtonModule,
+    MatIconModule,
+    MatDividerModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatProgressBarModule,
+    MatTooltipModule,
+    MarkdownModule,
+    MatSpinner,
+    SafeHtmlPipe,
   ],
   templateUrl: './post-editor.html',
-  styleUrl: './post-editor.scss'
+  styleUrl: './post-editor.scss',
 })
 export class PostEditor {
   private postService = inject(PostService);
@@ -30,7 +41,6 @@ export class PostEditor {
 
   @ViewChild('editorTextarea') textarea!: ElementRef<HTMLTextAreaElement>;
 
-  // State
   title = signal('');
   content = signal('');
   viewMode = signal<'edit' | 'preview'>('edit');
@@ -43,24 +53,26 @@ export class PostEditor {
 
     this.isUploading.set(true);
 
-    this.postService.getSignature().pipe(
-      switchMap(sig => this.postService.uploadToCloudinary(file, sig.data))
-    ).subscribe({
-      next: (res: any) => {
-        const url = res.secure_url;
-        const markdownLink = res.resource_type === 'video' 
-          ? `\n<video controls src="${url}"></video>\n` 
-          : `\n![Image preview](${url})\n`;
-        
-        this.insertAtCursor(markdownLink);
-        this.isUploading.set(false);
-        this.notify.showSuccess('Media added to editor');
-      },
-      error: () => {
-        this.isUploading.set(false);
-        this.notify.showError('Media upload failed');
-      }
-    });
+    this.postService
+      .getSignature()
+      .pipe(switchMap((sig) => this.postService.uploadToCloudinary(file, sig.data)))
+      .subscribe({
+        next: (res: any) => {
+          const url = res.secure_url;
+          const markdownLink =
+            res.resource_type === 'video'
+              ? `\n<video controls src="${url}"></video>\n`
+              : `\n![Image preview](${url})\n`;
+
+          this.insertAtCursor(markdownLink);
+          this.isUploading.set(false);
+          this.notify.showSuccess('Media added to editor');
+        },
+        error: () => {
+          this.isUploading.set(false);
+          this.notify.showError('Media upload failed');
+        },
+      });
   }
 
   insertFormat(type: 'bold' | 'italic' | 'list' | 'quote' | 'code' | 'link') {
@@ -70,14 +82,14 @@ export class PostEditor {
       list: '\n- ',
       quote: '\n> ',
       code: '\n```\n\n```',
-      link: '[Text](https://)'
+      link: '[Text](https://)',
     };
     this.insertAtCursor(syntax[type]);
   }
 
   private insertAtCursor(text: string) {
     if (this.viewMode() === 'preview') this.viewMode.set('edit');
-    
+
     const el = this.textarea.nativeElement;
     const start = el.selectionStart;
     const end = el.selectionEnd;
@@ -85,10 +97,11 @@ export class PostEditor {
 
     const newContent = currentContent.substring(0, start) + text + currentContent.substring(end);
     this.content.set(newContent);
-    
+
     setTimeout(() => {
       el.focus();
-      const cursorOffset = text.includes('**') || text.includes('__') ? text.length / 2 : text.length;
+      const cursorOffset =
+        text.includes('**') || text.includes('__') ? text.length / 2 : text.length;
       el.setSelectionRange(start + cursorOffset, start + cursorOffset);
     });
   }
@@ -100,17 +113,28 @@ export class PostEditor {
     }
 
     this.isSubmitting.set(true);
-    this.postService.createPost({ 
-      title: this.title(), 
-      content: this.content() 
-    }).subscribe({
-      next: () => {
-        this.notify.showSuccess('Post published successfully!');
-        this.title.set('');
-        this.content.set('');
-        this.isSubmitting.set(false);
-      },
-      error: () => this.isSubmitting.set(false)
-    });
+    this.postService
+      .createPost({
+        title: this.title(),
+        content: this.content(),
+      })
+      .subscribe({
+        next: () => {
+          this.notify.showSuccess('Post published successfully!');
+          this.title.set('');
+          this.content.set('');
+          this.isSubmitting.set(false);
+        },
+        error: () => this.isSubmitting.set(false),
+      });
+  }
+
+  cancel() {
+    if (confirm('Discard all changes?')) {
+      this.title.set('');
+      this.content.set('');
+      // Optionally navigate away:
+      // this.router.navigate(['/feed']);
+    }
   }
 }

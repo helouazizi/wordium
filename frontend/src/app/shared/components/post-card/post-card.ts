@@ -1,5 +1,5 @@
 // src/app/shared/components/post-card/post-card.ts
-import { Component, input, output } from '@angular/core';
+import { booleanAttribute, Component, input, output } from '@angular/core';
 import { Post, Reaction } from '../../../core/apis/posts/post.model';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
@@ -33,6 +33,15 @@ export class PostCard {
   onComment = output<string>();
   onReport = output<string>();
   onDelete = output<void>();
+  showReadMoreOverlay = input<boolean, boolean | undefined>(true, { transform: booleanAttribute });
+
+  navigateToPost() {
+    this.open.emit(this.post().id);
+    // Prevent navigation when clicking buttons/menus inside card
+    // if ((event.target as HTMLElement).closest('button, a[mat-menu-item]')) {
+    //   return;
+    // }
+  }
 
   handleLike() {
     this.onReact.emit({
