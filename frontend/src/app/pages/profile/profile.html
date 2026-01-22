@@ -1,0 +1,135 @@
+<div class="profile-page" [class.is-mobile]="isMobile()" [class.is-admin]="isAdmin()">
+  <header class="hero-header">
+    <div class="cover-wrapper">
+      <img
+        [src]="user()?.cover || 'https://picsum.photos/seed/cover/1200/400'"
+        class="cover-img"
+        alt="Cover"
+      />
+      @if (isOwn()) {
+        <button
+          mat-mini-fab
+          color="secondary"
+          class="edit-cover"
+          (click)="openEditDialog('cover')"
+          matTooltip="Change Cover"
+        >
+          <mat-icon>photo_camera</mat-icon>
+        </button>
+      }
+    </div>
+
+    <div class="header-content">
+      <div class="avatar-container">
+        <div class="avatar-ring">
+          <img [src]="user()?.avatar || 'https://picsum.photos/seed/ava/200'" class="avatar-img" />
+          @if (isOwn()) {
+            <button mat-mini-fab class="edit-avatar" (click)="openEditDialog('avatar')">
+              <mat-icon>edit</mat-icon>
+            </button>
+          }
+        </div>
+        @if (isAdmin()) {
+          <mat-icon class="verified-badge" matTooltip="Platform Admin">verified</mat-icon>
+        }
+      </div>
+
+      <div class="action-bar">
+        @if (isOwn()) {
+          <button mat-flat-button color="primary" (click)="openEditDialog('profile')">
+            <mat-icon>settings</mat-icon> Edit Profile
+          </button>
+        } @else {
+          <button mat-flat-button color="primary" (click)="toggleFollow()">Follow</button>
+          <button mat-stroked-button>Message</button>
+        }
+      </div>
+    </div>
+  </header>
+
+  <div class="main-container">
+    <section class="identity">
+      <h1 class="display-name">
+        {{ user()?.username }}
+        @if (isAdmin()) {
+          <span class="admin-label">Staff</span>
+        }
+      </h1>
+      <p class="handle">@{{ user()?.handle || user()?.username }}</p>
+
+      <div class="stats-row">
+        <div class="stat-pill" matRipple>
+          <span class="num">{{ stats().posts }}</span> <span class="lab">Posts</span>
+        </div>
+        <div class="stat-pill" matRipple>
+          <span class="num">{{ stats().followers | number }}</span>
+          <span class="lab">Followers</span>
+        </div>
+        <div class="stat-pill" matRipple>
+          <span class="num">{{ stats().following | number }}</span>
+          <span class="lab">Following</span>
+        </div>
+      </div>
+
+      <p class="bio-text">{{ user()?.bio || 'Blogger and creative mind.' }}</p>
+
+      <div class="metadata">
+        <span><mat-icon>place</mat-icon> {{ user()?.location || 'Everywhere' }}</span>
+        <span><mat-icon>calendar_month</mat-icon> Joined {{ user()?.createdAt }}</span>
+      </div>
+    </section>
+
+    <!-- 3. Material Tabs Navigation -->
+    <mat-tab-group class="profile-tabs" dynamicHeight>
+      <mat-tab>
+        <ng-template mat-tab-label> <mat-icon>person_outline</mat-icon> About </ng-template>
+        <div class="tab-body">
+          <mat-card class="glass-card" appearance="outlined">
+            <mat-card-header>
+              <mat-card-title>Biography</mat-card-title>
+              @if (isOwn()) {
+                <button mat-icon-button (click)="openEditDialog('about')">
+                  <mat-icon>edit</mat-icon>
+                </button>
+              }
+            </mat-card-header>
+            <mat-card-content>
+              <p>{{ user()?.bio }}</p>
+              <!-- <mat-divider></mat-divider>
+              <h4 style="margin-top: 1rem">Skills</h4>
+              <mat-chip-set>
+                <mat-chip>Angular</mat-chip>
+                <mat-chip>TypeScript</mat-chip>
+                <mat-chip>Material 3</mat-chip>
+              </mat-chip-set> -->
+            </mat-card-content>
+          </mat-card>
+        </div>
+      </mat-tab>
+
+      <mat-tab>
+        <ng-template mat-tab-label> <mat-icon>grid_view</mat-icon> Articles </ng-template>
+
+        <div class="tab-body posts-grid">
+          @for (post of posts(); track post.id) {
+            <mat-card class="post-card" appearance="outlined" matRipple>
+              <img mat-card-image [src]="post.image" alt="Post cover" />
+              <mat-card-content>
+                <h3>{{ post.title }}</h3>
+                <small>{{ post.date }}</small>
+              </mat-card-content>
+            </mat-card>
+          }
+        </div>
+      </mat-tab>
+
+      <mat-tab>
+        <ng-template mat-tab-label> <mat-icon>bookmark_border</mat-icon> Saved </ng-template>
+        <div class="tab-body empty-state">
+          <mat-icon>bookmarks</mat-icon>
+          <p>Your saved posts are private.</p>
+        </div>
+      </mat-tab>
+    </mat-tab-group>
+  </div>
+</div>

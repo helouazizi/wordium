@@ -1,0 +1,112 @@
+:host {
+  display: block;
+  min-height: 100vh;
+}
+
+.profile-page {
+  max-width: 1100px;
+  margin: 0 auto;  
+  &.is-admin {
+    --brand-color: var(--mat-sys-tertiary);
+    .admin-label { 
+      background: var(--mat-sys-tertiary-container);
+      color: var(--mat-sys-on-tertiary-container);
+      font-size: 12px; padding: 2px 8px; border-radius: 4px; margin-left: 8px;
+    }
+  }
+}
+
+.hero-header {
+  position: relative;
+  
+  .cover-wrapper {
+    height: 300px;
+    position: relative;
+    .cover-img { width: 100%; height: 100%; object-fit: cover;  border-radius: 0 0 8px 8px;}
+    .edit-cover { position: absolute; bottom: 16px; right: 16px; background: rgba(0,0,0,0.5); color: white; }
+
+  }
+
+  .header-content {
+    display: flex; justify-content: space-between; align-items: flex-end;
+    padding: 0 32px; margin-top: -60px;
+  }
+
+  .avatar-container {
+    position: relative;
+    .avatar-ring {
+      width: 140px; height: 140px; border-radius: 40px; // Squircle
+      background: var(--mat-sys-surface); padding: 5px;
+      position: relative;
+      .avatar-img { width: 100%; height: 100%; border-radius: 35px; object-fit: cover; }
+    }
+    .edit-avatar { position: absolute; bottom: -5px; right: -5px; scale: 0.8; }
+    .verified-badge { 
+      position: absolute; top: -5px; left: -5px; 
+      color: var(--mat-sys-primary); background: var(--mat-sys-surface); border-radius: 50%; 
+    }
+  }
+}
+
+// 2. Compact Stats Row
+.stats-row {
+  display: flex; gap: 12px; margin: 16px 0;
+  
+  .stat-pill {
+    background: var(--mat-sys-surface-container-low);
+    border: 1px solid var(--mat-sys-outline-variant);
+    padding: 6px 16px; border-radius: 50px;
+    display: flex; align-items: center; gap: 8px;
+    cursor: pointer; transition: 0.2s;
+    
+    &:hover { background: var(--mat-sys-surface-container-high); }
+    .num { font-weight: 800; color: var(--mat-sys-on-surface); }
+    .lab { font-size: 12px; color: var(--mat-sys-outline); text-transform: uppercase; }
+  }
+}
+
+// 3. Identity
+.identity {
+  padding: 24px 32px;
+  .display-name { font-size: 2.2rem; font-weight: 800; margin: 0; display: flex; align-items: center; }
+  .handle { color: var(--mat-sys-primary); font-weight: 500; margin-bottom: 12px; }
+  .bio-text { font-size: 1.1rem; max-width: 600px; color: var(--mat-sys-on-surface-variant); }
+  .metadata {
+    display: flex; gap: 20px; color: var(--mat-sys-outline); font-size: 0.9rem;
+    span { display: flex; align-items: center; gap: 4px; mat-icon { font-size: 18px; width: 18px; height: 18px; }}
+  }
+}
+
+// 4. Tabs & Grid
+.tab-body { padding: 24px 32px; }
+
+.posts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+  
+  .post-card {
+    border-radius: 16px; overflow: hidden;
+    img { height: 180px; object-fit: cover; }
+    h3 { margin: 12px 0 4px; font-weight: 700; }
+  }
+}
+
+.glass-card {
+  border-radius: 20px;
+  background: var(--mat-sys-surface-container-low);
+  mat-card-title { font-size: 1.2rem; }
+}
+
+// 5. Mobile Responsiveness
+.is-mobile {
+  .header-content { flex-direction: column; align-items: center; text-align: center; }
+  .avatar-container { margin-top: -70px; }
+  .action-bar { margin-top: 16px; width: 100%; justify-content: center; }
+  .identity { text-align: center; .metadata, .stats-row { justify-content: center; flex-wrap: wrap; } }
+}
+
+.empty-state {
+  text-align: center; padding: 80px 0; color: var(--mat-sys-outline);
+  mat-icon { font-size: 48px; width: 48px; height: 48px; opacity: 0.3; }
+}

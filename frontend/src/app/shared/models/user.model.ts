@@ -7,10 +7,11 @@ export interface User {
   handle?: string;
   bio?: string;
   location?: string;
+  createdAt:String;
+  cover:string
 }
 
 export enum UserRole {
   ADMIN = 'ADMIN',
   USER = 'USER',
-  EDITOR = 'EDITOR',
 }

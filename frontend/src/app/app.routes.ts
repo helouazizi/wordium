@@ -26,6 +26,10 @@ export const routes: Routes = [
         loadComponent: () => import('./pages/post-editor/post-editor').then((c) => c.PostEditor),
       },
       {
+        path: 'profiles/me', //  whrite blog
+        loadComponent: () => import('./pages/profile/profile').then((c) => c.Profile),
+      },
+      {
         path: '',
         redirectTo: 'feed',
         pathMatch: 'full',
