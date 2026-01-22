@@ -4,9 +4,7 @@
   border: 1px solid var(--mat-sys-outline-variant);
   border-radius: clamp(14px, 4vw, 18px);
   overflow: hidden;
-  transition:
-    box-shadow 0.24s cubic-bezier(0.34, 1.56, 0.64, 1),
-    transform 0.18s ease-out;
+  transition: box-shadow 0.24s cubic-bezier(0.34, 1.56, 0.64, 1), transform 0.18s ease-out;
   cursor: pointer;
   width: 100%;
   position: relative;
@@ -31,6 +29,8 @@
     }
   }
 
+
+
   .post-title {
     margin: 0 16px 12px;
     font-size: clamp(1.25rem, 4.4vw, 1.4rem);
@@ -42,6 +42,11 @@
     word-break: break-all;
   }
 
+
+  .spacer {
+    flex: 1 1 auto;
+  }
+
   .card-body {
     position: relative;
   }
@@ -49,7 +54,7 @@
   .content-wrapper {
     position: relative;
     isolation: isolate;
-    min-height: 160px; 
+    min-height: 160px;
   }
 
   .content-inner {
@@ -58,9 +63,9 @@
     line-height: 1.62;
     color: var(--mat-sys-on-surface-variant);
 
-    padding-bottom: 120px; 
+    padding-bottom: 120px;
     position: relative;
-    z-index: 1; 
+    z-index: 1;
 
     ::ng-deep {
       p {
@@ -141,7 +146,7 @@
   }
 
   .read-more-btn {
-    margin-top: 0; 
+    margin-top: 0;
     pointer-events: auto;
     min-width: clamp(110px, 28vw, 140px);
     padding: 8px 22px;
@@ -155,7 +160,7 @@
     &:hover,
     &:focus-visible {
       transform: translateY(-2px);
-      box-shadow: 0 6px 16px rgba(98, 0, 238, 0.28);
+      // box-shadow: 0 6px 16px rgba(98, 0, 238, 0.28);
     }
 
     &:active {
@@ -284,5 +289,14 @@
     min-width: 95px;
     font-size: 0.8rem;
     padding: 6px 16px;
+  }
+}
+
+
+
+
+.danger-item {
+  mat-icon {
+   color: var(--mat-sys-error);
   }
 }

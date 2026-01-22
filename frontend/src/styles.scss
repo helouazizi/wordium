@@ -1,6 +1,5 @@
 @use '@angular/material' as mat;
 
-// Define palettes — keep Azure for primary (good for links/buttons)
 $light-theme: mat.define-theme((color: (theme-type: light,
         primary: mat.$azure-palette,
         tertiary: mat.$blue-palette,
@@ -22,7 +21,6 @@ html {
   height: 100%;
   @include mat.all-component-themes($light-theme);
 
-  // Light mode system colors
   --mat-sys-background: #eef0f1; // App background (outside cards)
   --mat-sys-surface: #ffffff; // Cards, posts, dialogs
   --mat-sys-surface-container-low: #ffffff;
@@ -148,3 +146,5 @@ button {
   border-radius: 8px !important;
   box-shadow: 0 4px 12px rgba(76, 175, 80, 0.4) !important;
 }
+
+

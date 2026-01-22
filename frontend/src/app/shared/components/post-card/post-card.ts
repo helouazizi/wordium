@@ -1,4 +1,3 @@
-// src/app/shared/components/post-card/post-card.ts
 import { booleanAttribute, Component, input, output } from '@angular/core';
 import { Post, Reaction } from '../../../core/apis/posts/post.model';
 import { MatCardModule } from '@angular/material/card';
@@ -33,6 +32,7 @@ export class PostCard {
   onComment = output<string>();
   onReport = output<string>();
   onDelete = output<void>();
+  onMark = output<void>();
   showReadMoreOverlay = input<boolean, boolean | undefined>(true, { transform: booleanAttribute });
 
   navigateToPost() {
@@ -60,5 +60,9 @@ export class PostCard {
 
   handleDelete() {
     this.onDelete.emit();
+  }
+
+  handleMarke() {
+    this.onMark.emit();
   }
 }

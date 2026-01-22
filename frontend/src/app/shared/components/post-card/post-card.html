@@ -15,6 +15,7 @@
       [matMenuTriggerFor]="postMenu"
       aria-label="Post Options"
       (click)="$event.stopPropagation()"
+      class="post-optiions"
     >
       <mat-icon>more_vert</mat-icon>
     </button>
@@ -47,7 +48,7 @@
       [class.active-btn]="post().isLiked"
       aria-label="{{ post().isLiked ? 'Unlike post' : 'Like post' }}"
     >
-      <mat-icon>{{ post().isLiked ? 'thumb_up' : 'thumb_up_off_alt' }}</mat-icon>
+      <mat-icon>{{ post().isLiked ? 'favorite_outline' : 'favorite_outline_fill' }}</mat-icon>
       <span class="counter" aria-hidden="true">{{ post().likesCount }}</span>
     </button>
 
@@ -58,6 +59,13 @@
     >
       <mat-icon>chat_bubble_outline</mat-icon>
       <span class="counter" aria-hidden="true">{{ post().commentsCount }}</span>
+    </button>
+    <button
+      mat-button
+      (click)="handleMarke(); $event.stopPropagation()"
+      aria-label="Comment on post"
+    >
+      <mat-icon>bookmark</mat-icon>
     </button>
 
     <span class="spacer"></span>
@@ -72,9 +80,19 @@
   </mat-card-actions>
 </mat-card>
 
-<mat-menu #postMenu="matMenu">
+<mat-menu
+  class="post-options mat-menu-item"
+  #postMenu="matMenu"
+  xPosition="before"
+  yPosition="below"
+  [overlapTrigger]="false"
+>
   <button mat-menu-item (click)="handleDelete(); $event.stopPropagation()">
-    <mat-icon>delete_outline</mat-icon>
+    <mat-icon>outlined_flag</mat-icon>
+    <span>Report Post</span>
+  </button>
+  <button mat-menu-item class="danger-item" (click)="handleDelete(); $event.stopPropagation()">
+    <mat-icon color="warn">delete_outline</mat-icon>
     <span>Delete Post</span>
   </button>
 </mat-menu>
