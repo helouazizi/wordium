@@ -1,5 +1,4 @@
-<div class="feed-layout">
-  <div class="posts-column">
+<div class="feed">
     @for (post of postService.posts(); track post.id) {
       <app-post-card
         [post]="post"
@@ -29,5 +28,4 @@
         <p>No posts found. Start following people!</p>
       </div>
     }
-  </div>
 </div>

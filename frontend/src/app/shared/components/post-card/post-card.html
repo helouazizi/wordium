@@ -30,7 +30,6 @@
       >
       </mat-card-content>
 
-      <!-- Overlay + Read more (only in teaser mode) -->
       <div
         *ngIf="showReadMoreOverlay()"
         class="read-more-overlay"
@@ -41,19 +40,24 @@
     </div>
   </div>
 
-  <mat-card-actions align="end">
+  <mat-card-actions align="start">
     <button
       mat-button
       (click)="handleLike(); $event.stopPropagation()"
       [class.active-btn]="post().isLiked"
+      aria-label="{{ post().isLiked ? 'Unlike post' : 'Like post' }}"
     >
       <mat-icon>{{ post().isLiked ? 'thumb_up' : 'thumb_up_off_alt' }}</mat-icon>
-      <span class="counter">{{ post().likesCount }}</span>
+      <span class="counter" aria-hidden="true">{{ post().likesCount }}</span>
     </button>
 
-    <button mat-button (click)="handleComment(); $event.stopPropagation()">
+    <button
+      mat-button
+      (click)="handleComment(); $event.stopPropagation()"
+      aria-label="Comment on post"
+    >
       <mat-icon>chat_bubble_outline</mat-icon>
-      <span class="counter">{{ post().commentsCount }}</span>
+      <span class="counter" aria-hidden="true">{{ post().commentsCount }}</span>
     </button>
 
     <span class="spacer"></span>

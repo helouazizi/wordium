@@ -1,195 +1,288 @@
-// ============================================================================
-// Post Card – Feed / List Item (Material Compatible)
-// ============================================================================
-
 .post-card {
   margin-bottom: 24px;
-  background: var(--mat-sys-surface, #fff);
-  border: 1px solid var(--mat-sys-outline-variant, #e0e0e0);
-  border-radius: 16px;
+  background: var(--mat-sys-surface);
+  border: 1px solid var(--mat-sys-outline-variant);
+  border-radius: clamp(14px, 4vw, 18px);
   overflow: hidden;
-  transition: box-shadow 0.2s ease, transform 0.18s ease;
+  transition:
+    box-shadow 0.24s cubic-bezier(0.34, 1.56, 0.64, 1),
+    transform 0.18s ease-out;
   cursor: pointer;
+  width: 100%;
+  position: relative;
 
   &:hover,
   &:focus-visible {
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
-    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
   }
 
   &:active {
     transform: translateY(0);
+    transition-duration: 0.08s;
   }
 
-  // Title
+  -webkit-tap-highlight-color: transparent;
+
+  mat-card-header {
+    padding: 16px 16px 8px;
+
+    .mat-mdc-card-avatar {
+      margin-inline-end: 12px;
+    }
+  }
+
   .post-title {
-    margin: 12px 16px;
-    font-size: 1.38rem;
-    font-weight: 600;
-    line-height: 1.38;
+    margin: 0 16px 12px;
+    font-size: clamp(1.25rem, 4.4vw, 1.4rem);
+    font-weight: 700;
+    line-height: 1.3;
     color: var(--mat-sys-on-surface);
+    letter-spacing: -0.02em;
+    transition: color 0.2s;
+    word-break: break-all;
   }
 
-  // Content wrapper (for teaser overlay)
+  .card-body {
+    position: relative;
+  }
+
   .content-wrapper {
     position: relative;
-    isolation: isolate; // better stacking context
+    isolation: isolate;
+    min-height: 160px; 
   }
 
-  // Inner content (markdown + Material styling)
   .content-inner {
     padding: 0 16px 16px;
-    font-size: 1rem;
+    font-size: clamp(0.96rem, 3.8vw, 1.02rem);
     line-height: 1.62;
     color: var(--mat-sys-on-surface-variant);
 
+    padding-bottom: 120px; 
+    position: relative;
+    z-index: 1; 
+
     ::ng-deep {
       p {
-        margin: 0 0 1.1em;
+        margin: 0 0 1em;
+
+        &:last-child {
+          margin-bottom: 0;
+        }
       }
 
       blockquote {
-        margin: 16px 0;
+        margin: 14px 0;
         padding-left: 16px;
-        border-left: 4px solid var(--mat-sys-primary);
-        color: var(--mat-sys-on-surface-variant);
+        border-left: 3px solid var(--mat-sys-primary-container);
+        color: var(--mat-sys-on-surface);
         font-style: italic;
       }
 
       pre,
       code {
-        font-size: 0.92em;
-        background: var(--mat-sys-surface-variant);
+        font-family: 'JetBrains Mono', monospace;
+        background: var(--mat-sys-surface-container-highest);
         padding: 2px 6px;
         border-radius: 6px;
+        font-size: 0.9em;
       }
 
-      // Media – prevent overflow & layout shift
+      pre {
+        padding: 14px;
+        margin: 12px 0;
+        overflow-x: auto;
+      }
+
       img,
       video,
       iframe {
         display: block;
         width: 100%;
-        max-width: 100% !important;
         height: auto;
-        margin: 12px auto 8px;
-        border-radius: 10px;
+        margin: 14px auto;
+        border-radius: 12px;
         border: 1px solid var(--mat-sys-outline-variant);
-        box-sizing: border-box;
+        background: var(--mat-sys-surface-container);
+        aspect-ratio: 16 / 9;
+        object-fit: cover;
+        opacity: 0;
+        animation: fadeInImage 0.3s forwards 0.1s;
       }
 
       iframe {
-        aspect-ratio: 16 / 9; // fallback for embeds
+        aspect-ratio: 16 / 9;
+        border: none;
       }
     }
   }
 
-  // Teaser mode + Read more overlay
   .teaser-mode {
-    max-height: 300px;
+    max-height: 290px;
     overflow: hidden;
-
-    .read-more-overlay {
-      position: absolute;
-      inset-block-end: 0;
-      inset-inline: 0;
-      height: 140px;
-      background: linear-gradient(to bottom, transparent 10%, var(--mat-sys-surface) 55%);
-      display: flex;
-      align-items: flex-end;
-      justify-content: center;
-      padding-block-end: 20px;
-      pointer-events: none;
-      z-index: 1;
-
-      .read-more-btn {
-        pointer-events: auto;
-        min-width: 148px;
-        padding: 0 24px;
-        border-radius: 24px;
-        font-weight: 500;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.14);
-        transition: all 0.2s ease;
-        background-color: var(--mat-sys-on-surface);
-
-        &:hover,
-        &:focus-visible {
-          transform: translateY(-1px);
-          box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
-        }
-      }
-    }
-  }
-
-  // Material card actions
-  mat-card-actions {
-    padding: 8px 16px 16px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  .counter {
-    margin-inline-start: 8px;
-    font-weight: 500;
-    color: var(--mat-sys-on-surface-variant);
-  }
-
-  .active-btn {
-    color: var(--mat-sys-primary) !important;
-
-    mat-icon {
-      color: var(--mat-sys-primary) !important;
-    }
-  }
-}
-
-// Spacer utility
-.spacer {
-  flex: 1 1 auto;
-}
-
-// ============================================================================
-// Mobile adjustments
-// ============================================================================
-
-@media (max-width: 767px) {
-  .post-card {
-    // max-width: 100%;
-    margin-left: 0;
-    margin-right: 0;
-  }
-
-  .post-title {
-    font-size: 1.25rem;
-    line-height: 1.4;
-    margin: 12px 16px;
-  }
-
-  .content-inner {
-    padding: 0 16px 20px;
-    font-size: 0.97rem;
-    line-height: 1.58;
-  }
-
-  .teaser-mode {
-    max-height: 240px;
+    position: relative;
   }
 
   .read-more-overlay {
-    height: 96px;
+    position: absolute;
+    inset-block-end: 0;
+    inset-inline: 0;
+    // Reduce height slightly to avoid crowding
+    height: 100px; // was 120px
+    background: linear-gradient(to bottom,
+        transparent 30%, // Start fade later
+        var(--mat-sys-surface) 90%);
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
     padding-block-end: 16px;
+    pointer-events: none;
+    z-index: 3;
+  }
 
-    .read-more-btn {
-      min-width: 120px;
-      font-size: 0.9rem;
-      padding: 0 20px;
+  .read-more-btn {
+    margin-top: 0; 
+    pointer-events: auto;
+    min-width: clamp(110px, 28vw, 140px);
+    padding: 8px 22px;
+    font-size: clamp(0.86rem, 3.3vw, 0.94rem);
+    border-radius: 50px;
+    background: rgba(0, 0, 0, 0.137);
+    color: var(--mat-sys-on-surface);
+    font-weight: 600;
+    transition: all 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
+
+    &:hover,
+    &:focus-visible {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(98, 0, 238, 0.28);
+    }
+
+    &:active {
+      transform: translateY(0);
     }
   }
 
   mat-card-actions {
-    padding: 12px 16px 20px;
-    flex-wrap: wrap;
-    gap: 8px 12px;
+    padding: 8px 16px 16px;
+    gap: 8px;
+    min-height: 48px;
+    display: flex;
+    align-items: center;
+
+    button {
+      min-width: auto;
+      padding: 6px 12px;
+      border-radius: 18px;
+      font-size: 0.92rem;
+      color: var(--mat-sys-on-surface-variant);
+      transition: all 0.18s ease;
+
+      mat-icon {
+        font-size: 20px;
+        width: 20px;
+        height: 20px;
+      }
+
+      &.active-btn {
+        color: var(--mat-sys-primary);
+
+        mat-icon {
+          animation: pulseLike 0.4s ease;
+        }
+      }
+
+      &:hover,
+      &:focus-visible {
+        background: var(--mat-sys-surface-container);
+        color: var(--mat-sys-on-surface);
+      }
+    }
+
+    .counter {
+      font-size: 0.84rem;
+      margin-inline-start: 6px;
+      font-weight: 500;
+    }
+  }
+
+  mat-icon-button[mat-menu-trigger] {
+    width: 36px;
+    height: 36px;
+    color: var(--mat-sys-on-surface-variant);
+  }
+}
+
+@keyframes fadeInImage {
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes pulseLike {
+
+  0%,
+  100% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.15);
+  }
+}
+
+@media (max-width: 767px) {
+  .post-card {
+    margin-bottom: 20px;
+    border-radius: clamp(12px, 3.8vw, 16px);
+  }
+
+  .post-title {
+    margin: 0 14px 10px;
+    font-size: clamp(1.18rem, 4.8vw, 1.32rem);
+  }
+
+  .content-inner {
+    padding: 0 14px 14px;
+    font-size: clamp(0.94rem, 3.9vw, 0.98rem);
+  }
+
+  .teaser-mode {
+    max-height: clamp(190px, 52vh, 230px);
+  }
+
+  .read-more-overlay {
+    height: clamp(85px, 25vw, 100px);
+    padding-block-end: 14px;
+  }
+
+  .read-more-btn {
+    min-width: clamp(100px, 30vw, 125px);
+    padding: 7px 20px;
+    font-size: clamp(0.82rem, 3.4vw, 0.88rem);
+  }
+
+  mat-card-actions {
+    padding: 10px 14px 14px;
+
+    button {
+      padding: 6px 10px;
+
+      mat-icon {
+        font-size: 19px;
+      }
+    }
+  }
+}
+
+@media (max-width: 380px) {
+  .read-more-overlay {
+    height: 75px;
+  }
+
+  .read-more-btn {
+    min-width: 95px;
+    font-size: 0.8rem;
+    padding: 6px 16px;
   }
 }
