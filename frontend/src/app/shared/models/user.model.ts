@@ -1,17 +1,38 @@
 export interface User {
-  id: string;
+  id: number;
   username: string;
-  role: string;
-  email?: string;
+  displayName?: string;
+
+  email: string;
+  role: 'USER' | 'ADMIN' ;
+
   avatar?: string;
-  handle?: string;
+  cover?: string;
   bio?: string;
   location?: string;
-  createdAt:String;
-  cover:string
-}
 
-export enum UserRole {
-  ADMIN = 'ADMIN',
-  USER = 'USER',
+  createdAt: string;
+  updatedAt?: string;
+  lastLoginAt?: string;
+
+  isVerified?: boolean;
+  isBanned?: boolean;
+  isPrivate?: boolean;
+
+  isFollowing?: boolean;
+  followsMe?: boolean;
+
+  stats?: {
+    followers: number;
+    following: number;
+    posts: number;
+    bookmarks: number;
+  };
+
+  social?: {
+    website?: string;
+    twitter?: string;
+    github?: string;
+    linkedin?: string;
+  };
 }

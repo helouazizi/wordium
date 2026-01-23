@@ -1,7 +1,6 @@
 package com.wordium.posts.services.impl;
 
-import java.util.HashMap;
-import java.util.Map;
+
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -11,7 +10,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.cloudinary.Cloudinary;
 import com.wordium.posts.dto.CommentRequest;
 import com.wordium.posts.dto.CommentResponse;
 import com.wordium.posts.dto.PostReactionRequest;
@@ -37,15 +35,13 @@ public class PostServiceImpl implements PostService {
     private final ReactionRepository reactionRepository;
     private final CommentRepository commentRepository;
     private final UserEnrichmentHelper userEnrichmentHelper;
-    private final Cloudinary cloudinary;
 
     public PostServiceImpl(PostRepository postRepository, UserEnrichmentHelper userEnrichmentHelper,
-            ReactionRepository reactionRepository, CommentRepository commentRepository, Cloudinary cloudinary) {
+            ReactionRepository reactionRepository, CommentRepository commentRepository) {
         this.postRepository = postRepository;
         this.userEnrichmentHelper = userEnrichmentHelper;
         this.reactionRepository = reactionRepository;
         this.commentRepository = commentRepository;
-        this.cloudinary = cloudinary;
     }
 
     @Override
@@ -57,7 +53,7 @@ public class PostServiceImpl implements PostService {
         post.setContent(request.content());
 
         Post saved = postRepository.save(post);
-        return mapToResponse(saved, new UserProfile(userId, null, null, "null", null, "null", null), false);
+        return mapToResponse(saved, new UserProfile(userId, null, null, "null", null, "null", null,null,null,null,null,null,null,null,null,null,null,null), false);
     }
 
     @Override
@@ -108,7 +104,7 @@ public class PostServiceImpl implements PostService {
         }
 
         Post updated = postRepository.save(post);
-        return mapToResponse(updated, new UserProfile(userId, null, null, "null", null, "null", null), false);
+        return mapToResponse(updated, new UserProfile(userId, null, null, "null", null, "null", null,null,null,null,null,null,null,null,null,null,null,null), false);
     }
 
     @Override
@@ -182,7 +178,7 @@ public class PostServiceImpl implements PostService {
                 post.getId(),
                 post.getTitle(),
                 post.getContent(),
-                new UserProfile(userProfile.id(), null, null, userProfile.username(), null, userProfile.avatar(), null),
+                new UserProfile(userProfile.id(), userProfile.username(), null, "null", null, userProfile.avatar(), null,null,null,null,null,null,null,null,null,null,null,null),
                 post.getLikesCount(),
                 post.getCommentsCount(),
                 post.getRportCount(),
@@ -278,31 +274,5 @@ public class PostServiceImpl implements PostService {
         postRepository.decrementCommentsCount(postId);
     }
 
-    @Override
-    public Map<String, Object> getSignature() {
-
-        long timestamp = System.currentTimeMillis() / 1000L;
-        String status = "PENDING";
-        Map<String, Object> params = new HashMap<>();
-        params.put("timestamp", timestamp);
-        params.put("folder", "posts");
-        params.put("upload_preset", "ml_default");
-        params.put("context", "status=" + status);
-
-        // Generate the signature
-        String signature = cloudinary.apiSignRequest(params, cloudinary.config.apiSecret);
-
-        // Send to Angular
-        Map<String, Object> response = new HashMap<>();
-        response.put("signature", signature);
-        response.put("timestamp", timestamp);
-        response.put("cloudName", cloudinary.config.cloudName);
-        response.put("apiKey", cloudinary.config.apiKey);
-        response.put("folder", "posts");
-        response.put("upload_preset", "ml_default");
-        response.put("context", "status=" + status);
-
-        return response;
-    }
-
+  
 }

@@ -8,6 +8,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.wordium.users.dto.PaginatedResponse;
+import com.wordium.users.dto.Role;
 import com.wordium.users.models.Users;
 import com.wordium.users.repo.UsersRepo;
 import com.wordium.users.services.admin.AdminAccountService;
@@ -53,7 +54,7 @@ public class AdminAccountServiceImpl implements AdminAccountService {
     }
 
     @Override
-    public Users changeRole(Long id, String newRole) {
+    public Users changeRole(Long id, Role newRole) {
         Users account = getAccountById(id);
         account.setRole(newRole);
         account.setUpdatedAt(LocalDateTime.now());

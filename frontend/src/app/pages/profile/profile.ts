@@ -1,10 +1,6 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { toSignal } from '@angular/core/rxjs-interop';
-import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
-import { map } from 'rxjs';
 
-// Material
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -17,6 +13,12 @@ import { MatRippleModule } from '@angular/material/core';
 
 import { AuthService } from '../../core/services/auth.service';
 import { EditProfileDialogComponent } from '../../features/profile/components/edit-profile-dialog/edit-profile-dialog';
+import { UsersService } from '../../core/services/users.service';
+import { User } from '../../shared/models/user.model';
+import { DeviceService } from '../../core/services/device.service';
+import { ActivatedRoute, Router } from '@angular/router';
+import { UpdateProfileRequest } from '../../core/apis/users/users.model';
+import { Post } from '../../core/apis/posts/post.model';
 
 @Component({
   selector: 'app-profile',
@@ -31,56 +33,81 @@ import { EditProfileDialogComponent } from '../../features/profile/components/ed
     MatChipsModule,
     MatCardModule,
     MatDividerModule,
-    MatRippleModule
+    MatRippleModule,
   ],
   templateUrl: './profile.html',
   styleUrl: './profile.scss',
 })
 export class Profile {
   private auth = inject(AuthService);
+  private usersService = inject(UsersService);
+  private route = inject(ActivatedRoute);
   private dialog = inject(MatDialog);
-  private breakpointObserver = inject(BreakpointObserver);
+  private device = inject(DeviceService);
 
-  user = this.auth.user; 
+  isMobile = this.device.isHandset;
 
-  isOwn = computed(() => this.user()?.id !== this.auth.user()?.id);
-  isAdmin = computed(() => this.user()?.role === 'admin');
+  readonly sessionUser = this.auth.user;
 
-  isMobile = toSignal(
-    this.breakpointObserver
-      .observe([Breakpoints.Handset])
-      .pipe(map(result => result.matches)),
-    { initialValue: false }
-  );
+  readonly targetUser = signal<User | null>(null);
 
-  
-  stats = signal({ posts: 42, followers: 3840, following: 672 });
+  isOwn = computed(() => this.targetUser()?.id === this.sessionUser()?.id);
 
-  posts = signal([
-    { id: 1, title: 'Deep dive into Angular Signals 2026', image: 'https://picsum.photos/seed/p1/800/400', date: 'Jan 18' },
-    { id: 2, title: 'Building glassmorphic UIs', image: 'https://picsum.photos/seed/p2/800/400', date: 'Dec 30' },
-  ]);
+  isAdmin = computed(() => this.sessionUser()?.role === 'ADMIN');
 
- openEditDialog(type: 'profile' | 'cover' | 'avatar' | 'about') {
-  const dialogRef = this.dialog.open(EditProfileDialogComponent, {
-    width: '500px',
-    maxWidth: '95vw',
-    data: {
-      type: type,
-      user: this.user() // Pass the current user signal value
-    },
-    autoFocus: false
-  });
+  ngOnInit() {
+    const idParam = this.route.snapshot.paramMap.get('id');
+    const id = idParam ? Number(idParam) : null;
 
-  dialogRef.afterClosed().subscribe(result => {
-    if (result) {
-      console.log('User updated data:', result);
-      // Here you would call: this.authService.updateProfile(result);
+    if (id) {
+      this.usersService.getUserProfile(id).subscribe({
+        next: (user) => this.targetUser.set(user),
+      });
+    } else {
+      this.targetUser.set(this.sessionUser());
     }
+  }
+
+  // Placeholder until backend provides it
+  stats = signal({
+    posts: 0,
+    bookmarks: 0,
+    followers: 0,
+    following: 0,
   });
-}
+
+  posts = signal<Post[] | null>(null);
+
+  openEditDialog(type: 'profile' | 'cover' | 'avatar' | 'about') {
+    if (!this.isOwn()) return;
+
+    const dialogRef = this.dialog.open(EditProfileDialogComponent, {
+      width: '500px',
+      maxWidth: '95vw',
+      data: {
+        type,
+        user: this.sessionUser(),
+      },
+      autoFocus: false,
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        this.usersService.updateMyProfile(result as UpdateProfileRequest).subscribe({
+          next: (updated) => {
+            this.targetUser.set(updated);
+          },
+        });
+      }
+    });
+  }
 
   toggleFollow() {
-    // Logic for following
+    const user = this.targetUser();
+    if (!user || this.isOwn()) return;
+    console.log("toggleFollow");
+    
+
+    this.usersService.followUser(user.id).subscribe();
   }
 }

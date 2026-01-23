@@ -1,14 +1,13 @@
 <div class="avatar-wrapper" [class]="'size-' + size()">
-  <div class="avatar-circle" 
-       [class.clickable]="action() !== 'none'"
-       (click)="navigateToProfile(); avatarClick.emit($event)">
-    
+  <div
+    class="avatar-circle"
+    [class.clickable]="action() !== 'none'"
+    (click)="navigateToProfile(); avatarClick.emit($event)"
+  >
     @if (user()?.avatar) {
-      <img [src]="user()?.avatar" [alt]="user()?.username" class="img">
+      <img [src]="user()?.avatar" [alt]="user()?.username" class="img" />
     } @else {
-      <div class="placeholder">
-        <mat-icon>account_circle</mat-icon>
-      </div>
+      <img src="assets/avatar.webp" alt="avatar" class="img" />
     }
   </div>
 
@@ -17,11 +16,9 @@
       @if (showName()) {
         <span class="user-name">{{ user()?.username }}</span>
       }
-      @if (showHandle()) {
-        <span class="user-handle">{{ user()?.handle }}</span>
-      }
+
       @if (time()) {
-        <span class="post-time">{{ time() | timeAgo}}</span>
+        <span class="post-time">{{ time() | timeAgo }}</span>
       }
     </div>
   }

@@ -33,6 +33,6 @@ export class Header {
   }
 
    profile() {
-    this.router.navigate(['/profiles/me']);
+    this.router.navigate(['/profiles/',this.user?.id]);
   }
 }

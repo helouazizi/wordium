@@ -26,7 +26,7 @@ export const routes: Routes = [
         loadComponent: () => import('./pages/post-editor/post-editor').then((c) => c.PostEditor),
       },
       {
-        path: 'profiles/me', //  whrite blog
+        path: 'profiles/:id', //  whrite blog
         loadComponent: () => import('./pages/profile/profile').then((c) => c.Profile),
       },
       {
@@ -37,7 +37,6 @@ export const routes: Routes = [
     ],
   },
 
-  // FALLBACK
   {
     path: '**',
     redirectTo: 'feed',

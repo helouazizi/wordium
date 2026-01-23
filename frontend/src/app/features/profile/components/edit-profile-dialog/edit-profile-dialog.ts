@@ -31,7 +31,7 @@ export class EditProfileDialogComponent {
 
   editForm = this.fb.group({
     username: [this.data.user.username, [Validators.required,Validators.minLength(6)]],
-    handle: [this.data.user.handle],
+    displayName: [this.data.user.displayName],
     bio: [this.data.user.bio],
     location: [this.data.user.location],
     avatar: [this.data.user.avatar],

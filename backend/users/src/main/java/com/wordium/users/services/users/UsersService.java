@@ -2,19 +2,16 @@ package com.wordium.users.services.users;
 
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
-import com.cloudinary.Cloudinary;
-import com.cloudinary.utils.ObjectUtils;
+import com.wordium.users.dto.Social;
 import com.wordium.users.dto.auth.SignUpRequest;
 import com.wordium.users.dto.auth.SignUpResponse;
 import com.wordium.users.dto.users.BatchUsersRequest;
 import com.wordium.users.dto.users.UpdateProfileRequest;
-import com.wordium.users.dto.users.UsersResponse;
+import com.wordium.users.dto.users.UserProfile;
 import com.wordium.users.exceptions.BadRequestException;
 import com.wordium.users.exceptions.ConflictException;
 import com.wordium.users.exceptions.NotFoundException;
@@ -25,11 +22,9 @@ import com.wordium.users.repo.UsersRepo;
 public class UsersService {
 
     private final UsersRepo usersRepo;
-    private final Cloudinary cloudinary;
 
-    public UsersService(UsersRepo usersRepo, Cloudinary cloudinary) {
+    public UsersService(UsersRepo usersRepo) {
         this.usersRepo = usersRepo;
-        this.cloudinary = cloudinary;
     }
 
     public SignUpResponse createUser(SignUpRequest req) {
@@ -41,7 +36,7 @@ public class UsersService {
         user.setUsername(req.username());
         user.setBio(req.bio());
         user.setLocation(req.location());
-        user.setAvatarUrl(req.avatarUrl());
+        user.setAvatar(req.avatar());
         usersRepo.save(user);
 
         return new SignUpResponse(
@@ -68,28 +63,31 @@ public class UsersService {
                 user.getRole());
     }
 
-    public UsersResponse getUserProfile(Long userId) {
+    public UserProfile getUserProfile(Long userId) {
         Users user = usersRepo.findById(userId).orElseThrow(() -> new NotFoundException("User Not Found"));
 
-        return new UsersResponse(
+        return new UserProfile(
                 user.getId(),
-                null, null, user.getUsername(), user.getBio(),
-                user.getAvatarUrl(), user.getLocation());
+                user.getUsername(), user.getDisplayName(), user.getEmail(), user.getRole(),
+                user.getAvatar(), user.getCover(), user.getBio(), user.getLocation(), user.getCreatedAt(),
+                user.getUpdatedAt(), user.getLastLoginAt(), user.isVerified(), user.isBanned(), null, null, null,
+                user.getSocial());
 
     }
 
-    public UsersResponse getProfile(Long userId) {
+    public UserProfile getProfile(Long userId) {
         Users user = usersRepo.findById(userId).orElseThrow(() -> new NotFoundException("User Not Found"));
 
-        return new UsersResponse(
+        return new UserProfile(
                 user.getId(),
-                user.getRole(), user.getEmail(), user.getUsername(), user.getBio(),
-                user.getAvatarUrl(), user.getLocation());
+                user.getUsername(), user.getDisplayName(), user.getEmail(), user.getRole(),
+                user.getAvatar(), user.getCover(), user.getBio(), user.getLocation(), user.getCreatedAt(),
+                user.getUpdatedAt(), user.getLastLoginAt(), user.isVerified(), user.isBanned(), null, null, null,
+                user.getSocial());
 
     }
-    
 
-    public List<UsersResponse> getUsers(BatchUsersRequest req) {
+    public List<UserProfile> getUsers(BatchUsersRequest req) {
         Set<Long> ids = new HashSet<>(req.usersIds());
         List<Users> users = usersRepo.findAllByIdIn(ids);
 
@@ -97,94 +95,63 @@ public class UsersService {
             return List.of();
         }
         return users.stream()
-                .map(user -> new UsersResponse(
-                        user.getId(), // id
-                        user.getRole(), // role
-                        user.getEmail(), // email
-                        user.getUsername(), // username
-                        user.getBio(), // bio
-                        user.getAvatarUrl(), // avatar
-                        user.getLocation() // location
-                )).toList();
+                .map(user -> new UserProfile(
+                        user.getId(),
+                        user.getUsername(), user.getDisplayName(), user.getEmail(), user.getRole(),
+                        user.getAvatar(), user.getCover(), user.getBio(), user.getLocation(), user.getCreatedAt(),
+                        user.getUpdatedAt(), user.getLastLoginAt(), user.isVerified(), user.isBanned(), null, null,
+                        null, user.getSocial()))
+                .toList();
     }
 
-    public UsersResponse updateUserProfile(Long userId, UpdateProfileRequest req) {
+    public UserProfile updateUserProfile(Long userId, UpdateProfileRequest req) {
         Users user = usersRepo.findById(userId)
                 .orElseThrow(() -> new NotFoundException("User not found"));
 
-        if (req.email() != null && !req.email().equals(user.getEmail())) {
-            if (usersRepo.findByEmail(req.email()).isPresent()) {
-                throw new ConflictException("Email is already in use");
-            }
-            user.setEmail(req.email());
+        if (req.displayName() != null) {
+            user.setDisplayName(req.displayName());
         }
-
-        if (req.username() != null && !req.username().equals(user.getUsername())) {
-            if (usersRepo.findByUsername(req.username()).isPresent()) {
-                throw new ConflictException("Username is already in use");
-            }
-            user.setUsername(req.username());
-        }
-
         if (req.bio() != null) {
             user.setBio(req.bio());
         }
         if (req.location() != null) {
             user.setLocation(req.location());
         }
-        // avatar
-        String url = uploadFile(req.avatar());
-        if (url != null) {
-            user.setAvatarUrl(url);
+        if (req.avatar() != null) {
+            user.setAvatar(req.avatar());
+        }
+
+        if (req.cover() != null) {
+            user.setCover(req.cover());
+        }
+
+        if (req.social() != null) {
+            Social current = user.getSocial() ;
+
+            if (req.social().getWebsite() != null)
+                current.setWebsite(req.social().getWebsite());
+            if (req.social().getTwitter() != null)
+                current.setTwitter(req.social().getTwitter());
+            if (req.social().getGithub() != null)
+                current.setGithub(req.social().getGithub());
+            if (req.social().getLinkedin() != null)
+                current.setLinkedin(req.social().getLinkedin());
+
+            user.setSocial(current);
         }
 
         try {
             usersRepo.save(user);
         } catch (Exception e) {
-            throw new BadRequestException("Failed to update profile: " + e.getMessage());
+            throw new BadRequestException("Failed to update profile");
         }
 
-        return new UsersResponse(
+        return new UserProfile(
                 user.getId(),
-                user.getRole(),
-                user.getEmail(),
-                user.getUsername(),
-                user.getBio(),
-                user.getAvatarUrl(),
-                user.getLocation());
-    }
-
-    private boolean isValidContentType(String contentType) {
-        return contentType != null && (contentType.startsWith("image/"));
-    }
-
-    private String uploadFile(MultipartFile avatar) {
-        if (avatar == null) {
-            return null;
-        }
-
-        if (!isValidContentType(avatar.getContentType())) {
-            throw new BadRequestException("Unsupported file type");
-        }
-
-        try {
-            Map<?, ?> uploadResult = cloudinary.uploader().upload(
-                    avatar.getBytes(),
-                    ObjectUtils.asMap(
-                            "resource_type", "auto",
-                            "folder", "avatars"));
-
-            Object secureUrl = uploadResult.get("secure_url");
-            if (secureUrl == null) {
-                throw new BadRequestException("Upload failed: no URL returned");
-            }
-
-            return secureUrl.toString();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new BadRequestException("Failed to upload media file");
-        }
+                user.getUsername(), user.getDisplayName(), user.getEmail(), user.getRole(),
+                user.getAvatar(), user.getCover(), user.getBio(), user.getLocation(), user.getCreatedAt(),
+                user.getUpdatedAt(), user.getLastLoginAt(), user.isVerified(), user.isBanned(), null, null, null,
+                user.getSocial());
     }
 
 }

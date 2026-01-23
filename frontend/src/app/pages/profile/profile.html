@@ -2,7 +2,7 @@
   <header class="hero-header">
     <div class="cover-wrapper">
       <img
-        [src]="user()?.cover || 'https://picsum.photos/seed/cover/1200/400'"
+        [src]="targetUser()?.cover || 'assets/avatar.webp'"
         class="cover-img"
         alt="Cover"
       />
@@ -22,7 +22,7 @@
     <div class="header-content">
       <div class="avatar-container">
         <div class="avatar-ring">
-          <img [src]="user()?.avatar || 'https://picsum.photos/seed/ava/200'" class="avatar-img" />
+          <img [src]="targetUser()?.avatar || 'assets/avatar.webp'" class="avatar-img" />
           @if (isOwn()) {
             <button mat-mini-fab class="edit-avatar" (click)="openEditDialog('avatar')">
               <mat-icon>edit</mat-icon>
@@ -50,12 +50,12 @@
   <div class="main-container">
     <section class="identity">
       <h1 class="display-name">
-        {{ user()?.username }}
+        {{ targetUser()?.username }}
         @if (isAdmin()) {
           <span class="admin-label">Staff</span>
         }
       </h1>
-      <p class="handle">@{{ user()?.handle || user()?.username }}</p>
+      <p class="handle">@{{ targetUser()?.displayName || targetUser()?.username }}</p>
 
       <div class="stats-row">
         <div class="stat-pill" matRipple>
@@ -71,11 +71,11 @@
         </div>
       </div>
 
-      <p class="bio-text">{{ user()?.bio || 'Blogger and creative mind.' }}</p>
+      <p class="bio-text">{{ targetUser()?.bio || 'Blogger and creative mind.' }}</p>
 
       <div class="metadata">
-        <span><mat-icon>place</mat-icon> {{ user()?.location || 'Everywhere' }}</span>
-        <span><mat-icon>calendar_month</mat-icon> Joined {{ user()?.createdAt }}</span>
+        <span><mat-icon>place</mat-icon> {{ targetUser()?.location || 'Everywhere' }}</span>
+        <span><mat-icon>calendar_month</mat-icon> Joined {{ targetUser()?.createdAt }}</span>
       </div>
     </section>
 
@@ -94,14 +94,7 @@
               }
             </mat-card-header>
             <mat-card-content>
-              <p>{{ user()?.bio }}</p>
-              <!-- <mat-divider></mat-divider>
-              <h4 style="margin-top: 1rem">Skills</h4>
-              <mat-chip-set>
-                <mat-chip>Angular</mat-chip>
-                <mat-chip>TypeScript</mat-chip>
-                <mat-chip>Material 3</mat-chip>
-              </mat-chip-set> -->
+              <p>{{ targetUser()?.bio }}</p>
             </mat-card-content>
           </mat-card>
         </div>
@@ -113,10 +106,10 @@
         <div class="tab-body posts-grid">
           @for (post of posts(); track post.id) {
             <mat-card class="post-card" appearance="outlined" matRipple>
-              <img mat-card-image [src]="post.image" alt="Post cover" />
+              <!-- <img mat-card-image [src]="post.image" alt="Post cover" /> -->
               <mat-card-content>
                 <h3>{{ post.title }}</h3>
-                <small>{{ post.date }}</small>
+                <!-- <small>{{ post.date }}</small> -->
               </mat-card-content>
             </mat-card>
           }
