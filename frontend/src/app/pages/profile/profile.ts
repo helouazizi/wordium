@@ -61,7 +61,10 @@ export class Profile {
 
     if (id) {
       this.usersService.getUserProfile(id).subscribe({
-        next: (user) => this.targetUser.set(user),
+        next: (user) => {
+          this.targetUser.set(user);
+          console.log(this.targetUser(), 'profile');
+        },
       });
     } else {
       this.targetUser.set(this.sessionUser());
@@ -105,8 +108,7 @@ export class Profile {
   toggleFollow() {
     const user = this.targetUser();
     if (!user || this.isOwn()) return;
-    console.log("toggleFollow");
-    
+    console.log('toggleFollow');
 
     this.usersService.followUser(user.id).subscribe();
   }

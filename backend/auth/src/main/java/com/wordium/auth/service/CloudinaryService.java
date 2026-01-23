@@ -20,7 +20,7 @@ public class CloudinaryService {
     private final Cloudinary cloudinary;
 
     private static final String DEFAULT_FOLDER = "users";
-    private static final String DEFAULT_UPLOAD_PRESET = "ml_default";
+    private static final String DEFAULT_UPLOAD_PRESET = "users_preset";
     private static final String STATUS_PENDING = "PENDING";
     private static final String STATUS_COMPLETED = "COMPLETED";
 
@@ -28,9 +28,6 @@ public class CloudinaryService {
         this.cloudinary = cloudinary;
     }
 
-    /**
-     * Generates a Cloudinary signature for uploading files with PENDING status.
-     */
     public Map<String, Object> getSignature() {
         long timestamp = System.currentTimeMillis() / 1000L;
 
@@ -54,18 +51,13 @@ public class CloudinaryService {
         return response;
     }
 
-    /**
-     * Scheduled job that deletes stale PENDING uploads from Cloudinary.
-     * Runs every hour.
-     */
     @Scheduled(cron = "0 0 * * * ?")
     public void deletePendingUploads() {
         try {
             Map<?, ?> resources = cloudinary.api().resources(ObjectUtils.asMap(
                     "type", "upload",
                     "prefix", DEFAULT_FOLDER + "/",
-                    "context", true
-            ));
+                    "context", true));
 
             List<Map<String, Object>> files = (List<Map<String, Object>>) resources.get("resources");
             long now = System.currentTimeMillis() / 1000L;
@@ -94,23 +86,20 @@ public class CloudinaryService {
         }
     }
 
-    /**
-     * Marks a Cloudinary file as COMPLETED and returns the secure URL.
-     */
     public String finalizeUpload(String publicId) {
         try {
             cloudinary.uploader().explicit(publicId, ObjectUtils.asMap(
+                    "public_id", publicId,
                     "type", "upload",
                     "invalidate", true,
-                    "context", "status=" + STATUS_COMPLETED
-            ));
+                    "context", "status=" + STATUS_COMPLETED));
 
             Map<?, ?> resource = cloudinary.api().resource(publicId, ObjectUtils.emptyMap());
             return (String) resource.get("secure_url");
 
         } catch (Exception e) {
             log.error("Failed to finalize Cloudinary upload: {}", publicId, e);
-            throw new RuntimeException("Failed to finalize Cloudinary upload", e);
+            throw new RuntimeException("Failed to finalize Cloudinary upload");
         }
     }
 }

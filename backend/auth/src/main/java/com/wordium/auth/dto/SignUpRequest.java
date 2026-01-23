@@ -13,8 +13,8 @@ public record SignUpRequest(
         @Size(max = 300, message = "Bio must be less than 300 characters") String bio,
 
         String avatar,
-        String avatarUrl,
+       
 
-        @Size(max = 300, message = "Location must be less than 30 characters") String location) {
+        @Size(max = 300, message = "Location must be less than 30 characters") String location, String avatarPublicId) {
 
 }

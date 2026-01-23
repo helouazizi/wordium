@@ -17,8 +17,8 @@ export class UsersClient {
     return this.http.get<User>(`${this.config.usersBaseUrl}/me`);
   }
 
-  getUserById(userId: number): Observable<User> {
-    return this.http.get<User>(`${this.config.usersBaseUrl}/${userId}`);
+  getUserById(targetId: number): Observable<User> {
+    return this.http.get<User>(`${this.config.usersBaseUrl}/${targetId}`);
   }
 
   updateProfile(payload: UpdateProfileRequest): Observable<User> {

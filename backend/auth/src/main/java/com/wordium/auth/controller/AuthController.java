@@ -3,7 +3,6 @@ package com.wordium.auth.controller;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -40,9 +39,9 @@ public class AuthController {
                         @ApiResponse(responseCode = "200", description = "User registered successfully", content = @Content(schema = @Schema(implementation = AuthResponse.class))),
                         @ApiResponse(responseCode = "400", description = "Validation Errors", content = @Content(schema = @Schema(implementation = ProblemDetail.class)))
         })
-        @PostMapping(value = "/signup", consumes = "multipart/form-data")
+        @PostMapping("/signup")
         public ResponseEntity<AuthResponse> signup(
-                        @Valid @ModelAttribute SignUpRequest req) {
+                        @Valid @RequestBody SignUpRequest req) {
                 String token = authService.registerUser(req);
                 return ResponseEntity.ok(new AuthResponse(token));
         }

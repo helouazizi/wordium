@@ -21,16 +21,19 @@ public class AuthService {
     private final UsersServiceClient usersServiceClient;
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
     private final JwtUtil jwtUtil;
+    private final CloudinaryService cloudinaryService;
 
-    public AuthService(AuthRepository authRepository, UsersServiceClient usersServiceClient, JwtUtil jwtUtil) {
+    public AuthService(AuthRepository authRepository, UsersServiceClient usersServiceClient, JwtUtil jwtUtil,
+            CloudinaryService cloudinaryService) {
         this.authRepository = authRepository;
         this.usersServiceClient = usersServiceClient;
         this.jwtUtil = jwtUtil;
+        this.cloudinaryService = cloudinaryService;
     }
 
     public String registerUser(SignUpRequest req) {
         SignUpRequest signUpRequest = new SignUpRequest(req.email(), req.username(), null, req.bio(),
-                null, req.avatar(), req.location());
+                req.avatar(), req.location(), null);
 
         UserResponse userResponse = usersServiceClient.createUser(signUpRequest);
 
@@ -39,6 +42,15 @@ public class AuthService {
         authUser.setPasswordHash(passwordEncoder.encode(req.password()));
 
         authRepository.save(authUser);
+
+        // update avatar status if exist
+        if (req.avatar() != null && !req.avatar().isBlank()) {
+            if (req.avatarPublicId() == null || req.avatarPublicId().isBlank()) {
+                throw new IllegalArgumentException("publicId must not be null or empty");
+            }
+
+            cloudinaryService.finalizeUpload(req.avatarPublicId());
+        }
         String token = jwtUtil.generateToken(userResponse.id(), userResponse.role());
 
         return token;

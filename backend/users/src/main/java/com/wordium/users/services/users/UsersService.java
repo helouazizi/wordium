@@ -7,6 +7,7 @@ import java.util.Set;
 import org.springframework.stereotype.Service;
 
 import com.wordium.users.dto.Social;
+import com.wordium.users.dto.Stats;
 import com.wordium.users.dto.auth.SignUpRequest;
 import com.wordium.users.dto.auth.SignUpResponse;
 import com.wordium.users.dto.users.BatchUsersRequest;
@@ -16,21 +17,28 @@ import com.wordium.users.exceptions.BadRequestException;
 import com.wordium.users.exceptions.ConflictException;
 import com.wordium.users.exceptions.NotFoundException;
 import com.wordium.users.models.Users;
+import com.wordium.users.repo.FollowersRepo;
 import com.wordium.users.repo.UsersRepo;
 
 @Service
 public class UsersService {
 
     private final UsersRepo usersRepo;
+    private final FollowersRepo followersRepo;
 
-    public UsersService(UsersRepo usersRepo) {
+    public UsersService(UsersRepo usersRepo, FollowersRepo followersRepo) {
         this.usersRepo = usersRepo;
+        this.followersRepo = followersRepo;
     }
 
     public SignUpResponse createUser(SignUpRequest req) {
         if (usersRepo.findByEmail(req.email()).isPresent()) {
-            throw new ConflictException("Email or username already taken");
+            throw new ConflictException("Email  already taken");
         }
+        if (usersRepo.findByUsername(req.username()).isPresent()) {
+            throw new ConflictException("Username already taken");
+        }
+
         Users user = new Users();
         user.setEmail(req.email());
         user.setUsername(req.username());
@@ -63,15 +71,30 @@ public class UsersService {
                 user.getRole());
     }
 
-    public UserProfile getUserProfile(Long userId) {
-        Users user = usersRepo.findById(userId).orElseThrow(() -> new NotFoundException("User Not Found"));
+    public UserProfile getUserProfile(Long userId, Long targetId) {
+        // Users user = usersRepo.findById(userId).orElseThrow(() -> new
+        // NotFoundException("User Not Found"));
+        Users taregtUser = usersRepo.findById(userId).orElseThrow(() -> new NotFoundException("User Not Found"));
+        boolean isfollowing = false;
+        boolean followsme = false;
+        if (userId != targetId) {
+            isfollowing = followersRepo.existsByFollowerIdAndFollowedId(userId, targetId);
+            followsme = followersRepo.existsByFollowerIdAndFollowedId(targetId, userId);
+        }
+        Long followers = followersRepo.countByFollowedId(targetId);
+        Long following = followersRepo.countByFollowerId(targetId);
+
+        Stats stats = new Stats(followers, following, 0l, 0l);
 
         return new UserProfile(
-                user.getId(),
-                user.getUsername(), user.getDisplayName(), user.getEmail(), user.getRole(),
-                user.getAvatar(), user.getCover(), user.getBio(), user.getLocation(), user.getCreatedAt(),
-                user.getUpdatedAt(), user.getLastLoginAt(), user.isVerified(), user.isBanned(), null, null, null,
-                user.getSocial());
+                taregtUser.getId(),
+                taregtUser.getUsername(), taregtUser.getDisplayName(), taregtUser.getEmail(), taregtUser.getRole(),
+                taregtUser.getAvatar(), taregtUser.getCover(), taregtUser.getBio(), taregtUser.getLocation(),
+                taregtUser.getCreatedAt(),
+                taregtUser.getUpdatedAt(), taregtUser.getLastLoginAt(), taregtUser.isVerified(), taregtUser.isBanned(),
+                isfollowing, followsme,
+                stats,
+                taregtUser.getSocial());
 
     }
 
@@ -126,7 +149,7 @@ public class UsersService {
         }
 
         if (req.social() != null) {
-            Social current = user.getSocial() ;
+            Social current = user.getSocial();
 
             if (req.social().getWebsite() != null)
                 current.setWebsite(req.social().getWebsite());
