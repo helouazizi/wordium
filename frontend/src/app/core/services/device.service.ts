@@ -11,7 +11,7 @@ export class DeviceService {
 
   readonly isHandset = toSignal(
     this.breakpointObserver
-      .observe([Breakpoints.Handset])
+      .observe('(max-width: 768px)')
       .pipe(map(result => result.matches)),
     { initialValue: false }
   );

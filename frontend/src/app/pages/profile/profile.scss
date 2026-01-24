@@ -129,9 +129,10 @@
   .display-name {
     font-size: 2.2rem;
     font-weight: 800;
-    margin: 0;
+    margin: 0 auto;
     display: flex;
     align-items: center;
+    // justify-content: center;
   }
 
   .handle {
@@ -283,6 +284,15 @@
     .stats-row {
       justify-content: center;
       flex-wrap: wrap;
+    }
+
+    .display-name {
+      font-size: 2.2rem;
+      font-weight: 800;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
   }
 }
