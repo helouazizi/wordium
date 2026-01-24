@@ -1,6 +1,11 @@
-// src/app/core/services/post.service.ts
 import { inject, Injectable, signal, computed } from '@angular/core';
-import { CreatePostRequest, Post, Reaction, SignatureResponse } from '../apis/posts/post.model';
+import {
+  CreatePostRequest,
+  Post,
+  Reaction,
+  ReportType,
+  SignatureResponse,
+} from '../apis/posts/post.model';
 import { catchError, finalize, Observable, of, switchMap, tap, throwError } from 'rxjs';
 import { PostsClient } from '../apis/posts/post-client';
 import { PageRequest } from '../../shared/models/pagination.model';
@@ -29,7 +34,50 @@ export class PostService {
       }),
     );
   }
+  getUserPosts(userid: number, params: PageRequest, append: boolean = false) {
+    this._loading.set(true);
+    return this.client.getUserPosts(userid, params).pipe(
+      finalize(() => this._loading.set(false)),
+      tap((response) => {
+        if (append) {
+          this._posts.update((current) => [...current, ...response.data]);
+        } else {
+          this._posts.set(response.data);
+        }
+      }),
+    );
+  }
 
+  getAllPosts(params: PageRequest, append: boolean = false) {
+    this._loading.set(true);
+    return this.client.getAllPosts(params).pipe(
+      finalize(() => this._loading.set(false)),
+      tap((response) => {
+        if (append) {
+          this._posts.update((current) => [...current, ...response.data]);
+        } else {
+          this._posts.set(response.data);
+        }
+      }),
+    );
+  }
+  getBookmarks(params: PageRequest, append: boolean = false) {
+    this._loading.set(true);
+    return this.client.getBookmarks(params).pipe(
+      finalize(() => this._loading.set(false)),
+      tap((response) => {
+        if (append) {
+          this._posts.update((current) => [...current, ...response.data]);
+        } else {
+          this._posts.set(response.data);
+        }
+      }),
+    );
+  }
+
+  fetchPostById(id: number): Observable<Post> {
+    return this.client.getPostById(id);
+  }
   createPost(post: CreatePostRequest): Observable<Post> {
     return this.client
       .createPost(post)
@@ -39,7 +87,7 @@ export class PostService {
     return this.posts().find((p) => p.id === id);
   }
 
-  react(postId: number) {
+  reactToPost(postId: number)  {
     const previousState = this._posts();
 
     const post = previousState.find((p) => p.id === postId);
@@ -70,7 +118,7 @@ export class PostService {
     );
   }
 
-  delete(postId: number) {
+  deletePost(postId: number) {
     return this.client.deletePost(postId).pipe(
       tap(() => {
         this._posts.update((posts) => posts.filter((p) => p.id !== postId));
@@ -78,12 +126,12 @@ export class PostService {
     );
   }
 
-  comment(postId: number, content: string) {
-    return this.client.commentPost(postId, content);
+  addComment(postId: number, content: string) {
+    return this.client.addComment(postId, content);
   }
 
-  report(postId: number, reason: string) {
-    return this.client.reportPost(postId, reason);
+  reportPost(event: { id: number; type: ReportType; reason: string }) {
+    return this.client.reportPost(event.id, event.reason);
   }
 
   getSignature(): Observable<SignatureResponse> {

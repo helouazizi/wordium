@@ -19,6 +19,115 @@
     transition-duration: 0.08s;
   }
 
+  // OVERLAYS (Delete & Report)
+  .card-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 10;
+    background: rgba(var(--mat-sys-surface-rgb, 255, 255, 255), 0.95);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 24px;
+    animation: fadeIn 0.2s ease-out;
+
+    .overlay-content {
+      max-width: 320px;
+
+      h3 {
+        font-weight: 700;
+        margin-bottom: 8px;
+      }
+
+      p {
+        color: var(--mat-sys-on-surface-variant);
+        margin-bottom: 20px;
+      }
+    }
+
+    .overlay-actions {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+    }
+
+    .target-selector {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+
+      button {
+        width: 100%;
+        border-radius: 12px;
+      }
+    }
+  }
+
+  // Ensure the Like pulse works
+  .active-btn {
+    color: var(--mat-sys-primary) !important;
+
+    mat-icon {
+      animation: pulseLike 0.4s ease;
+    }
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: scale(1.02);
+    }
+
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  // COMMENTS SECTION
+  .comments-section {
+    padding: 20px 16px;
+    background: var(--mat-sys-surface-container-low);
+
+    .comment-input-container {
+      margin-bottom: 20px;
+
+      .full-width {
+        width: 100%;
+      }
+    }
+
+    .comment-item {
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--mat-sys-outline-variant);
+
+      &:last-child {
+        border: none;
+      }
+
+      .comment-content {
+        margin-top: 8px;
+        padding-inline-start: 44px; // Align with avatar
+        font-size: 0.95rem;
+        color: var(--mat-sys-on-surface);
+      }
+    }
+
+    .loader {
+      display: flex;
+      justify-content: center;
+      padding: 16px;
+    }
+
+    .load-more {
+      width: 100%;
+      color: var(--mat-sys-primary);
+    }
+  }
+
   -webkit-tap-highlight-color: transparent;
 
   mat-card-header {
@@ -297,6 +406,6 @@
 
 .danger-item {
   mat-icon {
-   color: var(--mat-sys-error);
+    color: var(--mat-sys-error);
   }
 }

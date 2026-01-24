@@ -26,6 +26,11 @@ export const routes: Routes = [
         loadComponent: () => import('./pages/post-editor/post-editor').then((c) => c.PostEditor),
       },
       {
+        path: 'posts/:id',
+        loadComponent: () =>
+          import('./pages/post-detail/post-detail').then((c) => c.PostDetail),
+      },
+      {
         path: '',
         redirectTo: 'feed',
         pathMatch: 'full',

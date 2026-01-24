@@ -1,11 +1,11 @@
 <div class="feed">
     @for (post of postService.posts(); track post.id) {
       <app-post-card
+        [user]="user!"
         [post]="post"
         (onReact)="handleReaction(post.id)"
         (onDelete)="handleDelete(post.id)"
-        (onReport)="handleReport(post.id, $event)"
-        (onComment)="handleComment(post.id, $event)"
+        [mode]="'feed'"
       >
       </app-post-card>
     }

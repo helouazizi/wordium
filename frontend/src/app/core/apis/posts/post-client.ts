@@ -37,6 +37,60 @@ export class PostsClient {
     });
   }
 
+  getUserPosts(userId: number, params?: PageRequest): Observable<PageResponse<Post>> {
+    let httpParams = new HttpParams();
+
+    if (params?.page !== undefined) {
+      httpParams = httpParams.set('page', params.page);
+    }
+    if (params?.size !== undefined) {
+      httpParams = httpParams.set('size', params.size);
+    }
+    if (params?.sort) {
+      httpParams = httpParams.set('sort', params.sort);
+    }
+
+    return this.http.get<PageResponse<Post>>(`${this.config.usersBaseUrl}/${userId}/posts`, {
+      params: httpParams,
+    });
+  }
+
+  getAllPosts(params?: PageRequest): Observable<PageResponse<Post>> {
+    let httpParams = new HttpParams();
+
+    if (params?.page !== undefined) {
+      httpParams = httpParams.set('page', params.page);
+    }
+    if (params?.size !== undefined) {
+      httpParams = httpParams.set('size', params.size);
+    }
+    if (params?.sort) {
+      httpParams = httpParams.set('sort', params.sort);
+    }
+
+    return this.http.get<PageResponse<Post>>(`${this.config.usersBaseUrl}/admin/posts`, {
+      params: httpParams,
+    });
+  }
+
+  getBookmarks(params?: PageRequest): Observable<PageResponse<Post>> {
+    let httpParams = new HttpParams();
+
+    if (params?.page !== undefined) {
+      httpParams = httpParams.set('page', params.page);
+    }
+    if (params?.size !== undefined) {
+      httpParams = httpParams.set('size', params.size);
+    }
+    if (params?.sort) {
+      httpParams = httpParams.set('sort', params.sort);
+    }
+
+    return this.http.get<PageResponse<Post>>(`${this.config.postsBaseUrl}/bookmarks`, {
+      params: httpParams,
+    });
+  }
+
   getSignature(): Observable<SignatureResponse> {
     return this.http.get<SignatureResponse>(`${this.config.postsBaseUrl}/signature`);
   }
@@ -72,7 +126,7 @@ export class PostsClient {
   reactPost(postId: number, reaction: Reaction): Observable<void> {
     return this.http.post<void>(`${this.config.postsBaseUrl}/${postId}/react`, { reaction });
   }
-  commentPost(postId: number, content: string): Observable<void> {
+  addComment(postId: number, content: string): Observable<void> {
     return this.http.post<void>(`${this.config.postsBaseUrl}/${postId}/comments`, { content });
   }
   reportPost(postId: number, reason: string): Observable<void> {

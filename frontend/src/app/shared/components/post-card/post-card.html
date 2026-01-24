@@ -1,4 +1,51 @@
-<mat-card class="post-card" (click)="navigateToPost()">
+<mat-card class="post-card" [class.detail-mode]="mode() === 'detail'" (click)="handleNavigate()">
+  
+  <!-- DELETE CONFIRMATION OVERLAY -->
+  @if (isConfirmingDelete()) {
+    <div class="card-overlay confirm-delete" (click)="$event.stopPropagation()">
+      <div class="overlay-content">
+        <mat-icon color="warn">delete_forever</mat-icon>
+        <h3>Delete this post?</h3>
+        <p>This action cannot be undone.</p>
+        <div class="overlay-actions">
+          <button mat-button (click)="cancelDelete()">Cancel</button>
+          <button mat-flat-button color="warn" (click)="executeDelete()">Delete</button>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- REPORTING OVERLAY -->
+  @if (isReporting()) {
+    <div class="card-overlay report-flow" (click)="$event.stopPropagation()">
+      <div class="overlay-content">
+        <h3>Report Content</h3>
+        
+        @if (!reportingTarget()) {
+          <p>What would you like to report?</p>
+          <div class="target-selector">
+            @for (opt of reportOptions(); track opt.id) {
+              <button mat-stroked-button (click)="selectReportTarget(opt.id,opt.type)">
+                {{ opt.label }}
+              </button>
+            }
+          </div>
+        } @else {
+          <p>Reporting <strong>{{ reportingTarget()?.type }}</strong>. Why?</p>
+          <mat-form-field appearance="outline" class="full-width">
+            <textarea matInput [(ngModel)]="reportReason" placeholder="Describe the issue..."></textarea>
+          </mat-form-field>
+          <div class="overlay-actions">
+            <button mat-button (click)="cancelReport()">Cancel</button>
+            <button mat-flat-button color="primary" [disabled]="!reportReason().trim()" (click)="submitReport()">
+              Submit Report
+            </button>
+          </div>
+        }
+      </div>
+    </div>
+  }
+
   <mat-card-header>
     <app-user-avatar
       [user]="post().actor"
@@ -7,92 +54,90 @@
       [showName]="true"
       [time]="post().createdAt"
     ></app-user-avatar>
-
     <span class="spacer"></span>
-
-    <button
-      mat-icon-button
-      [matMenuTriggerFor]="postMenu"
-      aria-label="Post Options"
-      (click)="$event.stopPropagation()"
-      class="post-optiions"
-    >
+    <button mat-icon-button [matMenuTriggerFor]="postMenu" (click)="$event.stopPropagation()">
       <mat-icon>more_vert</mat-icon>
     </button>
   </mat-card-header>
 
   <div class="card-body">
     <h2 class="post-title">{{ post().title }}</h2>
-
-    <div class="content-wrapper" [class.teaser-mode]="showReadMoreOverlay()">
-      <mat-card-content
-        class="markdown-body content-inner"
-        [innerHTML]="post().content | safeHtml | async"
-      >
+    <div class="content-wrapper" [class.teaser-mode]="mode() === 'feed'">
+      <mat-card-content class="markdown-body content-inner" [innerHTML]="post().content | safeHtml | async">
       </mat-card-content>
 
-      <div
-        *ngIf="showReadMoreOverlay()"
-        class="read-more-overlay"
-        (click)="navigateToPost(); $event.stopPropagation()"
-      >
-        <button mat-flat-button class="read-more-btn">Read more</button>
-      </div>
+      @if (mode() === 'feed') {
+        <div class="read-more-overlay">
+          <button mat-flat-button class="read-more-btn">Read more</button>
+        </div>
+      }
     </div>
   </div>
 
   <mat-card-actions align="start">
-    <button
-      mat-button
-      (click)="handleLike(); $event.stopPropagation()"
-      [class.active-btn]="post().isLiked"
-      aria-label="{{ post().isLiked ? 'Unlike post' : 'Like post' }}"
-    >
-      <mat-icon>{{ post().isLiked ? 'favorite_outline' : 'favorite_outline_fill' }}</mat-icon>
-      <span class="counter" aria-hidden="true">{{ post().likesCount }}</span>
+    <button mat-button (click)="onReact.emit(post().id); $event.stopPropagation()" [class.active-btn]="post().isLiked">
+      <mat-icon>{{ post().isLiked ? 'favorite' : 'favorite_border' }}</mat-icon>
+      <span class="counter">{{ post().likesCount }}</span>
     </button>
 
-    <button
-      mat-button
-      (click)="handleComment(); $event.stopPropagation()"
-      aria-label="Comment on post"
-    >
+    <button mat-button (click)="$event.stopPropagation()">
       <mat-icon>chat_bubble_outline</mat-icon>
-      <span class="counter" aria-hidden="true">{{ post().commentsCount }}</span>
+      <span class="counter">{{ post().commentsCount }}</span>
     </button>
-    <button
-      mat-button
-      (click)="handleMarke(); $event.stopPropagation()"
-      aria-label="Comment on post"
-    >
-      <mat-icon>bookmark</mat-icon>
+
+    <button mat-button (click)="onBookmark.emit(post().id); $event.stopPropagation()" [class.active-btn]="post().isBookmarked">
+      <mat-icon>{{ post().isBookmarked ? 'bookmark' : 'bookmark_border' }}</mat-icon>
     </button>
 
     <span class="spacer"></span>
 
-    <button
-      mat-icon-button
-      (click)="handleReport(); $event.stopPropagation()"
-      matTooltip="Report post"
-    >
+    <button mat-icon-button (click)="isReporting.set(true); $event.stopPropagation()" matTooltip="Quick Report">
       <mat-icon>outlined_flag</mat-icon>
     </button>
   </mat-card-actions>
+
+  <!-- COMMENTS SECTION (Only in Detail Mode) -->
+  @if (mode() === 'detail') {
+    <mat-divider></mat-divider>
+    <div class="comments-section" (click)="$event.stopPropagation()">
+      <div class="comment-input-container">
+        <mat-form-field appearance="outline" class="full-width">
+          <textarea matInput placeholder="Write a comment..." [(ngModel)]="newCommentText" rows="2"></textarea>
+          <button mat-icon-button matSuffix (click)="submitComment()" [disabled]="!newCommentText()">
+            <mat-icon>send</mat-icon>
+          </button>
+        </mat-form-field>
+      </div>
+
+      <div class="comments-list">
+        @for (comment of comments(); track comment.id) {
+          <div class="comment-item">
+            <app-user-avatar [user]="comment.actor" size="sm" [showName]="true" [time]="comment.createdAt"></app-user-avatar>
+            <div class="comment-content">{{ comment.content }}</div>
+          </div>
+        }
+        
+        @if (isLoadingComments()) {
+          <div class="loader"><mat-spinner diameter="30"></mat-spinner></div>
+        } @else if (hasMoreComments()) {
+          <button mat-button class="load-more" (click)="loadMore()">Load more comments</button>
+        }
+      </div>
+    </div>
+  }
 </mat-card>
 
-<mat-menu
-  class="post-options mat-menu-item"
-  #postMenu="matMenu"
-  xPosition="before"
-  yPosition="below"
-  [overlapTrigger]="false"
->
-  <button mat-menu-item (click)="handleDelete(); $event.stopPropagation()">
-    <mat-icon>outlined_flag</mat-icon>
-    <span>Report Post</span>
-  </button>
-  <button mat-menu-item class="danger-item" (click)="handleDelete(); $event.stopPropagation()">
-    <mat-icon color="warn">delete_outline</mat-icon>
-    <span>Delete Post</span>
-  </button>
+<mat-menu #postMenu="matMenu" xPosition="before">
+  @if (!canDelete()) {
+    <button mat-menu-item (click)="isReporting.set(true)">
+      <mat-icon>flag</mat-icon>
+      <span>Report Post</span>
+    </button>
+  }
+  @if (canDelete()) {
+    <button mat-menu-item class="danger-item" (click)="confirmDelete()">
+      <mat-icon color="warn">delete_outline</mat-icon>
+      <span>Delete Post</span>
+    </button>
+  }
 </mat-menu>

@@ -9,6 +9,7 @@ export interface Post {
   commentsCount: number;
   reportsCount: number;
   isLiked: boolean;
+  isBookmarked:boolean;
   isReported: boolean;
   isFlagged: boolean;
   createdAt: string;
@@ -35,7 +36,7 @@ export interface CreatePostRequest {
 }
 
 export type Reaction = 'like' | 'unlike';
-
+export type ReportType = 'post' | 'user';
 export interface Comment {
   id: number;
   postId: number;

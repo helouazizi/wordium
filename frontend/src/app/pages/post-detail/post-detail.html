@@ -1,0 +1,27 @@
+<div class="detail-container">
+  @if (isLoading()) {
+    <div class="loading-state">
+      <mat-spinner diameter="50"></mat-spinner>
+      <p>Loading post...</p>
+    </div>
+  } @else if (error() || !post()) {
+    <app-not-found 
+      title="Post Not Found" 
+      message="The post you are looking for might have been deleted or moved.">
+    </app-not-found>
+  } @else {
+    <div class="post-wrapper">
+      <app-post-card
+        [post]="post()!"
+        [user]="currentUser!"
+        mode="detail"
+        
+        (onReact)="handleReaction($event)"
+        (onComment)="handleComment($event)"
+        (onRequestComments)="handleRequestComments($event)"
+        (onReport)="handleReport($event)"
+        (onDelete)="handleDelete($event)"
+      ></app-post-card>
+    </div>
+  }
+</div>

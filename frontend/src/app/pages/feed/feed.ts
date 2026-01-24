@@ -6,17 +6,20 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { NotificationService } from '../../core/services/notification.service';
 import { PageRequest } from '../../shared/models/pagination.model';
 import { MatIcon } from '@angular/material/icon';
+import { AuthService } from '../../core/services/auth.service';
 
 @Component({
   selector: 'app-feed',
   standalone: true,
-  imports: [PostCard, MatButtonModule, MatProgressSpinnerModule,MatIcon],
+  imports: [PostCard, MatButtonModule, MatProgressSpinnerModule, MatIcon],
   templateUrl: './feed.html',
   styleUrl: './feed.scss',
 })
 export class Feed implements OnInit {
   public postService = inject(PostService);
   private notify = inject(NotificationService);
+  private auth = inject(AuthService);
+  user = this.auth.user();
 
   currentPage = signal(0);
   pageSize = signal(10);
@@ -49,17 +52,17 @@ export class Feed implements OnInit {
   }
 
   handleComment(postId: number, content: string) {
-    this.postService.comment(postId, content);
+    this.postService.addComment(postId, content);
   }
 
   handleReaction(postId: number) {
-    this.postService.react(postId);
+    this.postService.reactToPost(postId);
   }
 
   handleDelete(postId: number) {
     // need to show a popup instean of the browser popup
     if (confirm('Delete this post?')) {
-      this.postService.delete(postId).subscribe({
+      this.postService.deletePost(postId).subscribe({
         next: () => this.notify.showSuccess('Post removed'),
         error: () => this.notify.showError('Could not delete post'),
       });
@@ -67,7 +70,7 @@ export class Feed implements OnInit {
   }
 
   handleReport(postId: number, reason: string) {
-    this.postService.report(postId, reason).subscribe({
+    this.postService.reportPost({ id: postId, type: 'post', reason: reason }).subscribe({
       next: () => this.notify.showSuccess('Report submitted'),
     });
   }
