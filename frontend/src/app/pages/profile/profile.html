@@ -72,10 +72,12 @@
         </div>
       </div>
 
-      <p class="bio-text">{{ targetUser()?.bio || 'Blogger and creative mind.' }}</p>
+      <p class="bio-text">{{ targetUser()?.bio }}</p>
 
       <div class="metadata">
-        <span><mat-icon>place</mat-icon> {{ targetUser()?.location || 'Everywhere' }}</span>
+        @if (targetUser()?.location) {
+          <span><mat-icon>place</mat-icon> {{ targetUser()?.location }}</span>
+        }
         <span
           ><mat-icon>calendar_month</mat-icon> Joined
           {{ targetUser()?.createdAt | date: 'mediumDate' }}</span
@@ -83,43 +85,46 @@
       </div>
 
       <div class="social-links">
-        <!-- Website -->
         <a
           *ngIf="targetUser()?.social?.website"
           [href]="targetUser()?.social?.website"
           target="_blank"
+          class="social-item"
         >
           <mat-icon>language</mat-icon>
+          <span>Website</span>
         </a>
 
-        <!-- Twitter -->
         <a
           *ngIf="targetUser()?.social?.twitter"
           [href]="'https://twitter.com/' + targetUser()?.social?.twitter"
           target="_blank"
+          class="social-item"
         >
-          <mat-icon>twitter</mat-icon>
+          <mat-icon>alternate_email</mat-icon>
+          <span>Twitter</span>
         </a>
 
-        <!-- GitHub -->
         <a
           *ngIf="targetUser()?.social?.github"
           [href]="'https://github.com/' + targetUser()?.social?.github"
           target="_blank"
+          class="social-item"
         >
-          <mat-icon>code</mat-icon>
+          <mat-icon>terminal</mat-icon>
+          <span>GitHub</span>
         </a>
 
-        <!-- LinkedIn -->
         <a
           *ngIf="targetUser()?.social?.linkedin"
           [href]="'https://linkedin.com/in/' + targetUser()?.social?.linkedin"
           target="_blank"
+          class="social-item"
         >
-          <mat-icon>linkedin</mat-icon>
+          <mat-icon>business_center</mat-icon>
+          <span>LinkedIn</span>
         </a>
 
-        <!-- If no social links exist, show placeholder text for owner -->
         <span
           *ngIf="isOwn() && (!targetUser()?.social || isSocialEmpty(targetUser()?.social))"
           class="no-social"
@@ -127,14 +132,12 @@
           Add your social links
         </span>
 
-        <!-- Edit button always visible for owner -->
-        <button *ngIf="isOwn()" mat-mini-fab (click)="openEditDialog('social')">
+        <button *ngIf="isOwn()" mat-mini-fab color="primary" (click)="openEditDialog('social')">
           <mat-icon>edit</mat-icon>
         </button>
       </div>
     </section>
 
-    <!-- Tabs: About / Articles / Saved -->
     <mat-tab-group class="profile-tabs" dynamicHeight>
       <mat-tab label="About">
         <div class="tab-body">
@@ -153,19 +156,36 @@
       </mat-tab>
 
       <mat-tab label="Articles">
-        <div class="tab-body posts-grid">
-          <mat-card *ngFor="let post of posts()" class="post-card" matRipple>
-            <mat-card-content>
-              <h3>{{ post.title }}</h3>
-            </mat-card-content>
-          </mat-card>
+        <div class="tab-body ">
+          @if (posts() != null) {
+            <mat-card *ngFor="let post of posts()" class="post-card" matRipple>
+              <mat-card-content>
+                <h3>{{ post.title }}</h3>
+              </mat-card-content>
+            </mat-card>
+          } @else {
+            <div class="tab-body empty-state">
+              <mat-icon>articles</mat-icon>
+              <p>No posts yet</p>
+            </div>
+          }
         </div>
       </mat-tab>
 
       <mat-tab label="Saved">
         <div class="tab-body empty-state">
-          <mat-icon>bookmarks</mat-icon>
-          <p>Your saved posts are private.</p>
+          @if (posts() != null) {
+            <mat-card *ngFor="let post of posts()" class="post-card" matRipple>
+              <mat-card-content>
+                <h3>{{ post.title }}</h3>
+              </mat-card-content>
+            </mat-card>
+          } @else {
+            <div class="tab-body empty-state">
+              <mat-icon>bookmarks</mat-icon>
+              <p>No saved posts</p>
+            </div>
+          }
         </div>
       </mat-tab>
     </mat-tab-group>

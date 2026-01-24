@@ -19,16 +19,19 @@ import com.wordium.users.exceptions.NotFoundException;
 import com.wordium.users.models.Users;
 import com.wordium.users.repo.FollowersRepo;
 import com.wordium.users.repo.UsersRepo;
+import com.wordium.users.services.cloudinary.CloudinaryService;
 
 @Service
 public class UsersService {
 
     private final UsersRepo usersRepo;
     private final FollowersRepo followersRepo;
+    private final CloudinaryService cloudinaryService;
 
-    public UsersService(UsersRepo usersRepo, FollowersRepo followersRepo) {
+    public UsersService(UsersRepo usersRepo, FollowersRepo followersRepo, CloudinaryService cloudinaryService) {
         this.usersRepo = usersRepo;
         this.followersRepo = followersRepo;
+        this.cloudinaryService = cloudinaryService;
     }
 
     public SignUpResponse createUser(SignUpRequest req) {
@@ -72,8 +75,6 @@ public class UsersService {
     }
 
     public UserProfile getUserProfile(Long userId, Long targetId) {
-        // Users user = usersRepo.findById(userId).orElseThrow(() -> new
-        // NotFoundException("User Not Found"));
         Users taregtUser = usersRepo.findById(userId).orElseThrow(() -> new NotFoundException("User Not Found"));
         boolean isfollowing = false;
         boolean followsme = false;
@@ -141,10 +142,13 @@ public class UsersService {
             user.setLocation(req.location());
         }
         if (req.avatar() != null) {
+            this.cloudinaryService.finalizeUpload(req.avatarPublicId());
             user.setAvatar(req.avatar());
+
         }
 
         if (req.cover() != null) {
+            this.cloudinaryService.finalizeUpload(req.coverPublicId());
             user.setCover(req.cover());
         }
 

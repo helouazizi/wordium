@@ -6,7 +6,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { UserAvatar } from '../../../shared/components/user-avatar/user-avatar';
 import { MatDivider } from '@angular/material/divider';
 import { AuthService } from '../../../core/services/auth.service';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-header',
@@ -18,6 +18,7 @@ import { Router } from '@angular/router';
     MatMenuModule,
     UserAvatar,
     MatDivider,
+    RouterLink
   ],
   templateUrl: './header.html',
   styleUrl: './header.scss',

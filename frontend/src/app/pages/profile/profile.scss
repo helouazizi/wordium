@@ -59,7 +59,7 @@
     .avatar-ring {
       width: 140px;
       height: 140px;
-      border-radius: 40px; // Squircle
+      border-radius: 40px;
       background: var(--mat-sys-surface);
       padding: 5px;
       position: relative;
@@ -90,7 +90,6 @@
   }
 }
 
-// 2. Compact Stats Row
 .stats-row {
   display: flex;
   gap: 12px;
@@ -99,6 +98,7 @@
   .stat-pill {
     background: var(--mat-sys-surface-container-low);
     border: 1px solid var(--mat-sys-outline-variant);
+    color: var(--mat-sys-on-surface);
     padding: 6px 16px;
     border-radius: 50px;
     display: flex;
@@ -118,13 +118,11 @@
 
     .lab {
       font-size: 12px;
-      color: var(--mat-sys-outline);
       text-transform: uppercase;
     }
   }
 }
 
-// 3. Identity
 .identity {
   padding: 24px 32px;
 
@@ -151,7 +149,7 @@
   .metadata {
     display: flex;
     gap: 20px;
-    color: var(--mat-sys-outline);
+    color: var(--mat-sys-on-surface-variant);
     font-size: 0.9rem;
 
     span {
@@ -168,42 +166,99 @@
   }
 }
 
-// 4. Tabs & Grid
-.tab-body {
-  padding: 24px 32px;
-}
+.social-links {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 12px;
 
-.posts-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 20px;
+  .social-item {
+    display: flex;
+    flex-direction: column;
+    /* icon above label */
+    align-items: center;
+    text-decoration: none;
+    color: var(--mat-sys-primary);
+    font-size: 0.75rem;
 
-  .post-card {
-    border-radius: 16px;
-    overflow: hidden;
-
-    img {
-      height: 180px;
-      object-fit: cover;
+    mat-icon {
+      font-size: 20px;
+      margin-bottom: 4px;
     }
 
-    h3 {
-      margin: 12px 0 4px;
-      font-weight: 700;
+    span {
+      font-size: 0.75rem;
+      text-align: center;
+    }
+
+    &:hover {
+      opacity: 0.8;
+    }
+  }
+
+  .no-social {
+    font-size: 0.9rem;
+    color: var(--mat-sys-on-surface);
+  }
+
+  button {
+    margin-left: auto;
+  }
+}
+
+.profile-tabs {
+  .tab-body {
+    padding: 24px 32px;
+  }
+
+  .posts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+
+    .post-card {
+      border-radius: 16px;
+      overflow: hidden;
+
+      img {
+        height: 180px;
+        object-fit: cover;
+      }
+
+      h3 {
+        margin: 12px 0 4px;
+        font-weight: 700;
+      }
+    }
+  }
+
+  .glass-card {
+    border-radius: 0px;
+    background: var(--mat-sys-surface-container-low);
+    box-shadow: none;
+
+    mat-card-title {
+      font-size: 1.2rem;
+    }
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 80px 0;
+    color: var(--mat-sys-on-surface-variant);
+
+    mat-icon {
+      font-size: 48px;
+      width: 48px;
+      height: 48px;
+      opacity: 0.3;
     }
   }
 }
 
-.glass-card {
-  border-radius: 20px;
-  background: var(--mat-sys-surface-container-low);
 
-  mat-card-title {
-    font-size: 1.2rem;
-  }
-}
 
-// 5. Mobile Responsiveness
+
 .is-mobile {
   .header-content {
     flex-direction: column;
@@ -229,42 +284,5 @@
       justify-content: center;
       flex-wrap: wrap;
     }
-  }
-}
-
-.empty-state {
-  text-align: center;
-  padding: 80px 0;
-  color: var(--mat-sys-outline);
-
-  mat-icon {
-    font-size: 48px;
-    width: 48px;
-    height: 48px;
-    opacity: 0.3;
-  }
-}
-
-
-.social-links {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-top: 12px;
-
-  .no-social {
-    font-size: 0.9rem;
-    color: var(--mat-sys-outline);
-  }
-
-  a {
-    mat-icon {
-      font-size: 20px;
-      color: var(--mat-sys-primary);
-    }
-  }
-
-  button {
-    margin-left: auto;
   }
 }

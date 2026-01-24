@@ -22,6 +22,8 @@ import com.wordium.users.dto.users.BatchUsersRequest;
 import com.wordium.users.dto.users.UpdateProfileRequest;
 import com.wordium.users.dto.users.UserProfile;
 import com.wordium.users.dto.users.UsersResponse;
+import com.wordium.users.dto.users.UsersSegnatureResponse;
+import com.wordium.users.services.cloudinary.CloudinaryService;
 import com.wordium.users.services.users.UsersService;
 
 import io.swagger.v3.oas.annotations.Hidden;
@@ -40,9 +42,11 @@ public class UsersController {
 
     @Autowired
     private final UsersService userService;
+    private final CloudinaryService CloudinaryService;
 
-    public UsersController(UsersService userService) {
+    public UsersController(UsersService userService,CloudinaryService CloudinaryService) {
         this.userService = userService;
+        this.CloudinaryService = CloudinaryService;
     }
 
     @Hidden
@@ -67,8 +71,6 @@ public class UsersController {
         return ResponseEntity.ok(users);
     }
 
-
-    
     @GetMapping("/me")
     @Operation(summary = "Get session profile", description = "Fetch a session profile using id from header ")
     @ApiResponses({
@@ -90,7 +92,7 @@ public class UsersController {
             @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = ProblemDetail.class))),
             @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(implementation = ProblemDetail.class))), })
     public ResponseEntity<UserProfile> upadteProfile(@RequestHeader("User-Id") Long userId,
-            @Valid @RequestBody  UpdateProfileRequest req) {
+            @Valid @RequestBody UpdateProfileRequest req) {
         UserProfile user = userService.updateUserProfile(userId, req);
         return ResponseEntity.ok(user);
     }
@@ -103,9 +105,16 @@ public class UsersController {
             @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = ProblemDetail.class))),
             @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(implementation = ProblemDetail.class))), })
 
-    public ResponseEntity<UserProfile> getUserProfile(@RequestHeader("User-Id") Long userId ,@PathVariable Long targetId) {
+    public ResponseEntity<UserProfile> getUserProfile(@RequestHeader("User-Id") Long userId,
+            @PathVariable Long targetId) {
         UserProfile user = userService.getUserProfile(userId, targetId);
         return ResponseEntity.ok(user);
+    }
+
+    @GetMapping("/signature")
+    public ResponseEntity<UsersSegnatureResponse> getUploadSignature() {
+        var res = CloudinaryService.getSignature();
+        return ResponseEntity.ok(new UsersSegnatureResponse(res));
     }
 
 }

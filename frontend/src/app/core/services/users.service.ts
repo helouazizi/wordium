@@ -1,11 +1,10 @@
 import { inject, Injectable } from '@angular/core';
-import { Observable, tap } from 'rxjs';
+import { Observable, switchMap, tap } from 'rxjs';
 import { UsersClient } from '../apis/users/users.client';
 import { User } from '../../shared/models/user.model';
 import { FollowResponse, UpdateProfileRequest } from '../apis/users/users.model';
 import { PageRequest, PageResponse } from '../../shared/models/pagination.model';
-
-
+import { SignatureResponse } from '../apis/posts/post.model';
 
 @Injectable({
   providedIn: 'root',
@@ -22,7 +21,6 @@ export class UsersService {
   }
 
   updateMyProfile(payload: UpdateProfileRequest): Observable<User> {
-    
     return this.client.updateProfile(payload);
   }
 
@@ -52,5 +50,17 @@ export class UsersService {
 
   changeUserRole(userId: number, role: string): Observable<void> {
     return this.client.changeRole(userId, role);
+  }
+
+  getSignature(): Observable<SignatureResponse> {
+    return this.client.getSignature();
+  }
+
+  uploadToCloudinary(file: File, sigData: any) {
+    return this.client.uploadToCloudinary(file, sigData);
+  }
+
+  uploadImage(file: File): Observable<any> {
+    return this.getSignature().pipe(switchMap((res) => this.uploadToCloudinary(file, res.data)));
   }
 }

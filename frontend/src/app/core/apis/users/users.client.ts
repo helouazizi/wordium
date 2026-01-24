@@ -5,6 +5,7 @@ import { FollowResponse, UpdateProfileRequest } from './users.model';
 import { API_CONFIG } from '../../config/apis.config';
 import { User } from '../../../shared/models/user.model';
 import { PageRequest, PageResponse } from '../../../shared/models/pagination.model';
+import { SignatureData, SignatureResponse } from '../posts/post.model';
 
 @Injectable({
   providedIn: 'root',
@@ -22,7 +23,6 @@ export class UsersClient {
   }
 
   updateProfile(payload: UpdateProfileRequest): Observable<User> {
-
     return this.http.patch<User>(`${this.config.usersBaseUrl}/me`, payload);
   }
 
@@ -40,7 +40,7 @@ export class UsersClient {
   getFollowers(userId: number): Observable<PageResponse<User>> {
     return this.http.get<PageResponse<User>>(`${this.config.usersBaseUrl}/${userId}/followers`);
   }
-  
+
   // ---------- admin ----------
   getAllUsers(params?: PageRequest): Observable<any> {
     let httpParams = new HttpParams();
@@ -55,7 +55,7 @@ export class UsersClient {
       httpParams = httpParams.set('sort', params.sort);
     }
 
-    return this.http.get(`${this.config.usersBaseUrl}/admin/accounts`, { params :httpParams });
+    return this.http.get(`${this.config.usersBaseUrl}/admin/accounts`, { params: httpParams });
   }
 
   banUser(id: number): Observable<void> {
@@ -68,5 +68,27 @@ export class UsersClient {
 
   changeRole(id: number, role: string): Observable<any> {
     return this.http.patch(`${this.config.usersBaseUrl}/admin/accounts/${id}/role`, { role });
+  }
+
+  getSignature(): Observable<SignatureResponse> {
+    return this.http.get<SignatureResponse>(`${this.config.usersBaseUrl}/signature`);
+  }
+
+  uploadToCloudinary(file: File, sigData: SignatureData) {
+    const formData = new FormData();
+
+    formData.append('file', file);
+
+    formData.append('api_key', sigData.apiKey);
+    formData.append('timestamp', sigData.timestamp.toString());
+    formData.append('signature', sigData.signature);
+
+    formData.append('folder', sigData.folder);
+    formData.append('upload_preset', sigData.upload_preset);
+    formData.append('context', sigData.context);
+
+    const url = `https://api.cloudinary.com/v1_1/${sigData.cloudName}/image/upload`;
+
+    return this.http.post(url, formData);
   }
 }

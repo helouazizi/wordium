@@ -15,7 +15,11 @@ public record UpdateProfileRequest(
 
         @Size(max = 500, message = "Location must be less than 500 characters") String location,
 
-        Social social
+        Social social,
+        String avatarPublicId,
+        String coverPublicId
+
+
 
 ) {
 }

@@ -8,6 +8,8 @@ export interface UpdateProfileRequest {
   avatar?: string;
   location?: string;
   cover?: string;
+  avatarPublicId?: string;
+  coverPublicId?: string;
   social?: {
     website?: string;
     twitter?: string;

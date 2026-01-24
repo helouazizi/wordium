@@ -56,10 +56,13 @@ export class Register {
   onFileSelected(event: Event) {
     const file = (event.target as HTMLInputElement).files?.[0];
     if (file) {
+      if (file.size > 2 * 1024 * 1024) {
+        alert('File is too large. Please choose an image under 2MB.');
+        return;
+      }
       this.isLoadingAvatar.set(true);
       this.authService.uploadImage(file).subscribe({
         next: (res) => {
-          console.log(res, 'cloud response');
           this.registerForm.patchValue({ avatar: res.secure_url, avatarPublicId: res.public_id });
           this.isLoadingAvatar.set(false);
           this.notification.showSuccess('Avatar saved');
@@ -67,7 +70,7 @@ export class Register {
         error: (err) => {
           this.isLoadingAvatar.set(false);
           this.notification.showError('Failed to save avatar');
-          this.avatarPreview.set('')
+          this.avatarPreview.set('');
         },
       });
 
@@ -88,17 +91,16 @@ export class Register {
       const formValues = this.registerForm.getRawValue();
       const { confirmPassword, ...data } = formValues;
 
-      console.log(data,"sugnup");
-      
+      console.log(data, 'sugnup');
+
       this.authService.register(data).subscribe({
-        
         next: () => {
           this.isLoading.set(false);
           this.notification.showSuccess('Account Created with succes');
         },
         error: (error: HttpErrorResponse) => {
           this.isLoading.set(false);
-          this.errorDetail.set(error.error.detail)
+          this.errorDetail.set(error.error.detail);
 
           if (error.status === 400 && Array.isArray(error.error?.fieldErrors)) {
             const fieldErrors = error.error.fieldErrors;
