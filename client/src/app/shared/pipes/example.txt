@@ -1,7 +1,0 @@
-| Pipe           | Example usage                                  |
-| -------------- | ---------------------------------------------- |
-| `timeAgo`      | Show “5 minutes ago” for post timestamps       |
-| `truncate`     | Shorten long post text with `…`                |
-| `filter`       | Filter posts by hashtag or keyword             |
-| `formatNumber` | Format likes, comments, followers (e.g., 1.2k) |
-| `sanitizeHtml` | Safely display HTML in posts                   |
