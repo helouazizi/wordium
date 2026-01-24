@@ -22,15 +22,8 @@ export class UsersClient {
   }
 
   updateProfile(payload: UpdateProfileRequest): Observable<User> {
-    const formData = new FormData();
 
-    Object.entries(payload).forEach(([key, value]) => {
-      if (value !== undefined && value !== null) {
-        formData.append(key, value as any);
-      }
-    });
-
-    return this.http.patch<User>(`${this.config.usersBaseUrl}/me`, formData);
+    return this.http.patch<User>(`${this.config.usersBaseUrl}/me`, payload);
   }
 
   follow(targetUserId: number): Observable<FollowResponse> {

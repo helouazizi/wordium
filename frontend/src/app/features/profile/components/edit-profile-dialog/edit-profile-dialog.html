@@ -1,7 +1,6 @@
 <h2 mat-dialog-title>Edit {{ data.type | titlecase }}</h2>
 
 <mat-dialog-content [formGroup]="editForm">
-  <!-- EDIT GENERAL PROFILE (Name & Location) -->
   <div *ngIf="data.type === 'profile'" class="form-column">
     <mat-form-field appearance="outline">
       <mat-label>Display Name</mat-label>
@@ -14,7 +13,6 @@
     </mat-form-field>
   </div>
 
-  <!-- EDIT BIO / ABOUT -->
   <mat-form-field *ngIf="data.type === 'about'" appearance="outline" class="full-width">
     <mat-label>Write about yourself</mat-label>
     <textarea
@@ -25,7 +23,6 @@
     ></textarea>
   </mat-form-field>
 
-  <!-- EDIT IMAGES (Avatar or Cover) -->
   <div *ngIf="data.type === 'avatar' || data.type === 'cover'" class="image-upload-preview">
     <div class="preview-box" [class.is-cover]="data.type === 'cover'">
       <img
@@ -40,7 +37,6 @@
     <p class="mat-body-small">Direct upload feature can be added here using a file input.</p>
   </div>
 
-  <!-- EDIT SOCIAL LINKS -->
   <div *ngIf="data.type === 'social'" [formGroup]="socialForm">
     <mat-form-field appearance="outline">
       <mat-label>Website</mat-label>

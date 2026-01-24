@@ -22,6 +22,7 @@ export class UsersService {
   }
 
   updateMyProfile(payload: UpdateProfileRequest): Observable<User> {
+    
     return this.client.updateProfile(payload);
   }
 

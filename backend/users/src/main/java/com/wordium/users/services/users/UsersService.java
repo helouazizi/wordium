@@ -151,6 +151,9 @@ public class UsersService {
         if (req.social() != null) {
             Social current = user.getSocial();
 
+            if (current == null) {
+                current = new Social();
+            }
             if (req.social().getWebsite() != null)
                 current.setWebsite(req.social().getWebsite());
             if (req.social().getTwitter() != null)

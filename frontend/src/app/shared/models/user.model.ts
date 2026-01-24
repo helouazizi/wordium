@@ -1,6 +1,4 @@
 
-
-
 export interface User {
   id: number;
   username: string;
@@ -14,7 +12,7 @@ export interface User {
   bio?: string;
   location?: string;
 
-  createdAt: string;       // ISO string from backend
+  createdAt: Date;       // ISO string from backend
   updatedAt?: string;      // optional
   lastLoginAt?: string;    // optional
 

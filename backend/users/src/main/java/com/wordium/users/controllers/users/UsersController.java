@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -83,7 +82,7 @@ public class UsersController {
         return ResponseEntity.ok(user);
     }
 
-    @PatchMapping(value = "/me", consumes = "multipart/form-data")
+    @PatchMapping("/me")
     @Operation(summary = "Update User profile", description = "Update User profile using id from header ")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "User profile updated successfully", content = @Content(schema = @Schema(implementation = UsersResponse.class))),
@@ -91,7 +90,7 @@ public class UsersController {
             @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = ProblemDetail.class))),
             @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(implementation = ProblemDetail.class))), })
     public ResponseEntity<UserProfile> upadteProfile(@RequestHeader("User-Id") Long userId,
-            @Valid @ModelAttribute UpdateProfileRequest req) {
+            @Valid @RequestBody  UpdateProfileRequest req) {
         UserProfile user = userService.updateUserProfile(userId, req);
         return ResponseEntity.ok(user);
     }

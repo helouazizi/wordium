@@ -65,7 +65,7 @@ export class Profile {
 
     if (id) {
       this.usersService.getUserProfile(id).subscribe({
-        next: (user) => {
+        next: (user) => {          
           (this.targetUser.set(user), console.log(this.targetUser(), 'profile'));
         },
       });
@@ -94,7 +94,7 @@ export class Profile {
 
     dialogRef.afterClosed().subscribe((result: UpdateProfileRequest | undefined) => {
       if (result) {
-        this.usersService.updateMyProfile(result).subscribe({
+        this.usersService.updateMyProfile(result as UpdateProfileRequest).subscribe({
           next: (updated) => this.targetUser.set(updated),
         });
       }
