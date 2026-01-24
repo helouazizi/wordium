@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.wordium.users.dto.users.FollowResponse;
+import com.wordium.users.dto.users.UserProfile;
 import com.wordium.users.dto.users.UsersResponse;
 import com.wordium.users.services.followers.FollowersService;
 
@@ -86,7 +87,7 @@ public class FollowersController {
             @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(implementation = ProblemDetail.class))),
     })
     @GetMapping("/{userId}/followers")
-    public ResponseEntity<List<UsersResponse>> followers(
+    public ResponseEntity<List<UserProfile>> followers(
             @PathVariable Long userId) {
         return ResponseEntity.ok(followersService.getFollowers(userId));
     }

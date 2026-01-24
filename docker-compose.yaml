@@ -141,6 +141,10 @@ services:
       - api-gateway
       - kafka
       - redis
+    dns:
+      - 8.8.8.8
+      - 8.8.4.4
+
 
   posts-service:
     build: ./backend/posts/

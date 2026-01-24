@@ -1,6 +1,6 @@
 package com.wordium.users.models;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -29,7 +29,7 @@ public class Followers {
 
     @CreationTimestamp
     @Temporal(TemporalType.TIMESTAMP)
-    private Date createdAt;
+    private LocalDateTime createdAt;
 
     // Constructors
     public Followers() {}
@@ -60,7 +60,7 @@ public class Followers {
         this.followedId = followedId;
     }
 
-    public Date getCreatedAt() {
+    public LocalDateTime getCreatedAt() {
         return createdAt;
     }
 }

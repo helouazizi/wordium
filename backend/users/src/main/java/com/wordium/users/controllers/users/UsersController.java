@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,7 +20,10 @@ import com.wordium.users.dto.auth.SignUpRequest;
 import com.wordium.users.dto.auth.SignUpResponse;
 import com.wordium.users.dto.users.BatchUsersRequest;
 import com.wordium.users.dto.users.UpdateProfileRequest;
+import com.wordium.users.dto.users.UserProfile;
 import com.wordium.users.dto.users.UsersResponse;
+import com.wordium.users.dto.users.UsersSegnatureResponse;
+import com.wordium.users.services.cloudinary.CloudinaryService;
 import com.wordium.users.services.users.UsersService;
 
 import io.swagger.v3.oas.annotations.Hidden;
@@ -40,9 +42,11 @@ public class UsersController {
 
     @Autowired
     private final UsersService userService;
+    private final CloudinaryService CloudinaryService;
 
-    public UsersController(UsersService userService) {
+    public UsersController(UsersService userService,CloudinaryService CloudinaryService) {
         this.userService = userService;
+        this.CloudinaryService = CloudinaryService;
     }
 
     @Hidden
@@ -62,8 +66,8 @@ public class UsersController {
 
     @Hidden
     @PostMapping("/internal/batch")
-    public ResponseEntity<List<UsersResponse>> getUsersProfiles(@RequestBody BatchUsersRequest req) {
-        List<UsersResponse> users = userService.getUsers(req);
+    public ResponseEntity<List<UserProfile>> getUsersProfiles(@RequestBody BatchUsersRequest req) {
+        List<UserProfile> users = userService.getUsers(req);
         return ResponseEntity.ok(users);
     }
 
@@ -75,25 +79,25 @@ public class UsersController {
             @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = ProblemDetail.class))),
             @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(implementation = ProblemDetail.class))), })
 
-    public ResponseEntity<UsersResponse> getProfile(@RequestHeader("User-Id") Long userId) {
-        UsersResponse user = userService.getProfile(userId);
+    public ResponseEntity<UserProfile> getProfile(@RequestHeader("User-Id") Long userId) {
+        UserProfile user = userService.getProfile(userId);
         return ResponseEntity.ok(user);
     }
 
-    @PatchMapping(value = "/me", consumes = "multipart/form-data")
+    @PatchMapping("/me")
     @Operation(summary = "Update User profile", description = "Update User profile using id from header ")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "User profile updated successfully", content = @Content(schema = @Schema(implementation = UsersResponse.class))),
             @ApiResponse(responseCode = "404", description = "User not found", content = @Content(schema = @Schema(implementation = ProblemDetail.class))),
             @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = ProblemDetail.class))),
             @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(implementation = ProblemDetail.class))), })
-    public ResponseEntity<UsersResponse> upadteProfile(@RequestHeader("User-Id") Long userId,
-            @Valid @ModelAttribute UpdateProfileRequest req) {
-        UsersResponse user = userService.updateUserProfile(userId, req);
+    public ResponseEntity<UserProfile> upadteProfile(@RequestHeader("User-Id") Long userId,
+            @Valid @RequestBody UpdateProfileRequest req) {
+        UserProfile user = userService.updateUserProfile(userId, req);
         return ResponseEntity.ok(user);
     }
 
-    @GetMapping("/{userId}")
+    @GetMapping("/{targetId}")
     @Operation(summary = "Get User profile for all kind of users ", description = "Fetch a user profile using id as param")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "User fetched successfully", content = @Content(schema = @Schema(implementation = UsersResponse.class))),
@@ -101,9 +105,16 @@ public class UsersController {
             @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = ProblemDetail.class))),
             @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(implementation = ProblemDetail.class))), })
 
-    public ResponseEntity<UsersResponse> getUserProfile(@PathVariable Long userId) {
-        UsersResponse user = userService.getUserProfile(userId);
+    public ResponseEntity<UserProfile> getUserProfile(@RequestHeader("User-Id") Long userId,
+            @PathVariable Long targetId) {
+        UserProfile user = userService.getUserProfile(userId, targetId);
         return ResponseEntity.ok(user);
+    }
+
+    @GetMapping("/signature")
+    public ResponseEntity<UsersSegnatureResponse> getUploadSignature() {
+        var res = CloudinaryService.getSignature();
+        return ResponseEntity.ok(new UsersSegnatureResponse(res));
     }
 
 }

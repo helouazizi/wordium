@@ -11,7 +11,14 @@ import com.wordium.users.models.Followers;
 @Repository
 public interface FollowersRepo extends JpaRepository<Followers, Long> {
     List<Followers> findByFollowerId(Long followerId);
+
     List<Followers> findByFollowedId(Long followedId);
-    Optional<Followers> findByFollowerIdAndFollowedId(Long followerId , Long followedId);
+
+    Optional<Followers> findByFollowerIdAndFollowedId(Long followerId, Long followedId);
+
     boolean existsByFollowerIdAndFollowedId(Long followerId, Long followedId);
+
+    long countByFollowedId(Long userId); // followers count
+
+    long countByFollowerId(Long userId); // following count
 }

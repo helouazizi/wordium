@@ -43,21 +43,38 @@ html {
   @include mat.all-component-colors($dark-theme);
   color-scheme: dark;
 
-  // Dark mode system colors
-  --mat-sys-background: #0f172a;
-  --mat-sys-surface: #1e293b;
-  --mat-sys-surface-container-low: #1e293b;
-  --mat-sys-surface-container-high: #334155;
+  /* Background & Surfaces */
+  --mat-sys-background: #0f111a;
+  /* almost black */
+  --mat-sys-surface: #1a1c29;
+  /* dark card / panels */
+  --mat-sys-surface-container-low: #1a1c29;
+  /* low contrast surfaces */
+  --mat-sys-surface-container-high: #2c2f3d;
+  /* slightly lighter surface for hover/cards */
 
-  --mat-sys-on-surface: #f1f5f9;
-  --mat-sys-on-surface-variant: #94a3b8;
+  /* Text & Labels */
+  --mat-sys-on-surface: #e5e7eb;
+  /* primary text, light gray */
+  --mat-sys-on-surface-variant: #a1a5b0;
+  /* secondary text / muted labels */
 
-  --mat-sys-outline: #334155;
-  --mat-sys-outline-variant: #475569;
+  /* Outlines & borders */
+  --mat-sys-outline: #2c2f3d;
+  /* border color */
+  --mat-sys-outline-variant: #3f4255;
+  /* hover/focus variant */
 
-  --mat-sys-primary: #{mat.get-theme-color($dark-theme, primary, 40)};
+  /* Primary & Secondary */
+  --mat-sys-primary: #{mat.get-theme-color($light-theme, primary, 50)};
+  /* amber/gold primary */
   --mat-sys-secondary: #818cf8;
-  --mat-sys-error: #fca5a5;
+  /* subtle accent, can keep soft purple/blue */
+
+  /* Alerts */
+  --mat-sys-error: #f87171;
+  /* red error color */
+
 
 }
 
@@ -146,5 +163,3 @@ button {
   border-radius: 8px !important;
   box-shadow: 0 4px 12px rgba(76, 175, 80, 0.4) !important;
 }
-
-

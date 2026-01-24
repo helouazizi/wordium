@@ -52,7 +52,7 @@ public class ReportServiceImpl implements ReportService {
 
         postRepository.incrementReportCount(posId);
 
-        return mapToResponse(data, new UserProfile(userId, null, null, "null", null, "null", null));
+        return mapToResponse(data, new UserProfile(userId, null, null, "null", null, "null", null,null,null,null,null,null,null,null,null,null,null,null));
     }
 
     private ReportPostResponse mapToResponse(Report report, UserProfile reporterProfile) {
@@ -79,7 +79,7 @@ public class ReportServiceImpl implements ReportService {
         report.setResolved(true);
         reportRepository.save(report);
 
-        return mapToResponse(report, new UserProfile(userId, null, null, "null", null, "null", null));
+        return mapToResponse(report, new UserProfile(userId, null, null, "null", null, "null", null,null,null,null,null,null,null,null,null,null,null,null));
     }
 
     @Override

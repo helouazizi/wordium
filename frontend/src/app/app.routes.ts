@@ -31,6 +31,10 @@ export const routes: Routes = [
           import('./pages/post-detail/post-detail').then((c) => c.PostDetail),
       },
       {
+        path: 'profiles/:id', //  whrite blog
+        loadComponent: () => import('./pages/profile/profile').then((c) => c.Profile),
+      },
+      {
         path: '',
         redirectTo: 'feed',
         pathMatch: 'full',
@@ -38,7 +42,6 @@ export const routes: Routes = [
     ],
   },
 
-  // FALLBACK
   {
     path: '**',
     redirectTo: 'feed',

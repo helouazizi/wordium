@@ -1,24 +1,24 @@
 #!/bin/zsh
 
-cd backend/auth && ./mvnw package -DskipTests
+cd backend/auth && rm -rf ./target && ./mvnw package -DskipTests
 cd ..
 cd ..
-cd backend/api-gatway && ./mvnw package -DskipTests
+cd backend/api-gatway && rm -rf ./target && ./mvnw package -DskipTests
 cd ..
 cd ..
-cd backend/users && ./mvnw package -DskipTests
+cd backend/users && rm -rf ./target && ./mvnw package -DskipTests
 cd ..
 cd ..
-cd backend/posts && ./mvnw package -DskipTests
+cd backend/posts && rm -rf ./target && ./mvnw package -DskipTests
 cd ..
 cd ..
-cd backend/wsgateway && ./mvnw package -DskipTests
+cd backend/wsgateway && rm -rf ./target && ./mvnw package -DskipTests
 cd ..
 cd ..
-cd backend/eurika-server && ./mvnw package -DskipTests
+cd backend/eurika-server && rm -rf ./target && ./mvnw package -DskipTests
 cd ..
 cd ..
 
-cd backend/test-service && ./mvnw package -DskipTests
+cd backend/test-service && rm -rf ./target && ./mvnw package -DskipTests
 cd ..
 cd ..

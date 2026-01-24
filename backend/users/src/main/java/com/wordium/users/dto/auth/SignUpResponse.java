@@ -1,5 +1,7 @@
 package com.wordium.users.dto.auth;
 
-public record SignUpResponse(Long id, String role) {
+import com.wordium.users.dto.Role;
+
+public record SignUpResponse(Long id, Role role) {
 
 }

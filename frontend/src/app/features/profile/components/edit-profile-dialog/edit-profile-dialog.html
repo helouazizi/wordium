@@ -1,0 +1,85 @@
+<h2 mat-dialog-title>
+  <mat-icon class="title-icon">{{ getIcon() }}</mat-icon>
+  Edit {{ data.type | titlecase }}
+</h2>
+
+<mat-dialog-content [formGroup]="editForm">
+  <div *ngIf="data.type === 'profile'" class="form-column">
+    <mat-form-field appearance="outline">
+      <mat-label>Display Name</mat-label>
+      <mat-icon matPrefix>person</mat-icon>
+      <input matInput formControlName="displayName" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Location</mat-label>
+      <mat-icon matPrefix>place</mat-icon>
+      <input matInput formControlName="location" />
+    </mat-form-field>
+  </div>
+
+  <div *ngIf="data.type === 'avatar' || data.type === 'cover'" class="upload-container">
+    <div
+      class="preview-wrapper"
+      [class.is-cover]="data.type === 'cover'"
+      (click)="fileInput.click()"
+    >
+      @if (isLoadingAvatar()) {
+        <mat-spinner diameter="24" color="accent"></mat-spinner>
+      } @else {
+        <img
+          [src]="data.type === 'avatar' ? editForm.value.avatar : editForm.value.cover"
+          class="preview-image"
+          alt="Preview"
+        />
+        <div class="overlay">
+          <mat-icon>photo_camera</mat-icon>
+          <span>Change {{ data.type }}</span>
+        </div>
+      }
+    </div>
+
+    <input #fileInput type="file" (change)="onFileSelected($event)" accept="image/*" hidden />
+
+    <div class="upload-hint">
+      <p>Click the image to upload a new file</p>
+      <small>Recommended: PNG, JPG (Max 2MB)</small>
+    </div>
+
+    <mat-form-field appearance="outline" class="full-width url-fallback">
+      <mat-label>Or paste image URL</mat-label>
+      <input matInput [formControlName]="data.type" />
+    </mat-form-field>
+  </div>
+
+  <mat-form-field *ngIf="data.type === 'about'" appearance="outline" class="full-width">
+    <mat-label>Bio</mat-label>
+    <textarea matInput formControlName="bio" rows="4"></textarea>
+  </mat-form-field>
+
+  <div *ngIf="data.type === 'social'" [formGroup]="socialForm" class="form-column">
+    <mat-form-field appearance="outline">
+      <mat-label>Website</mat-label>
+      <input matInput formControlName="website" />
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>Twitter</mat-label>
+      <input matInput formControlName="twitter" placeholder="@username" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Github</mat-label>
+      <input matInput formControlName="github" placeholder="username" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>LinkedIn</mat-label>
+      <input matInput formControlName="linkedin" placeholder="username" />
+    </mat-form-field>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="close()">Cancel</button>
+  <button mat-flat-button color="primary" (click)="save()" class="save-btn">Save Changes</button>
+</mat-dialog-actions>

@@ -20,6 +20,7 @@ import com.wordium.posts.dto.PostReactionRequest;
 import com.wordium.posts.dto.PostRequest;
 import com.wordium.posts.dto.PostResponse;
 import com.wordium.posts.dto.PostsSegnatureResponse;
+import com.wordium.posts.services.CloudinaryService;
 import com.wordium.posts.services.impl.PostServiceImpl;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -36,9 +37,11 @@ import jakarta.validation.Valid;
 public class PublicPostController {
 
         private final PostServiceImpl postService;
+        private final CloudinaryService cloudinaryService;
 
-        public PublicPostController(PostServiceImpl postService) {
+        public PublicPostController(PostServiceImpl postService,CloudinaryService cloudinaryService) {
                 this.postService = postService;
+                this.cloudinaryService = cloudinaryService;
         }
 
         @Operation(summary = "Create a new post")
@@ -142,7 +145,7 @@ public class PublicPostController {
 
         @GetMapping("/signature")
         public ResponseEntity<PostsSegnatureResponse> getUploadSignature() {
-                var res = postService.getSignature();
+                var res = cloudinaryService.getSignature();
                 return ResponseEntity.ok(new PostsSegnatureResponse(res));
         }
 }

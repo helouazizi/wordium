@@ -2,8 +2,8 @@
   <mat-sidenav
     #drawer
     class="sidenav"
-    [mode]="(isHandset$ | async) ? 'over' : 'side'"
-    [opened]="!(isHandset$ | async)"
+    [mode]="(isHandset$()) ? 'over' : 'side'"
+    [opened]="!(isHandset$())"
     disableClose="false"
   >
     <div class="sidenav-theme">
@@ -45,7 +45,7 @@
       <router-outlet></router-outlet>
     </main>
 
-    @if (isHandset$ | async) {
+    @if (isHandset$()) {
       <nav class="mobile-bottom-nav">
         @for (link of navLinks; track link.route) {
           <a

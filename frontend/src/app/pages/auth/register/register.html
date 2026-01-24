@@ -14,8 +14,10 @@
               [class.error-border]="registerForm.controls.avatar.invalid"
               (click)="fileInput.click()"
             >
-              @if (avatarPreview()) {
+              @if (avatarPreview() && !isLoadingAvatar()) {
                 <img [src]="avatarPreview()" alt="Avatar" />
+              } @else if (avatarPreview() && isLoadingAvatar()) {
+                <mat-spinner diameter="24" color="accent"></mat-spinner>
               } @else {
                 <mat-icon>add_a_photo</mat-icon>
               }
@@ -39,7 +41,7 @@
             }
           </div>
         </div>
-
+         <mat-error>{{errorDetail()}}</mat-error>
         <div class="form-grid">
           <mat-form-field appearance="outline" subscriptSizing="fixed">
             <mat-label>Username</mat-label>

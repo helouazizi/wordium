@@ -6,6 +6,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { UserAvatar } from '../../../shared/components/user-avatar/user-avatar';
 import { MatDivider } from '@angular/material/divider';
 import { AuthService } from '../../../core/services/auth.service';
+import { Router, RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-header',
@@ -17,6 +18,7 @@ import { AuthService } from '../../../core/services/auth.service';
     MatMenuModule,
     UserAvatar,
     MatDivider,
+    RouterLink
   ],
   templateUrl: './header.html',
   styleUrl: './header.scss',
@@ -24,10 +26,14 @@ import { AuthService } from '../../../core/services/auth.service';
 export class Header {
   session = inject(AuthService);
   user = this.session.user();
+  router = inject(Router)
 
-  openSettings = output<void>();
 
   logout() {
     this.session.logout();
+  }
+
+   profile() {
+    this.router.navigate(['/profiles/',this.user?.id]);
   }
 }

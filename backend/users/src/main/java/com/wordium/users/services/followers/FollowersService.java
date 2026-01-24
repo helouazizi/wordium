@@ -6,7 +6,7 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 
 import com.wordium.users.dto.notification.NotificationEvent;
-import com.wordium.users.dto.users.UsersResponse;
+import com.wordium.users.dto.users.UserProfile;
 import com.wordium.users.events.FollowEventProducer;
 import com.wordium.users.exceptions.BadRequestException;
 import com.wordium.users.exceptions.NotFoundException;
@@ -62,16 +62,19 @@ public class FollowersService {
         producer.sendFollowEvent(new NotificationEvent("UNFOLLOW",follow.getFollowerId(), follow.getFollowedId(),null));
     }
 
-    public List<UsersResponse> getFollowers(Long userId) {
+    public List<UserProfile> getFollowers(Long userId) {
         usersRepo.findById(userId).orElseThrow(() -> new NotFoundException("User Not Found"));
 
         List<Followers> followers = followersRepo.findByFollowedId(userId);
 
         return followers.stream()
                 .map(f -> usersRepo.findById(f.getFollowerId())
-                .map(u -> new UsersResponse(u.getId(), u.getRole(), u.getEmail(),
-                u.getUsername(), u.getBio(), u.getAvatarUrl(),
-                u.getLocation()))
+                .map(u -> new UserProfile(
+                u.getId(),
+                u.getUsername(), u.getDisplayName(), u.getEmail(), u.getRole(),
+                u.getAvatar(), u.getCover(), u.getBio(), u.getLocation(), u.getCreatedAt(),
+                u.getUpdatedAt(), u.getLastLoginAt(), u.isVerified(), u.isBanned(), null, null, null,
+                u.getSocial()))
                 .orElse(null))
                 .filter(r -> r != null)
                 .collect(Collectors.toList());

@@ -10,6 +10,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { RouterLink } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { NotificationService } from '../../../core/services/notification.service';
 
 @Component({
   selector: 'app-register',
@@ -22,7 +23,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
     MatButtonModule,
     MatIconModule,
     RouterLink,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
   ],
   templateUrl: './register.html',
   styleUrl: './register.scss',
@@ -30,10 +31,13 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 export class Register {
   private fb = inject(FormBuilder);
   private authService = inject(AuthService);
+  private notification = inject(NotificationService);
 
   isLoading = signal(false);
+  isLoadingAvatar = signal(false);
   hidePassword = signal(true);
   avatarPreview = signal<string | null>(null);
+  errorDetail = signal('');
 
   registerForm = this.fb.nonNullable.group(
     {
@@ -43,7 +47,8 @@ export class Register {
       confirmPassword: ['', [Validators.required]],
       bio: ['', [Validators.maxLength(160)]],
       location: [''],
-      avatar: [null as File | null],
+      avatar: [''],
+      avatarPublicId: [''],
     },
     { validators: passwordMatchValidator },
   );
@@ -51,7 +56,23 @@ export class Register {
   onFileSelected(event: Event) {
     const file = (event.target as HTMLInputElement).files?.[0];
     if (file) {
-      this.registerForm.patchValue({ avatar: file });
+      if (file.size > 2 * 1024 * 1024) {
+        alert('File is too large. Please choose an image under 2MB.');
+        return;
+      }
+      this.isLoadingAvatar.set(true);
+      this.authService.uploadImage(file).subscribe({
+        next: (res) => {
+          this.registerForm.patchValue({ avatar: res.secure_url, avatarPublicId: res.public_id });
+          this.isLoadingAvatar.set(false);
+          this.notification.showSuccess('Avatar saved');
+        },
+        error: (err) => {
+          this.isLoadingAvatar.set(false);
+          this.notification.showError('Failed to save avatar');
+          this.avatarPreview.set('');
+        },
+      });
 
       const reader = new FileReader();
       reader.onload = () => this.avatarPreview.set(reader.result as string);
@@ -61,7 +82,7 @@ export class Register {
 
   removeAvatar(event?: Event) {
     if (event) event.stopPropagation();
-    this.registerForm.patchValue({ avatar: null });
+    this.registerForm.patchValue({ avatar: '' });
     this.avatarPreview.set(null);
   }
   onSubmit() {
@@ -70,10 +91,16 @@ export class Register {
       const formValues = this.registerForm.getRawValue();
       const { confirmPassword, ...data } = formValues;
 
+      console.log(data, 'sugnup');
+
       this.authService.register(data).subscribe({
-        next: () => this.isLoading.set(false),
+        next: () => {
+          this.isLoading.set(false);
+          this.notification.showSuccess('Account Created with succes');
+        },
         error: (error: HttpErrorResponse) => {
           this.isLoading.set(false);
+          this.errorDetail.set(error.error.detail);
 
           if (error.status === 400 && Array.isArray(error.error?.fieldErrors)) {
             const fieldErrors = error.error.fieldErrors;
@@ -85,6 +112,7 @@ export class Register {
               }
             });
           }
+          this.notification.showError('Creation Faild');
         },
       });
     }
