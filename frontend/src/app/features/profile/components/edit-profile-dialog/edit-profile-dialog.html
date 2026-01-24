@@ -1,47 +1,67 @@
-<h2 mat-dialog-title>
-  <!-- <mat-icon>{{ getIcon() }}</mat-icon> -->
-  Edit {{ data.type | titlecase }}
-</h2>
+<h2 mat-dialog-title>Edit {{ data.type | titlecase }}</h2>
 
 <mat-dialog-content [formGroup]="editForm">
-  
-  <!-- CASE: EDIT GENERAL PROFILE (Name & Location) -->
-  @if (data.type === 'profile') {
-    <div class="form-column">
-      <mat-form-field appearance="outline">
-        <mat-label>Display Name</mat-label>
-        <input matInput formControlName="username" placeholder="e.g. Alex Rivera">
-      </mat-form-field>
-
-      <mat-form-field appearance="outline">
-        <mat-label>Location</mat-label>
-        <input matInput formControlName="location" placeholder="e.g. San Francisco, CA">
-      </mat-form-field>
-    </div>
-  }
-
-  <!-- CASE: EDIT BIO / ABOUT -->
-  @if (data.type === 'about') {
-    <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Write about yourself</mat-label>
-      <textarea matInput formControlName="bio" rows="5" placeholder="Tell the world your story..."></textarea>
+  <!-- EDIT GENERAL PROFILE (Name & Location) -->
+  <div *ngIf="data.type === 'profile'" class="form-column">
+    <mat-form-field appearance="outline">
+      <mat-label>Display Name</mat-label>
+      <input matInput formControlName="displayName" placeholder="e.g. Alex Rivera" />
     </mat-form-field>
-  }
 
-  <!-- CASE: EDIT IMAGES (Avatar or Cover) -->
-  @if (data.type === 'avatar' || data.type === 'cover') {
-    <div class="image-upload-preview">
-      <div class="preview-box" [class.is-cover]="data.type === 'cover'">
-        <img [src]="data.type === 'avatar' ? editForm.value.avatar : editForm.value.cover" alt="Preview">
-      </div>
-      <mat-form-field appearance="outline" class="full-width">
-        <mat-label>{{ data.type | titlecase }} Image URL</mat-label>
-        <input matInput [formControlName]="data.type" placeholder="Paste image link here">
-      </mat-form-field>
-      <p class="mat-body-small">Direct upload feature can be added here using a file input.</p>
+    <mat-form-field appearance="outline">
+      <mat-label>Location</mat-label>
+      <input matInput formControlName="location" placeholder="e.g. San Francisco, CA" />
+    </mat-form-field>
+  </div>
+
+  <!-- EDIT BIO / ABOUT -->
+  <mat-form-field *ngIf="data.type === 'about'" appearance="outline" class="full-width">
+    <mat-label>Write about yourself</mat-label>
+    <textarea
+      matInput
+      formControlName="bio"
+      rows="5"
+      placeholder="Tell the world your story..."
+    ></textarea>
+  </mat-form-field>
+
+  <!-- EDIT IMAGES (Avatar or Cover) -->
+  <div *ngIf="data.type === 'avatar' || data.type === 'cover'" class="image-upload-preview">
+    <div class="preview-box" [class.is-cover]="data.type === 'cover'">
+      <img
+        [src]="data.type === 'avatar' ? editForm.value.avatar : editForm.value.cover"
+        alt="Preview"
+      />
     </div>
-  }
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>{{ data.type | titlecase }} Image URL</mat-label>
+      <input matInput [formControlName]="data.type" placeholder="Paste image link here" />
+    </mat-form-field>
+    <p class="mat-body-small">Direct upload feature can be added here using a file input.</p>
+  </div>
 
+  <!-- EDIT SOCIAL LINKS -->
+  <div *ngIf="data.type === 'social'" [formGroup]="socialForm">
+    <mat-form-field appearance="outline">
+      <mat-label>Website</mat-label>
+      <input matInput formControlName="website" placeholder="https://example.com" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Twitter</mat-label>
+      <input matInput formControlName="twitter" placeholder="@username" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Github</mat-label>
+      <input matInput formControlName="github" placeholder="username" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>LinkedIn</mat-label>
+      <input matInput formControlName="linkedin" placeholder="username" />
+    </mat-form-field>
+  </div>
 </mat-dialog-content>
 
 <mat-dialog-actions align="end">

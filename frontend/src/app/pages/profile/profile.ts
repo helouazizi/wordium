@@ -14,11 +14,11 @@ import { MatRippleModule } from '@angular/material/core';
 import { AuthService } from '../../core/services/auth.service';
 import { EditProfileDialogComponent } from '../../features/profile/components/edit-profile-dialog/edit-profile-dialog';
 import { UsersService } from '../../core/services/users.service';
-import { User } from '../../shared/models/user.model';
 import { DeviceService } from '../../core/services/device.service';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { UpdateProfileRequest } from '../../core/apis/users/users.model';
 import { Post } from '../../core/apis/posts/post.model';
+import { User } from '../../shared/models/user.model';
 
 @Component({
   selector: 'app-profile',
@@ -36,7 +36,7 @@ import { Post } from '../../core/apis/posts/post.model';
     MatRippleModule,
   ],
   templateUrl: './profile.html',
-  styleUrl: './profile.scss',
+  styleUrls: ['./profile.scss'],
 })
 export class Profile {
   private auth = inject(AuthService);
@@ -52,8 +52,12 @@ export class Profile {
   readonly targetUser = signal<User | null>(null);
 
   isOwn = computed(() => this.targetUser()?.id === this.sessionUser()?.id);
-
   isAdmin = computed(() => this.sessionUser()?.role === 'ADMIN');
+
+  posts = signal<Post[] | null>(null);
+  stats = computed(
+    () => this.targetUser()?.stats ?? { posts: 0, bookmarks: 0, followers: 0, following: 0 },
+  );
 
   ngOnInit() {
     const idParam = this.route.snapshot.paramMap.get('id');
@@ -62,8 +66,7 @@ export class Profile {
     if (id) {
       this.usersService.getUserProfile(id).subscribe({
         next: (user) => {
-          this.targetUser.set(user);
-          console.log(this.targetUser(), 'profile');
+          (this.targetUser.set(user), console.log(this.targetUser(), 'profile'));
         },
       });
     } else {
@@ -71,17 +74,12 @@ export class Profile {
     }
   }
 
-  // Placeholder until backend provides it
-  stats = signal({
-    posts: 0,
-    bookmarks: 0,
-    followers: 0,
-    following: 0,
-  });
+  isSocialEmpty(social: User['social'] | undefined): boolean {
+    if (!social) return true;
+    return !social.website && !social.twitter && !social.github && !social.linkedin;
+  }
 
-  posts = signal<Post[] | null>(null);
-
-  openEditDialog(type: 'profile' | 'cover' | 'avatar' | 'about') {
+  openEditDialog(type: 'profile' | 'cover' | 'avatar' | 'about' | 'social') {
     if (!this.isOwn()) return;
 
     const dialogRef = this.dialog.open(EditProfileDialogComponent, {
@@ -89,17 +87,15 @@ export class Profile {
       maxWidth: '95vw',
       data: {
         type,
-        user: this.sessionUser(),
+        user: this.targetUser(),
       },
       autoFocus: false,
     });
 
-    dialogRef.afterClosed().subscribe((result) => {
+    dialogRef.afterClosed().subscribe((result: UpdateProfileRequest | undefined) => {
       if (result) {
-        this.usersService.updateMyProfile(result as UpdateProfileRequest).subscribe({
-          next: (updated) => {
-            this.targetUser.set(updated);
-          },
+        this.usersService.updateMyProfile(result).subscribe({
+          next: (updated) => this.targetUser.set(updated),
         });
       }
     });
@@ -108,8 +104,15 @@ export class Profile {
   toggleFollow() {
     const user = this.targetUser();
     if (!user || this.isOwn()) return;
-    console.log('toggleFollow');
 
-    this.usersService.followUser(user.id).subscribe();
+    this.usersService.followUser(user.id).subscribe({
+      next: () => {
+        const current = this.targetUser();
+        if (current) {
+          const newTarget = { ...current, isFollowing: !current.isFollowing };
+          this.targetUser.set(newTarget);
+        }
+      },
+    });
   }
 }
