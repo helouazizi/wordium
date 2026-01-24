@@ -1,6 +1,5 @@
 package com.wordium.posts.services.impl;
 
-
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -25,6 +24,7 @@ import com.wordium.posts.models.PostReaction;
 import com.wordium.posts.repo.CommentRepository;
 import com.wordium.posts.repo.PostRepository;
 import com.wordium.posts.repo.ReactionRepository;
+import com.wordium.posts.services.CloudinaryService;
 import com.wordium.posts.services.PostService;
 import com.wordium.posts.utils.UserEnrichmentHelper;
 
@@ -35,13 +35,16 @@ public class PostServiceImpl implements PostService {
     private final ReactionRepository reactionRepository;
     private final CommentRepository commentRepository;
     private final UserEnrichmentHelper userEnrichmentHelper;
+    private final CloudinaryService cloudinaryService;
 
     public PostServiceImpl(PostRepository postRepository, UserEnrichmentHelper userEnrichmentHelper,
-            ReactionRepository reactionRepository, CommentRepository commentRepository) {
+            ReactionRepository reactionRepository, CommentRepository commentRepository,
+            CloudinaryService cloudinaryService) {
         this.postRepository = postRepository;
         this.userEnrichmentHelper = userEnrichmentHelper;
         this.reactionRepository = reactionRepository;
         this.commentRepository = commentRepository;
+        this.cloudinaryService = cloudinaryService;
     }
 
     @Override
@@ -53,7 +56,15 @@ public class PostServiceImpl implements PostService {
         post.setContent(request.content());
 
         Post saved = postRepository.save(post);
-        return mapToResponse(saved, new UserProfile(userId, null, null, "null", null, "null", null,null,null,null,null,null,null,null,null,null,null,null), false);
+
+        if (request.mediaPublicIds() != null) {
+            for (String publicId : request.mediaPublicIds()) {
+                this.cloudinaryService.finalizeUpload(publicId);
+            }
+        }
+
+        return mapToResponse(saved, new UserProfile(userId, null, null, "null", null, "null", null, null, null, null,
+                null, null, null, null, null, null, null, null), false);
     }
 
     @Override
@@ -73,6 +84,8 @@ public class PostServiceImpl implements PostService {
         Page<Post> page = postRepository.findByFlaggedFalse(pageable);
         return enrichWithLikes(page, userId);
     }
+
+  
 
     @Override
     public Page<PostResponse> getAllposts(Long userId, Pageable pageable) {
@@ -104,7 +117,8 @@ public class PostServiceImpl implements PostService {
         }
 
         Post updated = postRepository.save(post);
-        return mapToResponse(updated, new UserProfile(userId, null, null, "null", null, "null", null,null,null,null,null,null,null,null,null,null,null,null), false);
+        return mapToResponse(updated, new UserProfile(userId, null, null, "null", null, "null", null, null, null, null,
+                null, null, null, null, null, null, null, null), false);
     }
 
     @Override
@@ -178,7 +192,8 @@ public class PostServiceImpl implements PostService {
                 post.getId(),
                 post.getTitle(),
                 post.getContent(),
-                new UserProfile(userProfile.id(), userProfile.username(), null, "null", null, userProfile.avatar(), null,null,null,null,null,null,null,null,null,null,null,null),
+                new UserProfile(userProfile.id(), userProfile.username(), null, "null", null, userProfile.avatar(),
+                        null, null, null, null, null, null, null, null, null, null, null, null),
                 post.getLikesCount(),
                 post.getCommentsCount(),
                 post.getRportCount(),
@@ -274,5 +289,4 @@ public class PostServiceImpl implements PostService {
         postRepository.decrementCommentsCount(postId);
     }
 
-  
 }

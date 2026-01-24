@@ -7,71 +7,72 @@ import { NotificationService } from '../../core/services/notification.service';
 import { PageRequest } from '../../shared/models/pagination.model';
 import { MatIcon } from '@angular/material/icon';
 import { AuthService } from '../../core/services/auth.service';
+import { PostList } from '../../shared/components/post-list/post-list';
 
 @Component({
   selector: 'app-feed',
   standalone: true,
-  imports: [PostCard, MatButtonModule, MatProgressSpinnerModule, MatIcon],
+  imports: [PostList, MatButtonModule, MatProgressSpinnerModule, ],
   templateUrl: './feed.html',
   styleUrl: './feed.scss',
 })
 export class Feed implements OnInit {
-  public postService = inject(PostService);
-  private notify = inject(NotificationService);
-  private auth = inject(AuthService);
-  user = this.auth.user();
+  // public postService = inject(PostService);
+  // private notify = inject(NotificationService);
+  // private auth = inject(AuthService);
+  // user = this.auth.user();
 
-  currentPage = signal(0);
-  pageSize = signal(10);
-  isLastPage = signal(false);
+  // currentPage = signal(0);
+  // pageSize = signal(10);
+  // isLastPage = signal(false);
 
   ngOnInit() {
-    this.loadInitial();
+    // this.loadInitial();
   }
 
-  loadInitial() {
-    this.currentPage.set(0);
-    this.fetchFeed(false);
-  }
+  // loadInitial() {
+  //   this.currentPage.set(0);
+  //   this.fetchFeed(false);
+  // }
 
-  loadMore() {
-    this.currentPage.update((p) => p + 1);
-    this.fetchFeed(true);
-  }
+  // loadMore() {
+  //   this.currentPage.update((p) => p + 1);
+  //   this.fetchFeed(true);
+  // }
 
-  private fetchFeed(append: boolean) {
-    const params: PageRequest = {
-      page: this.currentPage(),
-      size: this.pageSize(),
-      sort: 'createdAt,desc',
-    };
+  // private fetchFeed(append: boolean) {
+  //   const params: PageRequest = {
+  //     page: this.currentPage(),
+  //     size: this.pageSize(),
+  //     // sort: 'createdAt,desc',
+  //   };
 
-    this.postService.getFeed(params, append).subscribe((res) => {
-      this.isLastPage.set(res.isLast);
-    });
-  }
+  //   this.postService.getFeed(params, append).subscribe((res) => {
+  //     this.isLastPage.set(res.isLast);
+  //   });
+  // }
 
-  handleComment(postId: number, content: string) {
-    this.postService.addComment(postId, content);
-  }
+  // handleComment(postId: number, content: string) {
+  //   this.postService.addComment(postId, content);
+  // }
 
-  handleReaction(postId: number) {
-    this.postService.reactToPost(postId);
-  }
+  // handleReaction(postId: number) {
+  //   this.postService.reactToPost(postId);
+  // }
 
-  handleDelete(postId: number) {
-    // need to show a popup instean of the browser popup
-    if (confirm('Delete this post?')) {
-      this.postService.deletePost(postId).subscribe({
-        next: () => this.notify.showSuccess('Post removed'),
-        error: () => this.notify.showError('Could not delete post'),
-      });
-    }
-  }
+  // handleDelete(postId: number) {
+  //   // need to show a popup instean of the browser popup
+  //   if (confirm('Delete this post?')) {
+  //     this.postService.deletePost(postId).subscribe({
+  //       next: () => this.notify.showSuccess('Post removed'),
+  //       error: () => this.notify.showError('Could not delete post'),
+  //     });
+  //   }
+  // }
 
-  handleReport(postId: number, reason: string) {
-    this.postService.reportPost({ id: postId, type: 'post', reason: reason }).subscribe({
-      next: () => this.notify.showSuccess('Report submitted'),
-    });
-  }
+  // handleReport(postId: number, reason: string) {
+  //   this.postService.reportPost({ id: postId, type: 'post', reason: reason }).subscribe({
+  //     next: () => this.notify.showSuccess('Report submitted'),
+  //   });
+  // }
 }

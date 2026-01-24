@@ -1,1 +1,32 @@
-<p>post-list works!</p>
+<div class="post-list">
+  @for (post of posts(); track post.id) {
+    <app-post-card
+      [user]="user!"
+      [post]="post"
+      (onReact)="reactToPost(post.id)"
+      (onDelete)="deletePost(post.id)"
+      [mode]="'feed'"
+    >
+    </app-post-card>
+  }
+
+  <!-- 
+    @if (postService.loading()) {
+      <div class="loader-container">
+        <mat-spinner diameter="40"></mat-spinner>
+      </div>
+    }
+
+    @if (!isLastPage() && !postService.loading() && !postService.isEmpty()) {
+      <div class="pagination-container">
+        <button mat-stroked-button color="primary" (click)="loadMore()">Load More Posts</button>
+      </div>
+    }
+
+    @if (postService.isEmpty()) {
+      <div class="empty-state">
+        <mat-icon>auto_awesome</mat-icon>
+        <p>No posts found. Start following people!</p>
+      </div>
+    } -->
+</div>

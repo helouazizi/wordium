@@ -33,6 +33,7 @@ export interface SignatureResponse {
 export interface CreatePostRequest {
   title: string;
   content: String;
+  mediaPublicIds?:string[];
 }
 
 export type Reaction = 'like' | 'unlike';

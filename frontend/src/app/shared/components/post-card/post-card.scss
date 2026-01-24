@@ -1,8 +1,8 @@
 .post-card {
   margin-bottom: 24px;
   background: var(--mat-sys-surface);
-  border: 1px solid var(--mat-sys-outline-variant);
-  border-radius: clamp(14px, 4vw, 18px);
+  // border: 1px solid var(--mat-sys-outline-variant);
+  border-radius: 0px;
   overflow: hidden;
   transition: box-shadow 0.24s cubic-bezier(0.34, 1.56, 0.64, 1), transform 0.18s ease-out;
   cursor: pointer;

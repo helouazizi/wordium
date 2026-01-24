@@ -19,6 +19,7 @@ import { ActivatedRoute } from '@angular/router';
 import { UpdateProfileRequest } from '../../core/apis/users/users.model';
 import { Post } from '../../core/apis/posts/post.model';
 import { User } from '../../shared/models/user.model';
+import { PostList } from '../../shared/components/post-list/post-list';
 
 @Component({
   selector: 'app-profile',
@@ -34,6 +35,7 @@ import { User } from '../../shared/models/user.model';
     MatCardModule,
     MatDividerModule,
     MatRippleModule,
+    PostList
   ],
   templateUrl: './profile.html',
   styleUrls: ['./profile.scss'],

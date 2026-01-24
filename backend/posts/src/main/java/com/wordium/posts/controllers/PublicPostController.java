@@ -39,7 +39,7 @@ public class PublicPostController {
         private final PostServiceImpl postService;
         private final CloudinaryService cloudinaryService;
 
-        public PublicPostController(PostServiceImpl postService,CloudinaryService cloudinaryService) {
+        public PublicPostController(PostServiceImpl postService, CloudinaryService cloudinaryService) {
                 this.postService = postService;
                 this.cloudinaryService = cloudinaryService;
         }
@@ -53,7 +53,7 @@ public class PublicPostController {
         @PostMapping()
         public ResponseEntity<PostResponse> createPost(
                         @RequestHeader("User-Id") Long userId,
-                       @RequestBody @Valid PostRequest request) {
+                        @RequestBody @Valid PostRequest request) {
                 PostResponse post = postService.createPost(userId, request);
                 return ResponseEntity.status(201).body(post);
         }
@@ -64,9 +64,18 @@ public class PublicPostController {
                         @ApiResponse(responseCode = "400", description = "Invalid pagination parameters", content = @Content(schema = @Schema(implementation = ProblemDetail.class)))
         })
         @GetMapping
-        public ResponseEntity<PaginatedResponse<PostResponse>> getFeed( @Valid PaginationRequest paginationRequest, @RequestHeader("User-Id") Long userId) {
+        public ResponseEntity<PaginatedResponse<PostResponse>> getFeed(@Valid PaginationRequest paginationRequest,
+                        @RequestHeader("User-Id") Long userId) {
                 Pageable pageable = paginationRequest.toPageable();
-                var page = postService.getFeed(pageable,userId);
+                var page = postService.getFeed(pageable, userId);
+                return ResponseEntity.ok(PaginatedResponse.fromPage(page));
+        }
+
+        @GetMapping("/user/{userId}")
+        public ResponseEntity<PaginatedResponse<PostResponse>> getPostsByUser(@PathVariable Long userId,
+                        @Valid PaginationRequest paginationRequest) {
+                Pageable pageable = paginationRequest.toPageable();
+                var page = postService.getPostsByUser( userId,pageable);
                 return ResponseEntity.ok(PaginatedResponse.fromPage(page));
         }
 
@@ -76,8 +85,8 @@ public class PublicPostController {
                         @ApiResponse(responseCode = "404", description = "Post not found", content = @Content(schema = @Schema(implementation = ProblemDetail.class)))
         })
         @GetMapping("/{id}")
-        public ResponseEntity<PostResponse> getPost(@PathVariable Long id , @RequestHeader("User-Id") Long userId) {
-                return ResponseEntity.ok(postService.getPostById(userId,id));
+        public ResponseEntity<PostResponse> getPost(@PathVariable Long id, @RequestHeader("User-Id") Long userId) {
+                return ResponseEntity.ok(postService.getPostById(userId, id));
         }
 
         @Operation(summary = "React to a post (like/unlike)")
@@ -148,4 +157,5 @@ public class PublicPostController {
                 var res = cloudinaryService.getSignature();
                 return ResponseEntity.ok(new PostsSegnatureResponse(res));
         }
+
 }

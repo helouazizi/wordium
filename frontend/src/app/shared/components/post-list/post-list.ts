@@ -5,14 +5,16 @@ import { NotificationService } from '../../../core/services/notification.service
 import { Router } from '@angular/router';
 import { PageRequest, PageResponse } from '../../models/pagination.model';
 import { Post } from '../../../core/apis/posts/post.model';
+import { PostCard } from '../post-card/post-card';
 
 export type PostListSource = 'admin' | 'feed' | 'profile' | 'bookmarks';
 
 @Component({
   selector: 'app-post-list',
-  imports: [],
+  imports: [PostCard],
   templateUrl: './post-list.html',
   styleUrl: './post-list.scss',
+
 })
 export class PostList implements OnInit {
   private postService = inject(PostService);
@@ -64,7 +66,10 @@ export class PostList implements OnInit {
 
     apiCall.subscribe({
       next: (res: PageResponse<Post>) => {
+        this.posts.set(res.data)
         this.isLastPage.set(res.isLast);
+        console.log(this.posts(),"posts");
+        
       },
       error: () => {
         this.notify.showError('Error loading posts');

@@ -1,5 +1,7 @@
 package com.wordium.posts.repo;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -17,6 +19,7 @@ public interface PostRepository extends JpaRepository<Post, Long>, JpaSpecificat
     Page<Post> findByUserId(Long userId, Pageable pageable);
 
     Page<Post> findByFlaggedFalse(Pageable pageable);
+    // Page<Post> findAllByOrderByCreatedAtDesc();
 
     @Modifying
     @Transactional
@@ -42,4 +45,5 @@ public interface PostRepository extends JpaRepository<Post, Long>, JpaSpecificat
     @Transactional
     @Query("UPDATE Post p SET p.reportCount = p.reportCount + 1, p.reported = true WHERE p.id = :postId")
     void incrementReportCount(Long postId);
+
 }

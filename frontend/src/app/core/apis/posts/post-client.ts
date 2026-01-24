@@ -50,7 +50,7 @@ export class PostsClient {
       httpParams = httpParams.set('sort', params.sort);
     }
 
-    return this.http.get<PageResponse<Post>>(`${this.config.usersBaseUrl}/${userId}/posts`, {
+    return this.http.get<PageResponse<Post>>(`${this.config.postsBaseUrl}/user/${userId}`, {
       params: httpParams,
     });
   }
@@ -113,7 +113,7 @@ export class PostsClient {
     return this.http.post(url, formData);
   }
 
-  createPost(post: CreatePostRequest): Observable<Post> {
+  createPost(post: CreatePostRequest): Observable<Post> {    
     return this.http.post<Post>(`${this.config.postsBaseUrl}`, post);
   }
   getPostById(id: number): Observable<Post> {

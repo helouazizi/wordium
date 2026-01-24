@@ -46,6 +46,7 @@ export class PostEditor {
   viewMode = signal<'edit' | 'preview'>('edit');
   isUploading = signal(false);
   isSubmitting = signal(false);
+  publicIds : string[] = [];
 
   onMediaUpload(event: Event) {
     const file = (event.target as HTMLInputElement).files?.[0];
@@ -59,6 +60,7 @@ export class PostEditor {
       .subscribe({
         next: (res: any) => {
           const url = res.secure_url;
+          this.publicIds.push(res.public_id);
           const markdownLink =
             res.resource_type === 'video'
               ? `\n<video controls src="${url}"></video>\n`
@@ -117,6 +119,7 @@ export class PostEditor {
       .createPost({
         title: this.title(),
         content: this.content(),
+        mediaPublicIds:this.publicIds,
       })
       .subscribe({
         next: () => {
@@ -133,8 +136,7 @@ export class PostEditor {
     if (confirm('Discard all changes?')) {
       this.title.set('');
       this.content.set('');
-      // Optionally navigate away:
-      // this.router.navigate(['/feed']);
+      this.publicIds = [];
     }
   }
 }

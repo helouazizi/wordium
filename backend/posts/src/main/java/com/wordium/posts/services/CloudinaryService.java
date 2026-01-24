@@ -21,7 +21,7 @@ public class CloudinaryService {
     private final Cloudinary cloudinary;
 
     private static final String DEFAULT_FOLDER = "posts";
-    private static final String DEFAULT_UPLOAD_PRESET = "ml_default";
+    private static final String DEFAULT_UPLOAD_PRESET = "post_default";
     private static final String STATUS_PENDING = "PENDING";
     private static final String STATUS_COMPLETED = "COMPLETED";
 
