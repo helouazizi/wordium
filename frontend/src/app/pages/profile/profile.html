@@ -1,0 +1,173 @@
+<div class="profile-page" [class.is-mobile]="isMobile()" [class.is-admin]="isAdmin()">
+  <header class="hero-header">
+    <div class="cover-wrapper">
+      <img [src]="targetUser()?.cover || 'assets/avatar.webp'" class="cover-img" alt="Cover" />
+      <button
+        *ngIf="isOwn()"
+        mat-mini-fab
+        color="secondary"
+        class="edit-cover"
+        (click)="openEditDialog('cover')"
+        matTooltip="Change Cover"
+      >
+        <mat-icon>photo_camera</mat-icon>
+      </button>
+    </div>
+
+    <div class="header-content">
+      <div class="avatar-container">
+        <div class="avatar-ring">
+          <img [src]="targetUser()?.avatar || 'assets/avatar.webp'" class="avatar-img" />
+          <button
+            *ngIf="isOwn()"
+            mat-mini-fab
+            class="edit-avatar"
+            (click)="openEditDialog('avatar')"
+          >
+            <mat-icon>edit</mat-icon>
+          </button>
+        </div>
+        <mat-icon *ngIf="isAdmin()" class="verified-badge" matTooltip="Platform Admin"
+          >verified</mat-icon
+        >
+      </div>
+
+      <div class="action-bar">
+        <button *ngIf="isOwn()" mat-flat-button color="primary" (click)="openEditDialog('profile')">
+          <mat-icon>settings</mat-icon> Edit Profile
+        </button>
+        <ng-container *ngIf="!isOwn()">
+          <button mat-flat-button color="primary" (click)="toggleFollow()">
+            {{ targetUser()?.isFollowing ? 'Unfollow' : 'Follow' }}
+          </button>
+          <button mat-stroked-button>Message</button>
+        </ng-container>
+      </div>
+    </div>
+  </header>
+
+  <div class="main-container">
+    <section class="identity">
+      <h1 class="display-name">
+        {{ targetUser()?.displayName || targetUser()?.username }}
+        <span *ngIf="isAdmin()" class="admin-label">Staff</span>
+      </h1>
+      <p class="handle">@{{ targetUser()?.username }}</p>
+
+      <div class="stats-row">
+        <div class="stat-pill" matRipple>
+          <span class="num">{{ stats().posts }}</span> <span class="lab">Posts</span>
+        </div>
+        <div class="stat-pill" matRipple>
+          <span class="num">{{ stats().followers | number }}</span>
+          <span class="lab">Followers</span>
+        </div>
+        <div class="stat-pill" matRipple>
+          <span class="num">{{ stats().following | number }}</span>
+          <span class="lab">Following</span>
+        </div>
+        <div class="stat-pill" matRipple>
+          <span class="num">{{ stats().bookmarks | number }}</span>
+          <span class="lab">Bookmarks</span>
+        </div>
+      </div>
+
+      <p class="bio-text">{{ targetUser()?.bio || 'Blogger and creative mind.' }}</p>
+
+      <div class="metadata">
+        <span><mat-icon>place</mat-icon> {{ targetUser()?.location || 'Everywhere' }}</span>
+        <span
+          ><mat-icon>calendar_month</mat-icon> Joined
+          {{ targetUser()?.createdAt | date: 'mediumDate' }}</span
+        >
+      </div>
+
+      <div class="social-links">
+        <!-- Website -->
+        <a
+          *ngIf="targetUser()?.social?.website"
+          [href]="targetUser()?.social?.website"
+          target="_blank"
+        >
+          <mat-icon>language</mat-icon>
+        </a>
+
+        <!-- Twitter -->
+        <a
+          *ngIf="targetUser()?.social?.twitter"
+          [href]="'https://twitter.com/' + targetUser()?.social?.twitter"
+          target="_blank"
+        >
+          <mat-icon>twitter</mat-icon>
+        </a>
+
+        <!-- GitHub -->
+        <a
+          *ngIf="targetUser()?.social?.github"
+          [href]="'https://github.com/' + targetUser()?.social?.github"
+          target="_blank"
+        >
+          <mat-icon>code</mat-icon>
+        </a>
+
+        <!-- LinkedIn -->
+        <a
+          *ngIf="targetUser()?.social?.linkedin"
+          [href]="'https://linkedin.com/in/' + targetUser()?.social?.linkedin"
+          target="_blank"
+        >
+          <mat-icon>linkedin</mat-icon>
+        </a>
+
+        <!-- If no social links exist, show placeholder text for owner -->
+        <span
+          *ngIf="isOwn() && (!targetUser()?.social || isSocialEmpty(targetUser()?.social))"
+          class="no-social"
+        >
+          Add your social links
+        </span>
+
+        <!-- Edit button always visible for owner -->
+        <button *ngIf="isOwn()" mat-mini-fab (click)="openEditDialog('social')">
+          <mat-icon>edit</mat-icon>
+        </button>
+      </div>
+    </section>
+
+    <!-- Tabs: About / Articles / Saved -->
+    <mat-tab-group class="profile-tabs" dynamicHeight>
+      <mat-tab label="About">
+        <div class="tab-body">
+          <mat-card class="glass-card">
+            <mat-card-header>
+              <mat-card-title>Biography</mat-card-title>
+              <button *ngIf="isOwn()" mat-icon-button (click)="openEditDialog('about')">
+                <mat-icon>edit</mat-icon>
+              </button>
+            </mat-card-header>
+            <mat-card-content>
+              <p>{{ targetUser()?.bio }}</p>
+            </mat-card-content>
+          </mat-card>
+        </div>
+      </mat-tab>
+
+      <mat-tab label="Articles">
+        <div class="tab-body posts-grid">
+          <mat-card *ngFor="let post of posts()" class="post-card" matRipple>
+            <mat-card-content>
+              <h3>{{ post.title }}</h3>
+            </mat-card-content>
+          </mat-card>
+        </div>
+      </mat-tab>
+
+      <mat-tab label="Saved">
+        <div class="tab-body empty-state">
+          <mat-icon>bookmarks</mat-icon>
+          <p>Your saved posts are private.</p>
+        </div>
+      </mat-tab>
+    </mat-tab-group>
+  </div>
+</div>

@@ -1,5 +1,7 @@
 package com.wordium.users.dto.users;
 
-public record RoleChangeRequest(String role) {
+import com.wordium.users.dto.Role;
+
+public record RoleChangeRequest(Role role) {
 
 }

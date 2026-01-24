@@ -1,20 +1,21 @@
 package com.wordium.users.dto.users;
 
-import org.springframework.web.multipart.MultipartFile;
+import com.wordium.users.dto.Social;
 
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Size;
 
 public record UpdateProfileRequest(
-                @Email(message = "Email must be valid") String email,
 
-                @Size(max = 30, min = 6, message = "Username must be 6 -> 30 characters") String username,
+        @Size(max = 50, message = "DisplayName must be less than 50 characters") String displayName,
 
-                @Size(max = 500, message = "Bio must be less than 500 characters") String bio,
-                MultipartFile avatar,
+        @Size(max = 500, message = "Bio must be less than 500 characters") String bio,
 
-                String avatarUrl,
+        String avatar,
+        String cover,
 
-                @Size(max = 500, message = "Location must be less than 500 characters") String location) {
+        @Size(max = 500, message = "Location must be less than 500 characters") String location,
 
+        Social social
+
+) {
 }

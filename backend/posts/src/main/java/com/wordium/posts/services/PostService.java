@@ -1,8 +1,6 @@
 package com.wordium.posts.services;
 
 // src/main/java/com/wordium/posts/service/PostService.java
-import java.util.Map;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -43,5 +41,4 @@ public interface PostService {
 
     void deleteComment(Long userId, Long id, Long commentId);
 
-    Map<String, Object> getSignature();
 }

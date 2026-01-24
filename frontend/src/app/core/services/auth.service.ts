@@ -1,9 +1,10 @@
 import { computed, inject, Injectable, signal } from '@angular/core';
 import { User } from '../../shared/models/user.model';
 import { Router } from '@angular/router';
-import { AuthClient } from '../apis/auth-client';
-import { LoginRequest, LoginResponse, SignupRequest } from '../apis/auth.models';
-import { switchMap, tap } from 'rxjs';
+import { AuthClient } from '../apis/auth/auth-client';
+import { LoginRequest, LoginResponse, SignupRequest } from '../apis/auth/auth.models';
+import { Observable, switchMap, tap } from 'rxjs';
+import { SignatureResponse } from '../apis/posts/post.model';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -75,14 +76,23 @@ export class AuthService {
     this.clearSession();
   }
 
-  private setSession(auth: LoginResponse) {
-    localStorage.setItem(this.TOKEN_KEY, auth.token);
-    this.router.navigate(['/feed']);
-  }
+ 
 
   private clearSession() {
     localStorage.removeItem(this.TOKEN_KEY);
     this._user.set(null);
     this.router.navigate(['/login']);
   }
+
+    getSignature(): Observable<SignatureResponse> {
+      return this.client.getSignature();
+    }
+  
+    uploadToCloudinary(file: File, sigData: any) {
+      return this.client.uploadToCloudinary(file, sigData);
+    }
+  
+    uploadImage(file: File): Observable<any> {
+      return this.getSignature().pipe(switchMap((res) => this.uploadToCloudinary(file, res.data)));
+    }
 }
