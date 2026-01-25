@@ -11,9 +11,9 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MarkdownModule } from 'ngx-markdown';
 import { PostService } from '../../core/services/post.service';
 import { NotificationService } from '../../core/services/notification.service';
-import { switchMap } from 'rxjs';
 import { MatSpinner } from '@angular/material/progress-spinner';
 import { SafeHtmlPipe } from '../../shared/pipes/safe-html.pipe';
+import { MediaRequest, MediaType } from '../../core/apis/posts/post.model';
 
 @Component({
   selector: 'app-post-editor',
@@ -46,7 +46,7 @@ export class PostEditor {
   viewMode = signal<'edit' | 'preview'>('edit');
   isUploading = signal(false);
   isSubmitting = signal(false);
-  publicIds : string[] = [];
+  media: MediaRequest[] = [];
 
   onMediaUpload(event: Event) {
     const file = (event.target as HTMLInputElement).files?.[0];
@@ -54,27 +54,31 @@ export class PostEditor {
 
     this.isUploading.set(true);
 
-    this.postService
-      .getSignature()
-      .pipe(switchMap((sig) => this.postService.uploadToCloudinary(file, sig.data)))
-      .subscribe({
-        next: (res: any) => {
-          const url = res.secure_url;
-          this.publicIds.push(res.public_id);
-          const markdownLink =
-            res.resource_type === 'video'
-              ? `\n<video controls src="${url}"></video>\n`
-              : `\n![Image preview](${url})\n`;
+    this.postService.uploadImage(file).subscribe({
+      next: (res: any) => {
+        const url = res.secure_url;
 
-          this.insertAtCursor(markdownLink);
-          this.isUploading.set(false);
-          this.notify.showSuccess('Media added to editor');
-        },
-        error: () => {
-          this.isUploading.set(false);
-          this.notify.showError('Media upload failed');
-        },
-      });
+        const mediaType: MediaType = res.resource_type === 'video' ? 'VIDEO' : 'IMAGE';
+
+        this.media.push({
+          publicId: res.public_id,
+          type: mediaType,
+        });
+
+        const markdownLink =
+          mediaType === 'VIDEO'
+            ? `\n<video controls src="${url}"></video>\n`
+            : `\n![Image preview](${url})\n`;
+
+        this.insertAtCursor(markdownLink);
+        this.isUploading.set(false);
+        this.notify.showSuccess('Media added to editor');
+      },
+      error: () => {
+        this.isUploading.set(false);
+        this.notify.showError('Media upload failed');
+      },
+    });
   }
 
   insertFormat(type: 'bold' | 'italic' | 'list' | 'quote' | 'code' | 'link') {
@@ -114,18 +118,26 @@ export class PostEditor {
       return;
     }
 
+    const usedPublicIds = this.extractUsedPublicIds(this.content());
+
+    const filteredMedia = this.media.filter((m) => usedPublicIds.has(m.publicId));
+
     this.isSubmitting.set(true);
+    console.log(filteredMedia,"ids hhhhh");
+    
+
     this.postService
       .createPost({
         title: this.title(),
         content: this.content(),
-        mediaPublicIds:this.publicIds,
+        media: filteredMedia,
       })
       .subscribe({
         next: () => {
           this.notify.showSuccess('Post published successfully!');
           this.title.set('');
           this.content.set('');
+          this.media = [];
           this.isSubmitting.set(false);
         },
         error: () => this.isSubmitting.set(false),
@@ -136,7 +148,22 @@ export class PostEditor {
     if (confirm('Discard all changes?')) {
       this.title.set('');
       this.content.set('');
-      this.publicIds = [];
+      this.media = [];
     }
+  }
+
+  private extractUsedPublicIds(content: string): Set<string> {
+    const used = new Set<string>();
+
+    const urlRegex =
+      /https:\/\/res\.cloudinary\.com\/[^\/]+\/(?:image|video)\/upload\/[^\/]+\/([^.\s)]+)/g;
+
+    let match: RegExpExecArray | null;
+
+    while ((match = urlRegex.exec(content)) !== null) {
+      used.add(match[1]);
+    }
+
+    return used;
   }
 }

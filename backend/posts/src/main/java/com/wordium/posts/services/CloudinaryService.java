@@ -1,6 +1,5 @@
 package com.wordium.posts.services;
 
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -12,6 +11,8 @@ import org.springframework.stereotype.Service;
 
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
+import com.wordium.posts.dto.MediaRequest;
+import com.wordium.posts.dto.MediaType;
 
 @Service
 public class CloudinaryService {
@@ -65,8 +66,7 @@ public class CloudinaryService {
             Map<?, ?> resources = cloudinary.api().resources(ObjectUtils.asMap(
                     "type", "upload",
                     "prefix", DEFAULT_FOLDER + "/",
-                    "context", true
-            ));
+                    "context", true));
 
             List<Map<String, Object>> files = (List<Map<String, Object>>) resources.get("resources");
             long now = System.currentTimeMillis() / 1000L;
@@ -98,20 +98,28 @@ public class CloudinaryService {
     /**
      * Marks a Cloudinary file as COMPLETED and returns the secure URL.
      */
-    public String finalizeUpload(String publicId) {
-        try {
-            cloudinary.uploader().explicit(publicId, ObjectUtils.asMap(
-                    "type", "upload",
-                    "invalidate", true,
-                    "context", "status=" + STATUS_COMPLETED
-            ));
+    public String finalizeUpload(MediaRequest media) {
+        String resourceType = media.type() == MediaType.VIDEO ? "video" : "image";
 
-            Map<?, ?> resource = cloudinary.api().resource(publicId, ObjectUtils.emptyMap());
+        try {
+            cloudinary.uploader().explicit(
+                    media.publicId(),
+                    ObjectUtils.asMap(
+                            "resource_type", resourceType,
+                            "type", "upload",
+                            "invalidate", true,
+                            "context", "status=" + STATUS_COMPLETED));
+
+            Map<?, ?> resource = cloudinary.api().resource(
+                    media.publicId(),
+                    ObjectUtils.asMap("resource_type", resourceType));
+
             return (String) resource.get("secure_url");
 
         } catch (Exception e) {
-            log.error("Failed to finalize Cloudinary upload: {}", publicId, e);
+            log.error("Failed to finalize Cloudinary upload: {}", media.publicId(), e);
             throw new RuntimeException("Failed to finalize Cloudinary upload", e);
         }
     }
+
 }

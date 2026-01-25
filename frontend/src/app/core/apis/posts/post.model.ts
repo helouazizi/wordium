@@ -1,4 +1,4 @@
-import { User } from "../../../shared/models/user.model";
+import { User } from '../../../shared/models/user.model';
 
 export interface Post {
   id: number;
@@ -9,7 +9,7 @@ export interface Post {
   commentsCount: number;
   reportsCount: number;
   isLiked: boolean;
-  isBookmarked:boolean;
+  isBookmarked: boolean;
   isReported: boolean;
   isFlagged: boolean;
   createdAt: string;
@@ -23,7 +23,7 @@ export interface SignatureData {
   cloudName: string;
   timestamp: number;
   upload_preset: string;
-  context : string
+  context: string;
 }
 
 export interface SignatureResponse {
@@ -33,7 +33,7 @@ export interface SignatureResponse {
 export interface CreatePostRequest {
   title: string;
   content: String;
-  mediaPublicIds?:string[];
+  media?: MediaRequest[];
 }
 
 export type Reaction = 'like' | 'unlike';
@@ -44,4 +44,11 @@ export interface Comment {
   content: string;
   createdAt: string;
   actor: User;
+}
+
+export type MediaType = 'IMAGE' | 'VIDEO';
+
+export interface MediaRequest {
+  publicId: string;
+  type: MediaType;
 }

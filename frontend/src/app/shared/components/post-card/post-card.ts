@@ -44,7 +44,6 @@ export class PostCard {
   user = input.required<User>();
   mode = input<'feed' | 'detail'>('feed');
 
-  // open = output<number>();
   onReact = output<number>();
   onBookmark = output<number>();
   onDelete = output<number>();

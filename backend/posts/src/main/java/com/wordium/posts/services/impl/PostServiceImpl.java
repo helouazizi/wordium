@@ -57,9 +57,9 @@ public class PostServiceImpl implements PostService {
 
         Post saved = postRepository.save(post);
 
-        if (request.mediaPublicIds() != null) {
-            for (String publicId : request.mediaPublicIds()) {
-                this.cloudinaryService.finalizeUpload(publicId);
+        if (request.media() != null) {
+            for (var media : request.media()) {
+                this.cloudinaryService.finalizeUpload(media);
             }
         }
 
@@ -84,8 +84,6 @@ public class PostServiceImpl implements PostService {
         Page<Post> page = postRepository.findByFlaggedFalse(pageable);
         return enrichWithLikes(page, userId);
     }
-
-  
 
     @Override
     public Page<PostResponse> getAllposts(Long userId, Pageable pageable) {
