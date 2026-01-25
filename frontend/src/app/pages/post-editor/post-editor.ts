@@ -122,9 +122,7 @@ export class PostEditor {
 
     const filteredMedia = this.media.filter((m) => usedPublicIds.has(m.publicId));
 
-    this.isSubmitting.set(true);
-    console.log(filteredMedia,"ids hhhhh");
-    
+    this.isSubmitting.set(true);    
 
     this.postService
       .createPost({

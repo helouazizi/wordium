@@ -97,7 +97,7 @@ public class UsersController {
         return ResponseEntity.ok(user);
     }
 
-    @GetMapping("/{targetId}")
+    @GetMapping("/{id}")
     @Operation(summary = "Get User profile for all kind of users ", description = "Fetch a user profile using id as param")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "User fetched successfully", content = @Content(schema = @Schema(implementation = UsersResponse.class))),
@@ -106,8 +106,8 @@ public class UsersController {
             @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(implementation = ProblemDetail.class))), })
 
     public ResponseEntity<UserProfile> getUserProfile(@RequestHeader("User-Id") Long userId,
-            @PathVariable Long targetId) {
-        UserProfile user = userService.getUserProfile(userId, targetId);
+            @PathVariable Long id) {
+        UserProfile user = userService.getUserProfile(userId, id);
         return ResponseEntity.ok(user);
     }
 

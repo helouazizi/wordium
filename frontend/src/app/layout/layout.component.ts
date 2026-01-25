@@ -12,6 +12,8 @@ import { ThemeService } from '../core/services/theme.service';
 import { MatButtonToggle, MatButtonToggleGroup } from '@angular/material/button-toggle';
 import { Header } from '../shared/components/header/header';
 import { DeviceService } from '../core/services/device.service';
+import { UserAvatar } from '../shared/components/user-avatar/user-avatar';
+import { AuthService } from '../core/services/auth.service';
 
 @Component({
   selector: 'app-layout',
@@ -29,15 +31,24 @@ import { DeviceService } from '../core/services/device.service';
     MatButtonToggleGroup,
     MatButtonToggle,
     Header,
+    UserAvatar,
   ],
 })
 export class LayoutComponent {
   public themeService = inject(ThemeService);
-  private device = inject(DeviceService)
+  private device = inject(DeviceService);
+  private auth = inject(AuthService);
+
+  user = this.auth.user;
+
   navLinks = NAV_LINKS;
   isHandset$ = this.device.isHandset;
 
   toggleTheme() {
     this.themeService.toggle();
+  }
+
+  logout() {
+    this.auth.logout();
   }
 }

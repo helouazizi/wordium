@@ -17,7 +17,6 @@ import { UsersService } from '../../core/services/users.service';
 import { DeviceService } from '../../core/services/device.service';
 import { ActivatedRoute } from '@angular/router';
 import { UpdateProfileRequest } from '../../core/apis/users/users.model';
-import { Post } from '../../core/apis/posts/post.model';
 import { User } from '../../shared/models/user.model';
 import { PostList } from '../../shared/components/post-list/post-list';
 
@@ -56,24 +55,28 @@ export class Profile {
   isOwn = computed(() => this.targetUser()?.id === this.sessionUser()?.id);
   isAdmin = computed(() => this.sessionUser()?.role === 'ADMIN');
 
-  posts = signal<Post[] | null>(null);
-  stats = computed(
-    () => this.targetUser()?.stats ?? { posts: 0, bookmarks: 0, followers: 0, following: 0 },
-  );
+  // posts = signal<Post[] | null>(null);
+  // stats = computed(
+  //   () => this.targetUser()?.stats ?? { posts: 0, bookmarks: 0, followers: 0, following: 0 },
+  // );
 
   ngOnInit() {
     const idParam = this.route.snapshot.paramMap.get('id');
     const id = idParam ? Number(idParam) : null;
 
+    console.log(id,"param id ");
+    
+
     if (id) {
       this.usersService.getUserProfile(id).subscribe({
         next: (user) => {          
-          (this.targetUser.set(user), console.log(this.targetUser(), 'profile'));
+          (this.targetUser.set(user), console.log(user, 'profile'));
         },
       });
-    } else {
-      this.targetUser.set(this.sessionUser());
-    }
+    } 
+    // else {
+    //   this.targetUser.set(this.sessionUser());
+    // }
   }
 
   isSocialEmpty(social: User['social'] | undefined): boolean {

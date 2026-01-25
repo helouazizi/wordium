@@ -16,6 +16,7 @@ import { SafeHtmlPipe } from '../../pipes/safe-html.pipe';
 import { User } from '../../models/user.model';
 import { PageRequest } from '../../models/pagination.model';
 import { Router } from '@angular/router';
+import { PostListSource } from '../post-list/post-list';
 
 @Component({
   selector: 'app-post-card',
@@ -42,7 +43,7 @@ export class PostCard {
   private router = inject(Router)
   post = input.required<Post>();
   user = input.required<User>();
-  mode = input<'feed' | 'detail'>('feed');
+  mode = input<PostListSource>('feed');
 
   onReact = output<number>();
   onBookmark = output<number>();

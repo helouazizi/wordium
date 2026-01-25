@@ -75,7 +75,7 @@ public class UsersService {
     }
 
     public UserProfile getUserProfile(Long userId, Long targetId) {
-        Users taregtUser = usersRepo.findById(userId).orElseThrow(() -> new NotFoundException("User Not Found"));
+        Users taregtUser = usersRepo.findById(targetId).orElseThrow(() -> new NotFoundException("User Not Found"));
         boolean isfollowing = false;
         boolean followsme = false;
         if (userId != targetId) {

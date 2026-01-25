@@ -1,32 +1,48 @@
 <div class="post-list">
+  @if (initialLoading()) {
+    <div class="loading-state">
+      <mat-spinner diameter="40"></mat-spinner>
+      <p>Loading posts…</p>
+    </div>
+  }
+
   @for (post of posts(); track post.id) {
     <app-post-card
       [user]="user!"
       [post]="post"
       (onReact)="reactToPost(post.id)"
       (onDelete)="deletePost(post.id)"
-      [mode]="'feed'"
-    >
-    </app-post-card>
+      [mode]="source()"
+    />
   }
 
-  <!-- 
-    @if (postService.loading()) {
-      <div class="loader-container">
-        <mat-spinner diameter="40"></mat-spinner>
-      </div>
-    }
+  @if (isEmpty()) {
+    <div class="empty-state">
+      <mat-icon>inbox</mat-icon>
+      <h3>No posts yet</h3>
+      <p>{{ emptyMessage() }}</p>
+    </div>
+  }
 
-    @if (!isLastPage() && !postService.loading() && !postService.isEmpty()) {
-      <div class="pagination-container">
-        <button mat-stroked-button color="primary" (click)="loadMore()">Load More Posts</button>
-      </div>
-    }
+  @if (pageLoading()) {
+    <div class="pagination-loader">
+      <mat-progress-spinner diameter="28" mode="indeterminate" />
+    </div>
+  }
+  @if (endReached()) {
+    <div class="end-state">
+      <mat-icon>{{ endMessage.icon }}</mat-icon>
+      <h3>{{ endMessage.title }}</h3>
+      <p>{{ endMessage.message }}</p>
 
-    @if (postService.isEmpty()) {
-      <div class="empty-state">
-        <mat-icon>auto_awesome</mat-icon>
-        <p>No posts found. Start following people!</p>
-      </div>
-    } -->
+      @if (endMessage.action) {
+        <!-- <mat-button-toggle></mat-button-toggle> -->
+        <button class="end-btn" mat-button color="primary" (click)="goToDiscover()">
+          {{ endMessage.action }}
+        </button>
+      }
+    </div>
+  }
+
+  <div #scrollAnchor class="scroll-anchor"></div>
 </div>

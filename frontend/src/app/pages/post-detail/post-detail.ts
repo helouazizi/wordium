@@ -6,6 +6,7 @@ import { NotFound } from '../../shared/components/not-found/not-found';
 import { PostService } from '../../core/services/post.service';
 import { AuthService } from '../../core/services/auth.service';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { Post } from '../../core/apis/posts/post.model';
 
 @Component({
   selector: 'app-post-detail',
@@ -25,14 +26,8 @@ export class PostDetail implements OnInit {
   error = signal(false);
   postId = signal<number | null>(null);
 
-
-  currentUser = this.authService.user(); 
-
-  post = computed(() => {
-    const id = this.postId();
-    if (!id) return null;
-    return this.postService.posts().find((p) => p.id === id) || null;
-  });
+  currentUser = this.authService.user();
+  post = signal<Post | null>(null);
 
   ngOnInit() {
     const idParam = this.route.snapshot.paramMap.get('id');
@@ -45,26 +40,22 @@ export class PostDetail implements OnInit {
     }
 
     this.postId.set(id);
-
-    const exists = this.postService.posts().some(p => p.id === id);
-    if (!exists) {
-      this.fetchPost(id);
-    } else {
-      this.isLoading.set(false);
-    }
+    this.fetchPost(id);
+    this.isLoading.set(false);
   }
 
   private fetchPost(id: number) {
     this.isLoading.set(true);
     this.postService.fetchPostById(id).subscribe({
-      next: () => {
+      next: (res) => {
+        this.post.set(res);
         this.isLoading.set(false);
         this.error.set(false);
       },
       error: () => {
         this.isLoading.set(false);
         this.error.set(true);
-      }
+      },
     });
   }
 

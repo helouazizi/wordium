@@ -82,7 +82,6 @@ export class EditProfileDialogComponent {
           result.social = { ...this.editForm.value.social };
           break;
       }
-      console.log(result, 'tp db');
 
       this.dialogRef.close(result);
     }
@@ -106,8 +105,6 @@ export class EditProfileDialogComponent {
       this.isLoadingAvatar.set(true);
       this.usersService.uploadImage(file).subscribe({
         next: (res) => {
-          console.log(res, 'cloud');
-
           if (this.data.type === 'avatar') {
             this.editForm.patchValue({ avatar: res.secure_url, avatarPublicId: res.public_id });
           } else if (this.data.type === 'cover') {

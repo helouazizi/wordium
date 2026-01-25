@@ -2,8 +2,8 @@
   <mat-sidenav
     #drawer
     class="sidenav"
-    [mode]="(isHandset$()) ? 'over' : 'side'"
-    [opened]="!(isHandset$())"
+    [mode]="isHandset$() ? 'over' : 'side'"
+    [opened]="!isHandset$()"
     disableClose="false"
   >
     <div class="sidenav-theme">
@@ -36,6 +36,14 @@
         </a>
       }
     </mat-nav-list>
+
+
+    <div class="sidenav-user-card">
+      <app-user-avatar [user]="user()" [size]="'md'" [showEmail]="true" [showName]="true" ></app-user-avatar>
+      <button mat-icon-button matTooltip="Logout" (click)="logout()">
+        <mat-icon>logout</mat-icon>
+      </button>
+    </div>
   </mat-sidenav>
 
   <mat-sidenav-content class="content-wrapper">

@@ -31,8 +31,8 @@ export class UserAvatar {
   avatarClick = output<MouseEvent>();
 
   navigateToProfile() {
-    if (this.action() === 'profile' && this.user()?.id) {
-      this.router.navigate(['/profile', this.user()?.id]);
+    if (this.action() === 'profile' && this.user()?.id) {      
+      this.router.navigate(['/profiles', this.user()?.id]);
     }
   }
 }

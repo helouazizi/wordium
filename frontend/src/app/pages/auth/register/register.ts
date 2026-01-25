@@ -90,9 +90,6 @@ export class Register {
       this.isLoading.set(true);
       const formValues = this.registerForm.getRawValue();
       const { confirmPassword, ...data } = formValues;
-
-      console.log(data, 'sugnup');
-
       this.authService.register(data).subscribe({
         next: () => {
           this.isLoading.set(false);
