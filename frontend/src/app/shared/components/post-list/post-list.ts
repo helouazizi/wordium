@@ -12,7 +12,7 @@ import { PostService } from '../../../core/services/post.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { NotificationService } from '../../../core/services/notification.service';
 import { PageRequest, PageResponse } from '../../models/pagination.model';
-import { Post, Reaction, ReportType } from '../../../core/apis/posts/post.model';
+import { Comment, Post, Reaction, ReportType } from '../../../core/apis/posts/post.model';
 import { PostCard } from '../post-card/post-card';
 import { MatProgressSpinner, MatSpinner } from '@angular/material/progress-spinner';
 import { MatIcon } from '@angular/material/icon';
@@ -42,7 +42,6 @@ export class PostList implements OnInit, AfterViewInit {
 
   emptyMessage = input<string>('No posts found here yet.');
   user = this.auth.user();
-  userId = input<number>(this.user?.id!);
 
   currentPage = signal(0);
   isLastPage = signal(false);
@@ -50,6 +49,12 @@ export class PostList implements OnInit, AfterViewInit {
   posts = signal<Post[]>([]);
   initialLoading = signal(false);
   pageLoading = signal(false);
+
+  postComments = signal<Comment[]>([]);
+  commentsPage = signal(0);
+  commentsLastPage = signal(false);
+  commentsLoading = signal(false);
+
   err = signal<string | null>(null);
   isEmpty = () => !this.initialLoading() && this.posts().length === 0;
   endReached = () => this.isLastPage() && !this.initialLoading() && this.posts().length > 0;
@@ -60,7 +65,11 @@ export class PostList implements OnInit, AfterViewInit {
     if (!this.source()) {
       throw new Error('PostList: source input is required');
     }
-    this.loadInitial();
+    if (this.source() != 'detail') {
+      this.loadInitial();
+    } else {
+      this.loadInitialComments();
+    }
   }
 
   ngAfterViewInit() {
@@ -167,7 +176,7 @@ export class PostList implements OnInit, AfterViewInit {
   addComment(postId: number, content: string) {
     this.updatePost(postId, (p) => ({
       ...p,
-      commentsCount: (p.commentsCount || 0) + 1, // increment comment count
+      commentsCount: (p.commentsCount || 0) + 1,
     }));
 
     this.postService.addComment(postId, content).subscribe({
@@ -301,5 +310,73 @@ export class PostList implements OnInit, AfterViewInit {
 
   get endMessage() {
     return this.getEndMessage();
+  }
+
+  loadMoreComments() {
+    if (this.commentsLoading() || this.commentsLastPage()) return;
+
+    this.commentsPage.update((p) => p + 1);
+    this.commentsLoading.set(true);
+
+    this.fetchComments(true);
+  }
+
+  updateComments(content: string) {
+   const  postId = this.getPostId()
+     const post = this.posts().find((p) => p.id === postId);
+    const newComment: Comment = {
+      id:Math.random(), // temporary
+      postId:post?.id!,
+      content: content,
+      actor: this.auth.user()!,
+      createdAt: new Date().toDateString(),
+    };
+
+    this.postComments.update((existing) => ( [ newComment , ...existing]));
+  }
+
+  loadInitialComments() {
+    const postId = this.getPostId();
+    if (!postId) {
+      this.err.set('Post Not Found');
+      return;
+    }
+
+    this.commentsPage.set(0);
+    this.commentsLastPage.set(false);
+    this.postComments.set([]);
+    this.commentsLoading.set(true);
+
+    this.fetchComments(false);
+  }
+
+  private fetchComments(append: boolean) {
+    const postId = this.getPostId();
+    if (!postId) return;
+
+    const params: PageRequest = {
+      page: this.commentsPage(),
+      size: 10,
+      sort: 'createdAt,asc',
+    };
+
+    this.postService.getPostComments(postId, params).subscribe({
+      next: (res: PageResponse<Comment>) => {
+        this.postComments.update((existing) => (append ? [...existing, ...res.data] : res.data));
+
+        this.commentsLastPage.set(res.isLast);
+        this.commentsLoading.set(false);
+      },
+      error: () => {
+        this.commentsLoading.set(false);
+        this.notify.showError('Failed to load comments');
+      },
+    });
+  }
+
+  private getPostId(): number | null {
+    const idParam = this.route.snapshot.paramMap.get('id');
+    const id = Number(idParam);
+    return idParam && !isNaN(id) ? id : null;
   }
 }

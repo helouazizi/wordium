@@ -139,7 +139,7 @@
       </div>
 
       <div class="comments-list">
-        @for (comment of comments(); track comment.id) {
+        @for (comment of comments; track comment.id) {
           <div class="comment-item">
             <app-user-avatar
               [user]="comment.actor"
@@ -154,7 +154,7 @@
         @if (isLoadingComments()) {
           <div class="loader"><mat-spinner diameter="30"></mat-spinner></div>
         } @else if (hasMoreComments()) {
-          <button mat-button class="load-more" (click)="loadMore()">Load more comments</button>
+          <button mat-button class="load-more" (click)="loadMoreComments()">Load more comments</button>
         }
       </div>
     </div>

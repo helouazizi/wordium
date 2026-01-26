@@ -7,6 +7,8 @@ import {
   computed,
   inject,
   EventEmitter,
+  Output,
+  Input,
 } from '@angular/core';
 import { Post, Comment, ReportType } from '../../../core/apis/posts/post.model';
 import { MatCardModule } from '@angular/material/card';
@@ -59,10 +61,15 @@ export class PostCard {
   onDelete = output<number>();
   onReport = output<{ id: number; type: ReportType; reason: string }>();
   onComment = output<string>();
-  private size = 10;
-  onRequestComments = output<{ postId: number; page: PageRequest }>();
 
-  comments = signal<Comment[]>([]);
+  // @Output() onLoadComments = new EventEmitter<void>();
+  @Output() onLoadMoreComments = new EventEmitter<void>();
+  @Output() onSubmitComment = new EventEmitter<string>();
+
+  @Input() comments: Comment[] = [];
+  @Input() commentsLoading = false;
+  @Input() commentsLastPage = false;
+
   currentPage = signal(0);
   isLoadingComments = signal(false);
   hasMoreComments = signal(true);
@@ -97,41 +104,16 @@ export class PostCard {
     if (!user || !post) return false;
     return user.role === 'ADMIN';
   });
-  constructor() {
-    effect(() => {
-      if (this.mode() === 'detail' && this.comments().length === 0) {
-        this.loadMore();
-      }
-    });
-  }
 
-  loadMore() {
-    if (this.isLoadingComments() || !this.hasMoreComments()) return;
-    this.isLoadingComments.set(true);
-    const page: PageRequest = {
-      page: this.currentPage(),
-      size: this.size,
-      sort: 'createdAt,desc',
-    };
-    this.onRequestComments.emit({ postId: this.post().id, page: page });
-  }
-
-  updateComments(newComments: Comment[], isLastPage: boolean) {
-    this.comments.update((prev) => [...prev, ...newComments]);
-    this.hasMoreComments.set(!isLastPage);
-    this.currentPage.update((p) => p + 1);
-    this.isLoadingComments.set(false);
-  }
-
-  openReport(id: number, type: ReportType) {
-    this.reportingTarget.set({ id, type });
-    this.isReporting.set(true);
-  }
+  // openReport(id: number, type: ReportType) {
+  //   this.reportingTarget.set({ id, type });
+  //   this.isReporting.set(true);
+  // }
 
   handleReact(id: number) {
     this.onReact.emit(id);
-    
   }
+
   selectReportTarget(id: number, type: ReportType) {
     this.reportingTarget.set({ id, type });
   }
@@ -156,6 +138,7 @@ export class PostCard {
 
   submitComment() {
     if (this.newCommentText().trim()) {
+      this.onSubmitComment.emit(this.newCommentText())
       this.onComment.emit(this.newCommentText());
       this.newCommentText.set('');
     }
@@ -165,7 +148,12 @@ export class PostCard {
     this.onDelete.emit(this.post().id);
     this.isConfirmingDelete.set(false);
   }
+
   handleNavigate() {
     if (this.mode() === 'feed') this.router.navigate(['/posts/', this.post().id]);
+  }
+
+  loadMoreComments() {
+    this.onLoadMoreComments.emit();
   }
 }

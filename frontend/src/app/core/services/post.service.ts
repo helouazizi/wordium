@@ -18,33 +18,15 @@ export class PostService {
     return this.client.feed(params);
   }
   getUserPosts(userid: number, params: PageRequest) {
-    // this._loading.set(true);
     return this.client.getUserPosts(userid, params);
-    // .pipe(
-    //   // finalize(() => this._loading.set(false)),
-    //   tap((response) => {
-    //     if (append) {
-    //       this._posts.update((current) => [...current, ...response.data]);
-    //     } else {
-    //       this._posts.set(response.data);
-    //     }
-    //   }),
-    // );
+  }
+
+  getPostComments(postId: number, params: PageRequest) {
+    return this.client.getPostComments(postId, params);
   }
 
   getAllPosts(params: PageRequest) {
-    // this._loading.set(true);
     return this.client.getAllPosts(params);
-    // .pipe(
-    //   finalize(() => this._loading.set(false)),
-    //   tap((response) => {
-    //     if (append) {
-    //       this._posts.update((current) => [...current, ...response.data]);
-    //     } else {
-    //       this._posts.set(response.data);
-    //     }
-    //   }),
-    // );
   }
   getBookmarks(params: PageRequest) {
     return this.client.getBookmarks(params);

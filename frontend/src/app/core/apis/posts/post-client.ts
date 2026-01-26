@@ -55,6 +55,24 @@ export class PostsClient {
     });
   }
 
+  getPostComments(postId: number, params?: PageRequest): Observable<PageResponse<Comment>> {
+    let httpParams = new HttpParams();
+
+    if (params?.page !== undefined) {
+      httpParams = httpParams.set('page', params.page);
+    }
+    if (params?.size !== undefined) {
+      httpParams = httpParams.set('size', params.size);
+    }
+    if (params?.sort) {
+      httpParams = httpParams.set('sort', params.sort);
+    }
+
+    return this.http.get<PageResponse<Comment>>(`${this.config.postsBaseUrl}/${postId}/comments`, {
+      params: httpParams,
+    });
+  }
+
   getAllPosts(params?: PageRequest): Observable<PageResponse<Post>> {
     let httpParams = new HttpParams();
 
@@ -113,7 +131,7 @@ export class PostsClient {
     return this.http.post(url, formData);
   }
 
-  createPost(post: CreatePostRequest): Observable<Post> {    
+  createPost(post: CreatePostRequest): Observable<Post> {
     return this.http.post<Post>(`${this.config.postsBaseUrl}`, post);
   }
   getPostById(id: number): Observable<Post> {

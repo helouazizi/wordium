@@ -17,6 +17,11 @@
         (onDelete)="deletePost(post.id)"
         (onReport)="reportPost(post.id, $event.type, $event.reason)"
         [mode]="source()"
+        [comments]="postComments()"
+        [commentsLoading]="commentsLoading()"
+        [commentsLastPage]="commentsLastPage()"
+        (onLoadMoreComments)="loadMoreComments()"
+        (onSubmitComment)="updateComments($event)"
       />
     }
     @if (isEmpty()) {
