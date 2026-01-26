@@ -1,4 +1,13 @@
-import { Component, input, output, signal, effect, computed, inject } from '@angular/core';
+import {
+  Component,
+  input,
+  output,
+  signal,
+  effect,
+  computed,
+  inject,
+  EventEmitter,
+} from '@angular/core';
 import { Post, Comment, ReportType } from '../../../core/apis/posts/post.model';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
@@ -49,8 +58,7 @@ export class PostCard {
   onBookmark = output<number>();
   onDelete = output<number>();
   onReport = output<{ id: number; type: ReportType; reason: string }>();
-  onComment = output<{ postId: number; content: string }>();
-
+  onComment = output<string>();
   private size = 10;
   onRequestComments = output<{ postId: number; page: PageRequest }>();
 
@@ -120,6 +128,10 @@ export class PostCard {
     this.isReporting.set(true);
   }
 
+  handleReact(id: number) {
+    this.onReact.emit(id);
+    
+  }
   selectReportTarget(id: number, type: ReportType) {
     this.reportingTarget.set({ id, type });
   }
@@ -144,7 +156,7 @@ export class PostCard {
 
   submitComment() {
     if (this.newCommentText().trim()) {
-      this.onComment.emit({ postId: this.post().id, content: this.newCommentText() });
+      this.onComment.emit(this.newCommentText());
       this.newCommentText.set('');
     }
   }

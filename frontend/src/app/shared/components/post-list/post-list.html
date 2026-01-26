@@ -1,6 +1,6 @@
 <div class="post-list">
   @if (err()) {
-  <app-not-found [resource]="err()!" [linkText]="'Go Back'"></app-not-found>
+    <app-not-found [resource]="err()!" [linkText]="'Go Back'"></app-not-found>
   } @else {
     @if (initialLoading()) {
       <div class="loading-state">
@@ -13,7 +13,9 @@
         [user]="user!"
         [post]="post"
         (onReact)="reactToPost(post.id)"
+        (onComment)="addComment(post.id, $event)"
         (onDelete)="deletePost(post.id)"
+        (onReport)="reportPost(post.id, $event.type, $event.reason)"
         [mode]="source()"
       />
     }

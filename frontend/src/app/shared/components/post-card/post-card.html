@@ -91,14 +91,13 @@
   <mat-card-actions align="start">
     <button
       mat-button
-      (click)="onReact.emit(post().id); $event.stopPropagation()"
+      (click)="handleReact(post().id); $event.stopPropagation()"
       [class.active-btn]="post().isLiked"
     >
       <mat-icon>{{ post().isLiked ? 'favorite' : 'favorite_border' }}</mat-icon>
       <span class="counter">{{ post().likesCount }}</span>
     </button>
-
-    <button mat-button (click)="$event.stopPropagation()">
+    <button mat-button >
       <mat-icon>chat_bubble_outline</mat-icon>
       <span class="counter">{{ post().commentsCount }}</span>
     </button>

@@ -56,57 +56,28 @@ export class PostService {
   createPost(post: CreatePostRequest): Observable<Post> {
     return this.client.createPost(post);
   }
-  getPostById(id: number):Observable<Post> {
+  getPostById(id: number): Observable<Post> {
     return this.client.getPostById(id);
   }
 
   reactToPost(postId: number, reaction: Reaction) {
-    // const previousState = this._posts();
-
-    // const post = previousState.find((p) => p.id === postId);
-    // if (!post) return of(null);
-
-    // const isAddingLike = !post.isLiked;
-
-    // this._posts.update((posts) =>
-    //   posts.map((p) => {
-    //     if (p.id === postId) {
-    //       return {
-    //         ...p,
-    //         isLiked: isAddingLike,
-    //         likesCount: isAddingLike ? p.likesCount + 1 : Math.max(0, p.likesCount - 1),
-    //       };
-    //     }
-    //     return p;
-    //   }),
-    // );
-
-    // const reactionType: Reaction = isAddingLike ? 'like' : 'unlike';
-
     return this.client.reactPost(postId, reaction);
-    // .pipe(
-    //   catchError((error) => {
-    //     this._posts.set(previousState);
-    //     return throwError(() => error);
-    //   }),
-    // );
   }
 
   deletePost(postId: number) {
     return this.client.deletePost(postId);
-    // .pipe(
-    //   tap(() => {
-    //     this._posts.update((posts) => posts.filter((p) => p.id !== postId));
-    //   }),
-    // );
   }
 
   addComment(postId: number, content: string) {
     return this.client.addComment(postId, content);
   }
 
-  reportPost(event: { id: number; type: ReportType; reason: string }) {
-    return this.client.reportPost(event.id, event.reason);
+  reportPost(id: number, reason: string) {
+    return this.client.reportPost(id, reason);
+  }
+
+  reportUser(id: number, reason: string) {
+    return this.client.reportPost(id, reason);
   }
 
   getSignature(): Observable<SignatureResponse> {

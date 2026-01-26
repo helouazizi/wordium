@@ -12,7 +12,7 @@ import { PostService } from '../../../core/services/post.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { NotificationService } from '../../../core/services/notification.service';
 import { PageRequest, PageResponse } from '../../models/pagination.model';
-import { Post, Reaction } from '../../../core/apis/posts/post.model';
+import { Post, Reaction, ReportType } from '../../../core/apis/posts/post.model';
 import { PostCard } from '../post-card/post-card';
 import { MatProgressSpinner, MatSpinner } from '@angular/material/progress-spinner';
 import { MatIcon } from '@angular/material/icon';
@@ -165,7 +165,23 @@ export class PostList implements OnInit, AfterViewInit {
   }
 
   addComment(postId: number, content: string) {
-    this.postService.addComment(postId, content);
+    this.updatePost(postId, (p) => ({
+      ...p,
+      commentsCount: (p.commentsCount || 0) + 1, // increment comment count
+    }));
+
+    this.postService.addComment(postId, content).subscribe({
+      next: () => {
+        this.notify.showSuccess('New comment added');
+      },
+      error: () => {
+        this.updatePost(postId, (p) => ({
+          ...p,
+          commentsCount: (p.commentsCount || 0) - 1,
+        }));
+        this.notify.showError('Failed to add comment');
+      },
+    });
   }
 
   reactToPost(postId: number) {
@@ -204,9 +220,37 @@ export class PostList implements OnInit, AfterViewInit {
     });
   }
 
-  reportPost(postId: number, reason: string) {
-    this.postService.reportPost({ id: postId, type: 'post', reason }).subscribe({
-      next: () => this.notify.showSuccess('Report submitted'),
+  reportPost(postId: number, type: ReportType, reason: string) {
+    if (type === 'post') {
+      this.updatePost(postId, (p) => ({
+        ...p,
+        reportsCount: (p.reportsCount || 0) + 1,
+      }));
+    }
+    let request$;
+    if (type === 'post') {
+      request$ = this.postService.reportPost(postId, reason);
+    } else if (type === 'user') {
+      return;
+      // request$ = this.postService.reportUser({ id, reason });
+    } else {
+      console.error('Unknown report type:', type);
+      return;
+    }
+
+    request$.subscribe({
+      next: () => {
+        this.notify.showSuccess('New report added');
+      },
+      error: () => {
+        if (type === 'post') {
+          this.updatePost(postId, (p) => ({
+            ...p,
+            reportsCount: (p.reportsCount || 0) - 1,
+          }));
+        }
+        this.notify.showError('Failed to add report');
+      },
     });
   }
 
