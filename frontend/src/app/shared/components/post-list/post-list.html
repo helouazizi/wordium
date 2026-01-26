@@ -1,48 +1,48 @@
 <div class="post-list">
-  @if (initialLoading()) {
-    <div class="loading-state">
-      <mat-spinner diameter="40"></mat-spinner>
-      <p>Loading posts…</p>
-    </div>
-  }
+  @if (err()) {
+  <app-not-found [resource]="err()!" [linkText]="'Go Back'"></app-not-found>
+  } @else {
+    @if (initialLoading()) {
+      <div class="loading-state">
+        <mat-spinner diameter="40"></mat-spinner>
+        <p>Loading posts…</p>
+      </div>
+    }
+    @for (post of posts(); track post.id) {
+      <app-post-card
+        [user]="user!"
+        [post]="post"
+        (onReact)="reactToPost(post.id)"
+        (onDelete)="deletePost(post.id)"
+        [mode]="source()"
+      />
+    }
+    @if (isEmpty()) {
+      <div class="empty-state">
+        <mat-icon>inbox</mat-icon>
+        <h3>No posts yet</h3>
+        <p>{{ emptyMessage() }}</p>
+      </div>
+    }
+    @if (pageLoading()) {
+      <div class="pagination-loader">
+        <mat-progress-spinner diameter="28" mode="indeterminate" />
+      </div>
+    }
+    @if (endReached() && source() !== 'detail') {
+      <div class="end-state">
+        <mat-icon>{{ endMessage.icon }}</mat-icon>
+        <h3>{{ endMessage.title }}</h3>
+        <p>{{ endMessage.message }}</p>
 
-  @for (post of posts(); track post.id) {
-    <app-post-card
-      [user]="user!"
-      [post]="post"
-      (onReact)="reactToPost(post.id)"
-      (onDelete)="deletePost(post.id)"
-      [mode]="source()"
-    />
-  }
+        @if (endMessage.action) {
+          <button class="end-btn" mat-button color="primary" (click)="goToDiscover()">
+            {{ endMessage.action }}
+          </button>
+        }
+      </div>
+    }
 
-  @if (isEmpty()) {
-    <div class="empty-state">
-      <mat-icon>inbox</mat-icon>
-      <h3>No posts yet</h3>
-      <p>{{ emptyMessage() }}</p>
-    </div>
+    <div #scrollAnchor class="scroll-anchor"></div>
   }
-
-  @if (pageLoading()) {
-    <div class="pagination-loader">
-      <mat-progress-spinner diameter="28" mode="indeterminate" />
-    </div>
-  }
-  @if (endReached()) {
-    <div class="end-state">
-      <mat-icon>{{ endMessage.icon }}</mat-icon>
-      <h3>{{ endMessage.title }}</h3>
-      <p>{{ endMessage.message }}</p>
-
-      @if (endMessage.action) {
-        <!-- <mat-button-toggle></mat-button-toggle> -->
-        <button class="end-btn" mat-button color="primary" (click)="goToDiscover()">
-          {{ endMessage.action }}
-        </button>
-      }
-    </div>
-  }
-
-  <div #scrollAnchor class="scroll-anchor"></div>
 </div>

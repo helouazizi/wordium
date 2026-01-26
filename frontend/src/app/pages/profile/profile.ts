@@ -19,6 +19,7 @@ import { ActivatedRoute } from '@angular/router';
 import { UpdateProfileRequest } from '../../core/apis/users/users.model';
 import { User } from '../../shared/models/user.model';
 import { PostList } from '../../shared/components/post-list/post-list';
+import { NotFound } from '../../shared/components/not-found/not-found';
 
 @Component({
   selector: 'app-profile',
@@ -34,7 +35,8 @@ import { PostList } from '../../shared/components/post-list/post-list';
     MatCardModule,
     MatDividerModule,
     MatRippleModule,
-    PostList
+    PostList,
+    NotFound
   ],
   templateUrl: './profile.html',
   styleUrls: ['./profile.scss'],
@@ -54,29 +56,25 @@ export class Profile {
 
   isOwn = computed(() => this.targetUser()?.id === this.sessionUser()?.id);
   isAdmin = computed(() => this.sessionUser()?.role === 'ADMIN');
-
-  // posts = signal<Post[] | null>(null);
-  // stats = computed(
-  //   () => this.targetUser()?.stats ?? { posts: 0, bookmarks: 0, followers: 0, following: 0 },
-  // );
+  err = signal<string|null>(null)
 
   ngOnInit() {
-    const idParam = this.route.snapshot.paramMap.get('id');
-    const id = idParam ? Number(idParam) : null;
+    this.route.paramMap.subscribe((pm) => {
+      const id =  Number(pm.get('id')) ? Number(pm.get('id')) : this.sessionUser()?.id;
+      if (id) {
+        this.usersService.getUserProfile(id).subscribe({
+          next: (user) => {
+            (this.targetUser.set(user), console.log(user, 'profile'));
+          },
+          error: (err) => {
+            this.err.set(err.error.detail)
+            console.log(err);
+            console.log(this.err());
+          }
+        });
+      }
+    });
 
-    console.log(id,"param id ");
-    
-
-    if (id) {
-      this.usersService.getUserProfile(id).subscribe({
-        next: (user) => {          
-          (this.targetUser.set(user), console.log(user, 'profile'));
-        },
-      });
-    } 
-    // else {
-    //   this.targetUser.set(this.sessionUser());
-    // }
   }
 
   isSocialEmpty(social: User['social'] | undefined): boolean {

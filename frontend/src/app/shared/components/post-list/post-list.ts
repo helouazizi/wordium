@@ -16,14 +16,15 @@ import { Post, Reaction } from '../../../core/apis/posts/post.model';
 import { PostCard } from '../post-card/post-card';
 import { MatProgressSpinner, MatSpinner } from '@angular/material/progress-spinner';
 import { MatIcon } from '@angular/material/icon';
-import { Router } from '@angular/router';
-import { MatButtonToggle } from "@angular/material/button-toggle";
+import { ActivatedRoute, Router } from '@angular/router';
+import { EMPTY, map, Observable } from 'rxjs';
+import { NotFound } from '../not-found/not-found';
 
 export type PostListSource = 'admin' | 'feed' | 'profile' | 'detail' | 'bookmarks';
 
 @Component({
   selector: 'app-post-list',
-  imports: [PostCard, MatProgressSpinner, MatSpinner, MatIcon],
+  imports: [PostCard, MatProgressSpinner, MatSpinner, MatIcon, NotFound],
   templateUrl: './post-list.html',
   styleUrl: './post-list.scss',
 })
@@ -35,6 +36,7 @@ export class PostList implements OnInit, AfterViewInit {
   private auth = inject(AuthService);
   private notify = inject(NotificationService);
   private router = inject(Router);
+  private route = inject(ActivatedRoute);
 
   source = input.required<PostListSource>();
 
@@ -48,7 +50,7 @@ export class PostList implements OnInit, AfterViewInit {
   posts = signal<Post[]>([]);
   initialLoading = signal(false);
   pageLoading = signal(false);
-
+  err = signal<string | null>(null);
   isEmpty = () => !this.initialLoading() && this.posts().length === 0;
   endReached = () => this.isLastPage() && !this.initialLoading() && this.posts().length > 0;
 
@@ -99,7 +101,12 @@ export class PostList implements OnInit, AfterViewInit {
 
     apiCall.subscribe({
       next: (res: PageResponse<Post>) => {
-        this.posts.update((existing) => (append ? [...existing, ...res.data] : res.data));
+        this.posts.update((existing) =>
+          append
+            ? Array.from(new Map([...existing, ...res.data].map((p) => [p.id, p])).values())
+            : res.data,
+        );
+
         this.isLastPage.set(res.isLast);
         this.initialLoading.set(false);
         this.pageLoading.set(false);
@@ -112,14 +119,46 @@ export class PostList implements OnInit, AfterViewInit {
     });
   }
 
-  private resolveApiCall(params: PageRequest) {
+  private resolveApiCall(params: PageRequest): Observable<PageResponse<Post>> {
     switch (this.source()) {
       case 'profile':
-        return this.postService.getUserPosts(this.userId()!, params);
+        const idParamm = this.route.snapshot.paramMap.get('id');
+        const idd = Number(idParamm);
+
+        if (!idParamm || isNaN(idd)) {
+          this.err.set('User Not Found');
+          this.initialLoading.set(false);
+          return EMPTY;
+        }
+        return this.postService.getUserPosts(idd, params);
+
       case 'admin':
         return this.postService.getAllPosts(params);
-      case 'bookmarks':
-        return this.postService.getBookmarks(params);
+
+      case 'detail':
+        const idParam = this.route.snapshot.paramMap.get('id');
+        const id = Number(idParam);
+
+        if (!idParam || isNaN(id)) {
+          this.err.set('Post Not Found');
+          this.initialLoading.set(false);
+          return EMPTY;
+        }
+
+        return this.postService.getPostById(id).pipe(
+          map((post) => ({
+            data: [post],
+            page: 0,
+            size: 1,
+            totalElements: 1,
+            totalPages: 1,
+            isLast: true,
+            isFirst: true,
+            hasNext: false,
+            hasPrevious: false,
+          })),
+        );
+
       default:
         return this.postService.getFeed(params);
     }
@@ -129,35 +168,34 @@ export class PostList implements OnInit, AfterViewInit {
     this.postService.addComment(postId, content);
   }
 
- reactToPost(postId: number) {
-  this.updatePost(postId, (p) => {
-    const newIsLiked = !p.isLiked;
-    const newLikeCount = newIsLiked ? p.likesCount + 1 : p.likesCount - 1;
+  reactToPost(postId: number) {
+    this.updatePost(postId, (p) => {
+      const newIsLiked = !p.isLiked;
+      const newLikeCount = newIsLiked ? p.likesCount + 1 : p.likesCount - 1;
 
-    return {
-      ...p,
-      isLiked: newIsLiked,
-      likesCount: newLikeCount,
-    };
-  });
-
-  const post = this.posts().find((p) => p.id === postId);
-  if (!post) return;
-
-  const reaction: Reaction = post.isLiked ? 'like' : 'unlike';
-
-  this.postService.reactToPost(postId, reaction).subscribe({
-    error: () => {
-      this.updatePost(postId, (p) => ({
+      return {
         ...p,
-        isLiked: !p.isLiked,
-        likesCount: p.isLiked ? p.likesCount + 1 : p.likesCount - 1,
-      }));
-      this.notify.showError('Could not update reaction');
-    },
-  });
-}
+        isLiked: newIsLiked,
+        likesCount: newLikeCount,
+      };
+    });
 
+    const post = this.posts().find((p) => p.id === postId);
+    if (!post) return;
+
+    const reaction: Reaction = post.isLiked ? 'like' : 'unlike';
+
+    this.postService.reactToPost(postId, reaction).subscribe({
+      error: () => {
+        this.updatePost(postId, (p) => ({
+          ...p,
+          isLiked: !p.isLiked,
+          likesCount: p.isLiked ? p.likesCount + 1 : p.likesCount - 1,
+        }));
+        this.notify.showError('Could not update reaction');
+      },
+    });
+  }
 
   deletePost(postId: number) {
     this.postService.deletePost(postId).subscribe({

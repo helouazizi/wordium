@@ -14,30 +14,12 @@ import { PageRequest } from '../../shared/models/pagination.model';
 export class PostService {
   private readonly client = inject(PostsClient);
 
-  // private _posts = signal<Post[]>([]);
-  // private _loading = signal<boolean>(false);
-
-  // public posts = this._posts.asReadonly();
-  // public loading = this._loading.asReadonly();
-  // public isEmpty = computed(() => this._posts().length === 0 && !this._loading());
-
   getFeed(params: PageRequest) {
-    // this._loading.set(true);
-    return this.client.feed(params)
-    // .pipe(
-      // finalize(() => this._loading.set(false)),
-    //   tap((response) => {
-    //     if (append) {
-    //       this._posts.update((current) => [...current, ...response.data]);
-    //     } else {
-    //       this._posts.set(response.data);
-    //     }
-    //   }),
-    // );
+    return this.client.feed(params);
   }
   getUserPosts(userid: number, params: PageRequest) {
     // this._loading.set(true);
-    return this.client.getUserPosts(userid, params)
+    return this.client.getUserPosts(userid, params);
     // .pipe(
     //   // finalize(() => this._loading.set(false)),
     //   tap((response) => {
@@ -52,7 +34,7 @@ export class PostService {
 
   getAllPosts(params: PageRequest) {
     // this._loading.set(true);
-    return this.client.getAllPosts(params)
+    return this.client.getAllPosts(params);
     // .pipe(
     //   finalize(() => this._loading.set(false)),
     //   tap((response) => {
@@ -65,33 +47,20 @@ export class PostService {
     // );
   }
   getBookmarks(params: PageRequest) {
-    // this._loading.set(true);
-    return this.client.getBookmarks(params)
-    // .pipe(
-    //   finalize(() => this._loading.set(false)),
-    //   tap((response) => {
-    //     if (append) {
-    //       this._posts.update((current) => [...current, ...response.data]);
-    //     } else {
-    //       this._posts.set(response.data);
-    //     }
-    //   }),
-    // );
+    return this.client.getBookmarks(params);
   }
 
   fetchPostById(id: number): Observable<Post> {
     return this.client.getPostById(id);
   }
   createPost(post: CreatePostRequest): Observable<Post> {
-    return this.client
-      .createPost(post)
-      // .pipe(tap((newPost) => this._posts.update((prev) => [newPost, ...prev])));
+    return this.client.createPost(post);
   }
-  // getPostById(id: number): Post | undefined {
-  //   return this.posts().find((p) => p.id === id);
-  // }
+  getPostById(id: number):Observable<Post> {
+    return this.client.getPostById(id);
+  }
 
-  reactToPost(postId: number,reaction : Reaction)  {
+  reactToPost(postId: number, reaction: Reaction) {
     // const previousState = this._posts();
 
     // const post = previousState.find((p) => p.id === postId);
@@ -114,7 +83,7 @@ export class PostService {
 
     // const reactionType: Reaction = isAddingLike ? 'like' : 'unlike';
 
-    return this.client.reactPost(postId, reaction)
+    return this.client.reactPost(postId, reaction);
     // .pipe(
     //   catchError((error) => {
     //     this._posts.set(previousState);
@@ -124,7 +93,7 @@ export class PostService {
   }
 
   deletePost(postId: number) {
-    return this.client.deletePost(postId)
+    return this.client.deletePost(postId);
     // .pipe(
     //   tap(() => {
     //     this._posts.update((posts) => posts.filter((p) => p.id !== postId));

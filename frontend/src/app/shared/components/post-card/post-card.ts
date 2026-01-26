@@ -40,7 +40,7 @@ import { PostListSource } from '../post-list/post-list';
   styleUrl: './post-card.scss',
 })
 export class PostCard {
-  private router = inject(Router)
+  private router = inject(Router);
   post = input.required<Post>();
   user = input.required<User>();
   mode = input<PostListSource>('feed');
@@ -83,6 +83,12 @@ export class PostCard {
     return String(post.actor.id) === String(user.id) || user.role === 'ADMIN';
   });
 
+  readonly isAdmin = computed(() => {
+    const user = this.user();
+    const post = this.post();
+    if (!user || !post) return false;
+    return user.role === 'ADMIN';
+  });
   constructor() {
     effect(() => {
       if (this.mode() === 'detail' && this.comments().length === 0) {
@@ -147,7 +153,7 @@ export class PostCard {
     this.onDelete.emit(this.post().id);
     this.isConfirmingDelete.set(false);
   }
-  handleNavigate() {    
-    if (this.mode() === 'feed') this.router.navigate(['/posts/',this.post().id]);
+  handleNavigate() {
+    if (this.mode() === 'feed') this.router.navigate(['/posts/', this.post().id]);
   }
 }
