@@ -36,7 +36,7 @@ import { NotFound } from '../../shared/components/not-found/not-found';
     MatDividerModule,
     MatRippleModule,
     PostList,
-    NotFound
+    NotFound,
   ],
   templateUrl: './profile.html',
   styleUrls: ['./profile.scss'],
@@ -56,25 +56,24 @@ export class Profile {
 
   isOwn = computed(() => this.targetUser()?.id === this.sessionUser()?.id);
   isAdmin = computed(() => this.sessionUser()?.role === 'ADMIN');
-  err = signal<string|null>(null)
+  err = signal<string | null>(null);
 
   ngOnInit() {
     this.route.paramMap.subscribe((pm) => {
-      const id =  Number(pm.get('id')) ? Number(pm.get('id')) : this.sessionUser()?.id;
+      const id = Number(pm.get('id')) ? Number(pm.get('id')) : this.sessionUser()?.id;
       if (id) {
         this.usersService.getUserProfile(id).subscribe({
           next: (user) => {
             (this.targetUser.set(user), console.log(user, 'profile'));
           },
           error: (err) => {
-            this.err.set(err.error.detail)
+            this.err.set(err.error.detail);
             console.log(err);
             console.log(this.err());
-          }
+          },
         });
       }
     });
-
   }
 
   isSocialEmpty(social: User['social'] | undefined): boolean {
@@ -105,16 +104,24 @@ export class Profile {
   }
 
   toggleFollow() {
+
     const user = this.targetUser();
+    console.log(user);
+    
     if (!user || this.isOwn()) return;
 
     this.usersService.followUser(user.id).subscribe({
-      next: () => {
+      next: (res) => {
+        console.log(res, 'inside');
+
         const current = this.targetUser();
         if (current) {
           const newTarget = { ...current, isFollowing: !current.isFollowing };
           this.targetUser.set(newTarget);
         }
+      },
+      error(err) {
+        console.log(err);
       },
     });
   }
