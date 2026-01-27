@@ -1,5 +1,4 @@
 <mat-card class="post-card" [class.detail-mode]="mode() === 'detail'" (click)="handleNavigate()">
-  <!-- DELETE CONFIRMATION OVERLAY -->
   @if (isConfirmingDelete()) {
     <div class="card-overlay confirm-delete" (click)="$event.stopPropagation()">
       <div class="overlay-content">
@@ -8,13 +7,43 @@
         <p>This action cannot be undone.</p>
         <div class="overlay-actions">
           <button mat-button (click)="cancelDelete()">Cancel</button>
-          <button mat-flat-button color="warn" (click)="executeDelete()">Delete</button>
+          <button mat-flat-button color="warn" class="danger" (click)="executeDelete()">
+            Delete
+          </button>
         </div>
       </div>
     </div>
   }
 
-  <!-- REPORTING OVERLAY -->
+  @if (isConfirmingCommentDelete()) {
+    <div class="card-overlay confirm-delete" (click)="$event.stopPropagation()">
+      <div class="overlay-content">
+        <mat-icon color="warn">delete_forever</mat-icon>
+        <h3>Delete this comment?</h3>
+        <p>This action cannot be undone.</p>
+        <div class="overlay-actions">
+          <button mat-button (click)="cancelCommentDelete()">Cancel</button>
+          <button mat-flat-button color="warn" class="danger" (click)="DeleteComment()">
+            Delete
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+
+  @if (isConfirmingReport()) {
+    <div class="card-overlay confirm-delete" (click)="$event.stopPropagation()">
+      <div class="overlay-content">
+        <h3>Reporting.. this post?</h3>
+        <p>This action cannot be undone.</p>
+        <div class="overlay-actions">
+          <button mat-button (click)="cancelReport()">Cancel</button>
+          <button mat-flat-button class="danger" (click)="submitReport()">Report</button>
+        </div>
+      </div>
+    </div>
+  }
+
   @if (isReporting()) {
     <div class="card-overlay report-flow" (click)="$event.stopPropagation()">
       <div class="overlay-content">
@@ -42,17 +71,12 @@
             ></textarea>
           </mat-form-field>
           <div class="overlay-actions">
-            <button mat-button (click)="cancelReport()">Cancel</button>
-            <button
-              mat-flat-button
-              color="primary"
-              [disabled]="!reportReason().trim()"
-              (click)="submitReport()"
-            >
+            <button mat-button [disabled]="!reportReason().trim()" (click)="confirmReport()">
               Submit Report
             </button>
           </div>
         }
+        <button mat-flat-button (click)="cancelReport()">Cancel</button>
       </div>
     </div>
   }
@@ -97,7 +121,7 @@
       <mat-icon>{{ post().isLiked ? 'favorite' : 'favorite_border' }}</mat-icon>
       <span class="counter">{{ post().likesCount }}</span>
     </button>
-    <button mat-button >
+    <button mat-button>
       <mat-icon>chat_bubble_outline</mat-icon>
       <span class="counter">{{ post().commentsCount }}</span>
     </button>
@@ -115,9 +139,9 @@
     }
   </mat-card-actions>
 
-  <!-- COMMENTS SECTION (Only in Detail Mode) -->
   @if (mode() === 'detail') {
     <mat-divider></mat-divider>
+
     <div class="comments-section" (click)="$event.stopPropagation()">
       <div class="comment-input-container">
         <mat-form-field appearance="outline" class="full-width">
@@ -125,13 +149,14 @@
             matInput
             placeholder="Write a comment..."
             [(ngModel)]="newCommentText"
-            rows="2"
+            rows="1"
+            (keydown.enter)="submitComment(); $event.preventDefault()"
           ></textarea>
           <button
             mat-icon-button
             matSuffix
             (click)="submitComment()"
-            [disabled]="!newCommentText()"
+            [disabled]="!newCommentText().trim()"
           >
             <mat-icon>send</mat-icon>
           </button>
@@ -141,20 +166,46 @@
       <div class="comments-list">
         @for (comment of comments; track comment.id) {
           <div class="comment-item">
-            <app-user-avatar
-              [user]="comment.actor"
-              size="sm"
-              [showName]="true"
-              [time]="comment.createdAt"
-            ></app-user-avatar>
-            <div class="comment-content">{{ comment.content }}</div>
+            <div class="comment-left">
+              <app-user-avatar
+                [user]="comment.actor"
+                size="sm"
+                [showName]="true"
+                [time]="comment.createdAt"
+              ></app-user-avatar>
+
+              <div class="comment-content">
+                {{ comment.content }}
+              </div>
+            </div>
+
+            @if (comment.actor.id ===user().id) {
+              <div class="comment-actions">
+                <button
+                  mat-menu-item
+                  class="danger-item"
+                  (click)="confirmCommentDelete(comment.id)"
+                >
+                  <mat-icon color="warn">delete_outline</mat-icon>
+                </button>
+              </div>
+            }
           </div>
         }
 
         @if (isLoadingComments()) {
-          <div class="loader"><mat-spinner diameter="30"></mat-spinner></div>
-        } @else if (hasMoreComments()) {
-          <button mat-button class="load-more" (click)="loadMoreComments()">Load more comments</button>
+          <div class="loader">
+            <mat-spinner diameter="30"></mat-spinner>
+          </div>
+        } @else if (hasMoreComments() && !commentsLastPage) {
+          <button mat-button class="load-more" (click)="loadMoreComments()">
+            Load more comments
+          </button>
+        } @else if (commentsLastPage) {
+          <div class="no-more-comments">
+            You’ve reached the end 💭
+            <span>Be the first to add a new comment.</span>
+          </div>
         }
       </div>
     </div>

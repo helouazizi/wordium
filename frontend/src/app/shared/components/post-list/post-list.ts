@@ -229,6 +229,14 @@ export class PostList implements OnInit, AfterViewInit {
     });
   }
 
+  deleteComment(postId: number, commentId: number) {
+    this.postService.deleteComment(postId, commentId).subscribe({
+      next: () => this.notify.showSuccess('Comment removed'),
+      error: (err) => {this.notify.showError(err.error.title);
+      },
+    });
+  }
+
   reportPost(postId: number, type: ReportType, reason: string) {
     if (type === 'post') {
       this.updatePost(postId, (p) => ({
@@ -251,14 +259,14 @@ export class PostList implements OnInit, AfterViewInit {
       next: () => {
         this.notify.showSuccess('New report added');
       },
-      error: () => {
+      error: (err) => {
         if (type === 'post') {
           this.updatePost(postId, (p) => ({
             ...p,
             reportsCount: (p.reportsCount || 0) - 1,
           }));
         }
-        this.notify.showError('Failed to add report');
+        this.notify.showError(err.error.detail);
       },
     });
   }
@@ -322,17 +330,17 @@ export class PostList implements OnInit, AfterViewInit {
   }
 
   updateComments(content: string) {
-   const  postId = this.getPostId()
-     const post = this.posts().find((p) => p.id === postId);
+    const postId = this.getPostId();
+    const post = this.posts().find((p) => p.id === postId);
     const newComment: Comment = {
-      id:Math.random(), // temporary
-      postId:post?.id!,
+      id: Math.random(), // temporary
+      postId: post?.id!,
       content: content,
       actor: this.auth.user()!,
-      createdAt: new Date().toDateString(),
+      createdAt: new Date().toISOString(),
     };
 
-    this.postComments.update((existing) => ( [ newComment , ...existing]));
+    this.postComments.update((existing) => [newComment, ...existing]);
   }
 
   loadInitialComments() {

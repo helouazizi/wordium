@@ -14,6 +14,6 @@ export class GlobalErrorHandler implements ErrorHandler {
     // sendToLoggingService(error);
 
     // 3. Notify the user
-    this.notification.showError('A client-side error occurred. Please refresh the page.');
+    // this.notification.showError('A client-side error occurred. Please refresh the page.');
   }
 }

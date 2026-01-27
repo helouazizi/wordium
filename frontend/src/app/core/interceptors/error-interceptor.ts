@@ -17,7 +17,7 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
         errorMessage = `Error: ${error.error.message}`;
       } else {
         // Server-side error
-        switch (error.status) {
+        switch (error.error.status) {
           case 400:
             errorMessage = error.error?.detail || 'Bad Request';
             break;
@@ -32,6 +32,7 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
             errorMessage = 'The requested resource was not found.';
             break;
           case 500:
+            
             errorMessage = 'Internal Server Error. Please try again later.';
             break;
           default:
@@ -39,6 +40,8 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
         }
       }
 
+      // console.log(errorMessage,"dzfffffffffffffffffsss");
+      
       notification.showError(errorMessage);
       return throwError(() => error);
     }),

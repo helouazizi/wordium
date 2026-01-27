@@ -39,6 +39,6 @@ public interface PostService {
 
     Page<CommentResponse> getPostComments(Long postId, Pageable pageable);
 
-    void deleteComment(Long userId, Long id, Long commentId);
+    void deleteComment(Long userId, String role,Long id, Long commentId);
 
 }

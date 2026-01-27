@@ -141,6 +141,10 @@ export class PostsClient {
   deletePost(postId: number): Observable<void> {
     return this.http.delete<void>(`${this.config.postsBaseUrl}/${postId}`);
   }
+
+  deleteComment(postId: number,commentId : number): Observable<void> {
+    return this.http.delete<void>(`${this.config.postsBaseUrl}/${postId}/commetns/${commentId}`);
+  }
   reactPost(postId: number, reaction: Reaction): Observable<void> {
     return this.http.post<void>(`${this.config.postsBaseUrl}/${postId}/react`, { reaction });
   }

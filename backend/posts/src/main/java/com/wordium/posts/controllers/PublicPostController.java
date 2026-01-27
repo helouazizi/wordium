@@ -75,7 +75,7 @@ public class PublicPostController {
         public ResponseEntity<PaginatedResponse<PostResponse>> getPostsByUser(@PathVariable Long userId,
                         @Valid PaginationRequest paginationRequest) {
                 Pageable pageable = paginationRequest.toPageable();
-                var page = postService.getPostsByUser( userId,pageable);
+                var page = postService.getPostsByUser(userId, pageable);
                 return ResponseEntity.ok(PaginatedResponse.fromPage(page));
         }
 
@@ -143,12 +143,21 @@ public class PublicPostController {
                         @ApiResponse(responseCode = "403", description = "Forbidden - not owner of comment", content = @Content(schema = @Schema(implementation = ProblemDetail.class))),
                         @ApiResponse(responseCode = "404", description = "Comment not found", content = @Content(schema = @Schema(implementation = ProblemDetail.class)))
         })
-        @DeleteMapping("/{id}/comments/{commentId}")
+        @DeleteMapping("/{postId}/comments/{commentId}")
         public ResponseEntity<Void> deleteComment(
                         @RequestHeader("User-Id") Long userId,
-                        @PathVariable Long id,
+                        @RequestHeader("User-Role") String role,
+                        @PathVariable Long postId,
                         @PathVariable Long commentId) {
-                postService.deleteComment(userId, id, commentId);
+                postService.deleteComment(userId, role, postId, commentId);
+                return ResponseEntity.noContent().build();
+        }
+
+        @DeleteMapping("/{id}")
+        public ResponseEntity<Void> deletePost(
+                        @RequestHeader("User-Id") Long userId, @RequestHeader("User-Role") String role,
+                        @PathVariable Long id) {
+                postService.deletePost(userId, id, role);
                 return ResponseEntity.noContent().build();
         }
 

@@ -25,7 +25,6 @@ import { MarkdownModule } from 'ngx-markdown';
 import { CommonModule } from '@angular/common';
 import { SafeHtmlPipe } from '../../pipes/safe-html.pipe';
 import { User } from '../../models/user.model';
-import { PageRequest } from '../../models/pagination.model';
 import { Router } from '@angular/router';
 import { PostListSource } from '../post-list/post-list';
 
@@ -62,9 +61,9 @@ export class PostCard {
   onReport = output<{ id: number; type: ReportType; reason: string }>();
   onComment = output<string>();
 
-  // @Output() onLoadComments = new EventEmitter<void>();
   @Output() onLoadMoreComments = new EventEmitter<void>();
   @Output() onSubmitComment = new EventEmitter<string>();
+  @Output() onDeleteComment = new EventEmitter<number>();
 
   @Input() comments: Comment[] = [];
   @Input() commentsLoading = false;
@@ -75,8 +74,11 @@ export class PostCard {
   hasMoreComments = signal(true);
 
   isConfirmingDelete = signal(false);
+  isConfirmingCommentDelete = signal(false);
+  commentId = signal<number | null>(null);
   newCommentText = signal('');
   isReporting = signal(false);
+  isConfirmingReport = signal(false);
   reportReason = signal('');
   reportingTarget = signal<{ id: number; type: ReportType } | null>(null);
 
@@ -88,8 +90,24 @@ export class PostCard {
   confirmDelete() {
     this.isConfirmingDelete.set(true);
   }
+
+  confirmCommentDelete(id: number) {
+    this.isConfirmingCommentDelete.set(true);
+    this.commentId.set(id);
+  }
+  confirmReport() {
+    this.isConfirmingReport.set(true);
+    this.isReporting.set(false);
+  }
   cancelDelete() {
     this.isConfirmingDelete.set(false);
+  }
+  cancelCommentDelete() {
+    this.isConfirmingCommentDelete.set(false);
+    this.commentId.set(null);
+  }
+  DeleteComment() {
+    this.onDeleteComment.emit(this.commentId()!);
   }
   readonly canDelete = computed(() => {
     const user = this.user();
@@ -104,11 +122,6 @@ export class PostCard {
     if (!user || !post) return false;
     return user.role === 'ADMIN';
   });
-
-  // openReport(id: number, type: ReportType) {
-  //   this.reportingTarget.set({ id, type });
-  //   this.isReporting.set(true);
-  // }
 
   handleReact(id: number) {
     this.onReact.emit(id);
@@ -134,11 +147,12 @@ export class PostCard {
     this.isReporting.set(false);
     this.reportReason.set('');
     this.reportingTarget.set(null);
+    this.isConfirmingReport.set(false);
   }
 
   submitComment() {
     if (this.newCommentText().trim()) {
-      this.onSubmitComment.emit(this.newCommentText())
+      this.onSubmitComment.emit(this.newCommentText());
       this.onComment.emit(this.newCommentText());
       this.newCommentText.set('');
     }

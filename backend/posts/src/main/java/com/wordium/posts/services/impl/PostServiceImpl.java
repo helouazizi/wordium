@@ -273,18 +273,19 @@ public class PostServiceImpl implements PostService {
 
     @Override
     @Transactional
-    public void deleteComment(Long userId, Long postId, Long commentId) {
+    public void deleteComment(Long userId,String role, Long postId, Long commentId) {
 
         Comment comment = commentRepository
                 .findByIdAndPostId(commentId, postId)
                 .orElseThrow(() -> new NotFoundException("Comment not found"));
 
-        if (!comment.getUserId().equals(userId)) {
+        if (!comment.getUserId().equals(userId)|| !isAdmin(role)) {
             throw new AccessDeniedException("You cannot delete this comment");
         }
 
         commentRepository.delete(comment);
         postRepository.decrementCommentsCount(postId);
     }
+
 
 }
