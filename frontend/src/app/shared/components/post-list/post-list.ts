@@ -180,7 +180,8 @@ export class PostList implements OnInit, AfterViewInit {
     }));
 
     this.postService.addComment(postId, content).subscribe({
-      next: () => {
+      next: (res) => {
+        this.postComments.update((prev) => [res, ...prev]);
         this.notify.showSuccess('New comment added');
       },
       error: () => {
@@ -224,32 +225,40 @@ export class PostList implements OnInit, AfterViewInit {
 
   deletePost(postId: number) {
     this.postService.deletePost(postId).subscribe({
-      next: () => this.notify.showSuccess('Post removed'),
+      next: () => {
+        this.notify.showSuccess('Post removed');
+        this.posts.update((prev) => prev.filter((p) => p.id !== postId));
+      },
       error: () => this.notify.showError('Could not delete post'),
     });
   }
 
   deleteComment(postId: number, commentId: number) {
     this.postService.deleteComment(postId, commentId).subscribe({
-      next: () => this.notify.showSuccess('Comment removed'),
-      error: (err) => {this.notify.showError(err.error.title);
+      next: () => {
+        this.postComments.update((prev) => prev.filter((c) => c.id !== commentId));
+        this.notify.showSuccess('Comment removed');
+      },
+      error: (err) => {
+        this.notify.showError(err.error.title);
       },
     });
   }
 
-  reportPost(postId: number, type: ReportType, reason: string) {
+  reportPost(id: number, type: ReportType, reason: string) {
     if (type === 'post') {
-      this.updatePost(postId, (p) => ({
+      this.updatePost(id, (p) => ({
         ...p,
         reportsCount: (p.reportsCount || 0) + 1,
       }));
     }
     let request$;
     if (type === 'post') {
-      request$ = this.postService.reportPost(postId, reason);
+      request$ = this.postService.reportPost(id, reason);
     } else if (type === 'user') {
-      return;
-      // request$ = this.postService.reportUser({ id, reason });
+      console.log(type,"hhhhhhhhhhhh");
+      
+      request$ = this.postService.reportUser(id, reason);
     } else {
       console.error('Unknown report type:', type);
       return;
@@ -261,7 +270,7 @@ export class PostList implements OnInit, AfterViewInit {
       },
       error: (err) => {
         if (type === 'post') {
-          this.updatePost(postId, (p) => ({
+          this.updatePost(id, (p) => ({
             ...p,
             reportsCount: (p.reportsCount || 0) - 1,
           }));
@@ -327,20 +336,6 @@ export class PostList implements OnInit, AfterViewInit {
     this.commentsLoading.set(true);
 
     this.fetchComments(true);
-  }
-
-  updateComments(content: string) {
-    const postId = this.getPostId();
-    const post = this.posts().find((p) => p.id === postId);
-    const newComment: Comment = {
-      id: Math.random(), // temporary
-      postId: post?.id!,
-      content: content,
-      actor: this.auth.user()!,
-      createdAt: new Date().toISOString(),
-    };
-
-    this.postComments.update((existing) => [newComment, ...existing]);
   }
 
   loadInitialComments() {

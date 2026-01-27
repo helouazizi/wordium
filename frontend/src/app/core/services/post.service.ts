@@ -50,8 +50,8 @@ export class PostService {
     return this.client.deletePost(postId);
   }
 
-  deleteComment(postId: number,commentId:number) {
-    return this.client.deleteComment(postId,commentId);
+  deleteComment(postId: number, commentId: number) {
+    return this.client.deleteComment(postId, commentId);
   }
 
   addComment(postId: number, content: string) {
@@ -62,8 +62,9 @@ export class PostService {
     return this.client.reportPost(id, reason);
   }
 
+
   reportUser(id: number, reason: string) {
-    return this.client.reportPost(id, reason);
+    return this.client.reportUser(id, reason);
   }
 
   getSignature(): Observable<SignatureResponse> {

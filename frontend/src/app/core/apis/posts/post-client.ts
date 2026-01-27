@@ -142,17 +142,21 @@ export class PostsClient {
     return this.http.delete<void>(`${this.config.postsBaseUrl}/${postId}`);
   }
 
-  deleteComment(postId: number,commentId : number): Observable<void> {
-    return this.http.delete<void>(`${this.config.postsBaseUrl}/${postId}/commetns/${commentId}`);
+  deleteComment(postId: number, commentId: number): Observable<void> {
+    return this.http.delete<void>(`${this.config.postsBaseUrl}/${postId}/comments/${commentId}`);
   }
   reactPost(postId: number, reaction: Reaction): Observable<void> {
     return this.http.post<void>(`${this.config.postsBaseUrl}/${postId}/react`, { reaction });
   }
-  addComment(postId: number, content: string): Observable<void> {
-    return this.http.post<void>(`${this.config.postsBaseUrl}/${postId}/comments`, { content });
+  addComment(postId: number, content: string): Observable<Comment> {
+    return this.http.post<Comment>(`${this.config.postsBaseUrl}/${postId}/comments`, { content });
   }
   reportPost(postId: number, reason: string): Observable<void> {
     return this.http.post<void>(`${this.config.postsBaseUrl}/${postId}/reports`, { reason });
+  }
+
+  reportUser(userId: number, reason: string): Observable<void> {
+    return this.http.post<void>(`${this.config.usersBaseUrl}/${userId}/reports`, { reason });
   }
 
   getCommentsByPost(id: number, params?: PageRequest): Observable<PageResponse<Comment>> {

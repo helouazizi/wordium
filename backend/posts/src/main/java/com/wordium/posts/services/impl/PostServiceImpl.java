@@ -120,11 +120,12 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public void deletePost(Long postId, Long userId, String role) {
+    public void deletePost(Long userId, Long postId, String role) {
+
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new NotFoundException("Post not found"));
 
-        if (!post.getUserId().equals(userId) || !isAdmin(role)) {
+        if (!post.getUserId().equals(userId) && !isAdmin(role)) {
             throw new AccessDeniedException("You cannot delete this post");
         }
         postRepository.delete(post);
@@ -146,7 +147,6 @@ public class PostServiceImpl implements PostService {
         postRepository.save(post);
     }
 
-    // likes
     @Override
     public void react(Long userId, Long postId, PostReactionRequest req) {
         if (!postRepository.existsById(postId)) {
@@ -235,7 +235,6 @@ public class PostServiceImpl implements PostService {
         return role != null && role.equalsIgnoreCase("ADMIN");
     }
 
-    // comments
     @Override
     @Transactional
     public CommentResponse createComment(Long userId, Long postId, CommentRequest request) {
@@ -273,19 +272,18 @@ public class PostServiceImpl implements PostService {
 
     @Override
     @Transactional
-    public void deleteComment(Long userId,String role, Long postId, Long commentId) {
+    public void deleteComment(Long userId, String role, Long postId, Long commentId) {
 
         Comment comment = commentRepository
                 .findByIdAndPostId(commentId, postId)
                 .orElseThrow(() -> new NotFoundException("Comment not found"));
 
-        if (!comment.getUserId().equals(userId)|| !isAdmin(role)) {
+        if (!comment.getUserId().equals(userId) && !isAdmin(role)) {
             throw new AccessDeniedException("You cannot delete this comment");
         }
 
         commentRepository.delete(comment);
         postRepository.decrementCommentsCount(postId);
     }
-
 
 }

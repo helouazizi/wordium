@@ -21,7 +21,6 @@
         [commentsLoading]="commentsLoading()"
         [commentsLastPage]="commentsLastPage()"
         (onLoadMoreComments)="loadMoreComments()"
-        (onSubmitComment)="updateComments($event)"
         (onDeleteComment)="deleteComment(post.id,$event)"
       />
     }

@@ -62,7 +62,6 @@ export class PostCard {
   onComment = output<string>();
 
   @Output() onLoadMoreComments = new EventEmitter<void>();
-  @Output() onSubmitComment = new EventEmitter<string>();
   @Output() onDeleteComment = new EventEmitter<number>();
 
   @Input() comments: Comment[] = [];
@@ -108,6 +107,7 @@ export class PostCard {
   }
   DeleteComment() {
     this.onDeleteComment.emit(this.commentId()!);
+    this.isConfirmingCommentDelete.set(false)
   }
   readonly canDelete = computed(() => {
     const user = this.user();
@@ -152,7 +152,6 @@ export class PostCard {
 
   submitComment() {
     if (this.newCommentText().trim()) {
-      this.onSubmitComment.emit(this.newCommentText());
       this.onComment.emit(this.newCommentText());
       this.newCommentText.set('');
     }

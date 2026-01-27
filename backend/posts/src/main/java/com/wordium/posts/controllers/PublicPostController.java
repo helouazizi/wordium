@@ -149,6 +149,7 @@ public class PublicPostController {
                         @RequestHeader("User-Role") String role,
                         @PathVariable Long postId,
                         @PathVariable Long commentId) {
+
                 postService.deleteComment(userId, role, postId, commentId);
                 return ResponseEntity.noContent().build();
         }
