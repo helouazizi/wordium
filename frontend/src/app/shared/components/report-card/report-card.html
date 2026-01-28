@@ -1,0 +1,70 @@
+<mat-card [class]="['report-card', type(), severityClass()]" appearance="outlined">
+  <div class="card-layout">
+    
+    <!-- Left Side: Severity Meter -->
+    <div class="severity-bar" [matTooltip]="report().reportCount + ' total reports'">
+      <div class="count-bubble">{{ report().reportCount }}</div>
+      <div class="bar-fill"></div>
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="content-area">
+      
+      <!-- Top: Header Info -->
+      <div class="card-header">
+        <div class="type-indicator">
+          <mat-icon>{{ type() === 'user' ? 'person_search' : 'article' }}</mat-icon>
+          <span>Reported {{ type() | titlecase }}</span>
+        </div>
+        <span class="report-date">{{ report().date | date:'shortDate' }}</span>
+      </div>
+
+      <!-- Center: Contextual Content -->
+      <div class="context-body">
+        @if (type() === 'post') {
+          <!-- POST CONTENT DESIGN -->
+          <div class="post-preview">
+            <h4 class="post-title">{{ report().postTitle }}</h4>
+            <p class="post-snippet">"{{ report().snippet }}"</p>
+            <div class="author-tag">By <strong>@{{ report().author }}</strong></div>
+          </div>
+        } @else {
+          <!-- USER CONTENT DESIGN -->
+          <div class="user-preview">
+            <div class="user-meta">
+              <h4 class="user-name">{{ report().userName }}</h4>
+              <p class="user-id">ID: {{ report().targetId }}</p>
+            </div>
+            <div class="user-reputation">
+              <span>Reputation:</span>
+              <div class="rep-track"><div class="rep-fill" [style.width.%]="70"></div></div>
+            </div>
+          </div>
+        }
+      </div>
+
+      <!-- Bottom: Reporter Info -->
+      <div class="reporter-footer">
+        <div class="latest-reporter">
+          <span class="label">Latest report:</span>
+          <span class="reason">"{{ report().reason }}"</span>
+          <span class="reporter-name">— by @{{ report().reporterName }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Side: Vertical Actions -->
+    <div class="action-sidebar">
+      <button mat-flat-button color="primary" (click)="onResolve.emit(report())" matTooltip="Resolve & Close">
+        <mat-icon>check_circle</mat-icon>
+      </button>
+      <button mat-icon-button (click)="onInspect.emit(report())" matTooltip="Inspect Details">
+        <mat-icon>visibility</mat-icon>
+      </button>
+      <button mat-icon-button (click)="onIgnore.emit(report())" matTooltip="Dismiss Report">
+        <mat-icon>delete_sweep</mat-icon>
+      </button>
+    </div>
+
+  </div>
+</mat-card>

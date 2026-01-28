@@ -1,116 +1,172 @@
-.dashboard-wrapper {
+.dashboard-container {
   padding: 24px;
-  max-width: 1480px;
+  max-width: 1400px;
   margin: 0 auto;
-  background: var(--mat-sys-background);
-  min-height: 100vh;
 }
 
+// Stats Cards Refinement
 .stats-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
   margin-bottom: 32px;
 }
 
 .stat-card {
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-  background: var(--mat-sys-surface);
+  border-radius: 24px !important;
+  
+  mat-card-content {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 20px !important;
+  }
+
+  .stat-icon-wrapper {
+    padding: 12px;
+    border-radius: 16px;
+    background: var(--mat-sys-surface-container-high);
+    mat-icon { font-size: 28px; width: 28px; height: 28px; }
+  }
+
+  &.primary .stat-icon-wrapper { color: var(--mat-sys-primary); }
+  &.accent .stat-icon-wrapper { color: var(--mat-sys-tertiary); }
+  &.warn .stat-icon-wrapper { color: var(--mat-sys-error); }
+
+  .stat-value { display: block; font-size: 1.5rem; font-weight: 800; }
+  .stat-label { font-size: 0.85rem; color: var(--mat-sys-on-surface-variant); }
 }
 
-.stat-content {
+// User Grid Layout
+.user-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 16px;
+}
+
+.user-card {
+  border-radius: 20px !important;
+  transition: transform 0.2s ease;
+  &:hover { transform: translateY(-4px); }
+
+  .user-card-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 12px;
+  }
+
+  .avatar-placeholder {
+    width: 48px;
+    height: 48px;
+    background: var(--mat-sys-primary-container);
+    color: var(--mat-sys-on-primary-container);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 1.2rem;
+  }
+
+  .user-name { margin: 0; font-size: 1.1rem; font-weight: 600; }
+  .user-email { font-size: 0.85rem; color: var(--mat-sys-on-surface-variant); margin-bottom: 12px; }
+
+  .badge-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    .role-text { font-size: 0.8rem; opacity: 0.7; }
+  }
+}
+
+// Custom M3 Badge
+.m3-badge {
+  padding: 4px 12px;
+  border-radius: 8px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  background: var(--mat-sys-surface-container-highest);
+
+  &[data-status="Active"] { background: #e8f5e9; color: #2e7d32; }
+  &[data-status="Banned"] { background: var(--mat-sys-error-container); color: var(--mat-sys-on-error-container); }
+}
+
+// Posts Column (Vertical Feed)
+.posts-column {
+  max-width: 800px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.post-item-card {
+  border-radius: 16px !important;
+  overflow: hidden;
+  display: flex;
+  position: relative;
+
+  .post-accent {
+    width: 6px;
+    background: var(--mat-sys-primary);
+    &.hidden { background: var(--mat-sys-outline); }
+  }
+
+  mat-card-content {
+    flex: 1;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px !important;
+  }
+
+  .post-header {
+    display: flex;
+    gap: 12px;
+    font-size: 0.8rem;
+    margin-bottom: 4px;
+    .post-author { font-weight: bold; color: var(--mat-sys-primary); }
+    .post-reports { color: var(--mat-sys-error); display: flex; align-items: center; gap: 4px; }
+  }
+
+  .post-title { margin: 0 0 4px 0; font-size: 1.1rem; }
+  .post-snippet { margin: 0; color: var(--mat-sys-on-surface-variant); font-size: 0.9rem; }
+  
+  .post-actions { display: flex; gap: 8px; align-items: center; }
+}
+
+// Reports Strip Layout
+.reports-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.report-strip {
   display: flex;
   align-items: center;
-  padding: 20px;
-  gap: 20px;
-}
-
-.stat-icon {
-  font-size: 44px;
-  width: 44px;
-  height: 44px;
-  color: var(--mat-sys-on-surface-variant);
-}
-
-.stat-value {
-  font-size: 2.25rem;
-  font-weight: 600;
-  color: var(--mat-sys-on-surface);
-}
-
-.stat-label {
-  font-size: 1rem;
-  color: var(--mat-sys-on-surface-variant);
-}
-
-/* Color accents for stats */
-.stat-primary  { border-left: 5px solid var(--mat-sys-primary); }
-.stat-accent   { border-left: 5px solid var(--mat-sys-secondary); }
-.stat-warn     { border-left: 5px solid var(--mat-sys-error); }
-
-.admin-tabs {
-  background: var(--mat-sys-surface);
+  background: var(--mat-sys-surface-container-low);
   border-radius: 12px;
   overflow: hidden;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
-}
+  padding: 12px 20px;
+  gap: 20px;
 
-.tab-panel {
-  padding: 24px;
-}
-
-.tab-heading {
-  margin: 0 0 20px 0;
-  font-size: 1.6rem;
-  font-weight: 500;
-  color: var(--mat-sys-on-surface);
-}
-
-.table-wrapper {
-  overflow-x: auto;
-  border: 1px solid var(--mat-sys-outline);
-  border-radius: 10px;
-  background: var(--mat-sys-surface);
-}
-
-.admin-table {
-  width: 100%;
-  min-width: 800px;
-}
-
-.mat-header-cell,
-.mat-cell {
-  padding: 14px 18px !important;
-  color: var(--mat-sys-on-surface);
-}
-
-.mat-header-cell {
-  font-weight: 600;
-  color: var(--mat-sys-on-surface-variant);
-}
-
-.mat-row:hover {
-  background: var(--mat-sys-surface-container-high);
-}
-
-/* Responsive adjustments */
-@media (max-width: 960px) {
-  .stats-grid {
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  .priority-indicator {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    &[data-priority="High"] { background: var(--mat-sys-error); box-shadow: 0 0 8px var(--mat-sys-error); }
+    &[data-priority="Medium"] { background: var(--mat-sys-tertiary); }
   }
+
+  .report-body {
+    flex: 1;
+    .report-meta { font-size: 0.75rem; opacity: 0.6; display: flex; gap: 12px; }
+    .report-reason { font-weight: 600; margin: 2px 0; }
+    .report-target { font-size: 0.85rem; margin: 0; }
+  }
+
+  .resolved-check { color: var(--mat-sys-primary); }
 }
 
-@media (max-width: 600px) {
-  .dashboard-wrapper {
-    padding: 16px;
-  }
-  .tab-panel {
-    padding: 16px;
-  }
-  .stat-content {
-    flex-direction: column;
-    text-align: center;
-    gap: 12px;
-  }
-}
+.grid-content { padding-top: 24px; }

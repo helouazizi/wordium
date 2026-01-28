@@ -1,0 +1,82 @@
+<mat-card [class]="'user-card ' + mode()" appearance="outlined">
+  <!-- Top: Avatar & Basic Info -->
+  <div class="card-inner">
+    <div class="user-info-section">
+      <div class="avatar" [class.banned]="user().banned">
+        {{ avatarText }}
+        @if (user().banned && mode() === 'dashboard') {
+          <div class="status-indicator banned">
+            <mat-icon>block</mat-icon>
+          </div>
+        }
+      </div>
+      
+      <div class="text-content">
+        <h3 class="user-name">{{ user().name }}</h3>
+        <p class="user-email">{{ user().email }}</p>
+      </div>
+
+      <!-- Report Badge (Only for Dashboard) -->
+      @if (mode() === 'dashboard' && user().reportCount > 0) {
+        <div class="report-badge" matTooltip="Total Reports">
+          <mat-icon>report</mat-icon>
+          <span>{{ user().reportCount }}</span>
+        </div>
+      }
+    </div>
+
+    <!-- Middle: Dashboard Specific Status -->
+    @if (mode() === 'dashboard') {
+      <div class="status-row">
+        <span class="role-tag">{{ user().role }}</span>
+        <span class="status-tag" [attr.data-status]="user().status">
+          {{ user().status }}
+        </span>
+      </div>
+    }
+
+    <!-- Bottom: Actions (Conditional based on mode) -->
+    <div class="actions-section">
+      
+      @if (mode() === 'search') {
+        <!-- SEARCH MODE ACTIONS -->
+        <button mat-flat-button color="primary" (click)="onFollow.emit(user())">
+          <mat-icon>person_add</mat-icon>
+          Follow
+        </button>
+        <button mat-stroked-button (click)="onViewProfile.emit(user())">
+          Profile
+        </button>
+      } 
+      
+      @else {
+        <!-- DASHBOARD MODE ACTIONS -->
+        <div class="admin-actions">
+          @if (!user().banned) {
+            <button mat-stroked-button color="warn" (click)="onBan.emit(user())">
+              <mat-icon>block</mat-icon> Ban
+            </button>
+          } @else {
+            <button mat-flat-button color="primary" (click)="onUnban.emit(user())">
+              <mat-icon>restore</mat-icon> Unban
+            </button>
+          }
+
+          <button mat-icon-button [matMenuTriggerFor]="adminMenu">
+            <mat-icon>more_horiz</mat-icon>
+          </button>
+          
+          <mat-menu #adminMenu="matMenu">
+            <button mat-menu-item (click)="onViewProfile.emit(user())">
+              <mat-icon>visibility</mat-icon> View Activity
+            </button>
+            <button mat-menu-item color="warn" (click)="onDelete.emit(user())">
+              <mat-icon>delete</mat-icon> Delete User
+            </button>
+          </mat-menu>
+        </div>
+      }
+
+    </div>
+  </div>
+</mat-card>
