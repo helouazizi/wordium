@@ -142,6 +142,13 @@ export class PostsClient {
     return this.http.delete<void>(`${this.config.postsBaseUrl}/${postId}`);
   }
 
+  flagPost(postId: number): Observable<void> {
+    return this.http.patch<void>(`${this.config.usersBaseUrl}/admin/posts/${postId}/flag`, null);
+  }
+  unflagPost(postId: number): Observable<void> {
+    return this.http.patch<void>(`${this.config.usersBaseUrl}/admin/posts/${postId}/unflag`, null);
+  }
+
   deleteComment(postId: number, commentId: number): Observable<void> {
     return this.http.delete<void>(`${this.config.postsBaseUrl}/${postId}/comments/${commentId}`);
   }

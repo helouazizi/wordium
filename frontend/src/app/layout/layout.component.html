@@ -35,11 +35,37 @@
           <span matListItemTitle>{{ link.label }}</span>
         </a>
       }
+      @if (user()?.role === 'ADMIN') {
+        <a
+          mat-list-item
+          [routerLink]="'/dashboard'"
+          routerLinkActive="active-link"
+          [routerLinkActiveOptions]="{ exact: true }"
+        >
+          <mat-icon matListItemIcon>dashboard</mat-icon>
+          <span matListItemTitle>Dashboard</span>
+        </a>
+      }
     </mat-nav-list>
-
-
+    <!-- @if (user()?.role === 'ADMIN') {
+      <a
+        class="admin-link"
+        mat-list-item
+        [routerLink]="'/dashboard'"
+        routerLinkActive="active-link"
+        [routerLinkActiveOptions]="{ exact: true }"
+      >
+        <mat-icon matListItemIcon>dashboard</mat-icon>
+        <span matListItemTitle>Dashboard</span>
+      </a>
+    } -->
     <div class="sidenav-user-card">
-      <app-user-avatar [user]="user()" [size]="'sm'" [showEmail]="true" [showName]="true" ></app-user-avatar>
+      <app-user-avatar
+        [user]="user()"
+        [size]="'sm'"
+        [showEmail]="true"
+        [showName]="true"
+      ></app-user-avatar>
       <button mat-icon-button matTooltip="Logout" (click)="logout()">
         <mat-icon>logout</mat-icon>
       </button>
@@ -63,6 +89,16 @@
             class="nav-item"
           >
             <mat-icon>{{ link.icon }}</mat-icon>
+          </a>
+        }
+        @if (user()?.role === 'ADMIN') {
+          <a
+            [routerLink]="'/dashboard'"
+            routerLinkActive="active"
+            [routerLinkActiveOptions]="{ exact: true }"
+            class="nav-item"
+          >
+            <mat-icon matListItemIcon>dashboard</mat-icon>
           </a>
         }
       </nav>

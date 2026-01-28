@@ -58,6 +58,7 @@ export class PostCard {
   onReact = output<number>();
   onBookmark = output<number>();
   onDelete = output<number>();
+  onVisible = output<number>();
   onReport = output<{ id: number; type: ReportType; reason: string }>();
   onComment = output<string>();
 
@@ -107,7 +108,7 @@ export class PostCard {
   }
   DeleteComment() {
     this.onDeleteComment.emit(this.commentId()!);
-    this.isConfirmingCommentDelete.set(false)
+    this.isConfirmingCommentDelete.set(false);
   }
   readonly canDelete = computed(() => {
     const user = this.user();
@@ -125,6 +126,10 @@ export class PostCard {
 
   handleReact(id: number) {
     this.onReact.emit(id);
+  }
+  
+  handleVisibility() {
+    this.onVisible.emit(this.post().id);
   }
 
   selectReportTarget(id: number, type: ReportType) {

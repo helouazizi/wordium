@@ -130,6 +130,12 @@
 
     <span class="spacer"></span>
 
+    @if (isAdmin() && mode() === 'admin') {
+      <mat-icon>
+        {{ post().isFlagged ? 'visibility_off' : 'visibility' }}
+      </mat-icon>
+    }
+
     @if (isAdmin()) {
       <button
         mat-icon-button
@@ -182,7 +188,7 @@
               </div>
             </div>
 
-            @if (comment.actor.id === user().id) {
+            @if (comment.actor.id === user().id || isAdmin()) {
               <div class="comment-actions">
                 <button
                   mat-menu-item
@@ -229,9 +235,8 @@
     </button>
   }
 
-  <!-- Toggle visibility -->
   @if (isAdmin()) {
-    <button mat-menu-item>
+    <button mat-menu-item (click)="handleVisibility()">
       <mat-icon>
         {{ post().isFlagged ? 'visibility_off' : 'visibility' }}
       </mat-icon>

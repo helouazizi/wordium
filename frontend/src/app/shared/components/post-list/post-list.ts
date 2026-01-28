@@ -223,6 +223,30 @@ export class PostList implements OnInit, AfterViewInit {
     });
   }
 
+  handleVisibility(postId: number) {
+    const post = this.posts().find((p) => p.id === postId);
+    if (!post) return;
+
+    const wasFlagged = post.isFlagged ?? false;
+
+    this.updatePost(postId, (p) => ({ ...p, isFlagged: !wasFlagged }));
+
+    const action$ = wasFlagged
+      ? this.postService.unflagPost(postId)
+      : this.postService.flagPost(postId);
+
+    action$.subscribe({
+      next: () => {
+        const msg = wasFlagged ? 'Post unflagged' : 'Post flagged';
+        this.notify.showSuccess(msg);
+      },
+      error: () => {
+        this.updatePost(postId, (p) => ({ ...p, isFlagged: wasFlagged }));
+        this.notify.showError('Failed to update post status');
+      },
+    });
+  }
+
   deletePost(postId: number) {
     this.postService.deletePost(postId).subscribe({
       next: () => {
@@ -255,7 +279,7 @@ export class PostList implements OnInit, AfterViewInit {
     let request$;
     if (type === 'post') {
       request$ = this.postService.reportPost(id, reason);
-    } else if (type === 'user') {      
+    } else if (type === 'user') {
       request$ = this.postService.reportUser(id, reason);
     } else {
       console.error('Unknown report type:', type);

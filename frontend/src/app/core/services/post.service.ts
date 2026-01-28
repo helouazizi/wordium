@@ -50,6 +50,14 @@ export class PostService {
     return this.client.deletePost(postId);
   }
 
+  flagPost(postId: number) {
+    return this.client.flagPost(postId);
+  }
+
+  unflagPost(postId: number) {
+    return this.client.unflagPost(postId);
+  }
+
   deleteComment(postId: number, commentId: number) {
     return this.client.deleteComment(postId, commentId);
   }
@@ -61,7 +69,6 @@ export class PostService {
   reportPost(id: number, reason: string) {
     return this.client.reportPost(id, reason);
   }
-
 
   reportUser(id: number, reason: string) {
     return this.client.reportUser(id, reason);

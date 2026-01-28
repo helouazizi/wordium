@@ -1,4 +1,4 @@
-<div class="post-list">
+<div class="post-list"  [class.feed]="source() === 'feed'" [class.grid-layout]="source() === 'profile' || source() === 'admin'" >
   @if (err()) {
     <app-not-found [resource]="err()!" [linkText]="'Go Back'"></app-not-found>
   } @else {
@@ -16,6 +16,7 @@
         (onComment)="addComment(post.id, $event)"
         (onDelete)="deletePost(post.id)"
         (onReport)="reportPost(post.id, $event.type, $event.reason)"
+        (onVisible)="handleVisibility(post.id)"
         [mode]="source()"
         [comments]="postComments()"
         [commentsLoading]="commentsLoading()"
