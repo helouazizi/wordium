@@ -1,79 +1,120 @@
-<mat-card [class]="'user-card ' + mode()" appearance="outlined">
-  <!-- Top: Avatar & Basic Info -->
-  <div class="card-inner">
-    <div class="user-info-section">
-      <div class="avatar" [class.banned]="user().banned">
-        {{ avatarText }}
-        @if (user().banned && mode() === 'dashboard') {
-          <div class="status-indicator banned">
+<mat-card
+  appearance="outlined"
+  [class]="'user-card modern ' + mode()"
+>
+  <div class="card-content">
+
+    <!-- Header -->
+    <div class="header-row">
+      <div class="avatar-container">
+        <app-user-avatar
+          class="avatar"
+          [user]="user()"
+          [showName]="true"
+          [time]="null">
+        </app-user-avatar>
+
+        @if (user().isBanned) {
+          <span class="status-badge banned" aria-label="Banned user">
             <mat-icon>block</mat-icon>
-          </div>
+          </span>
+        } @else if (user().isVerified) {
+          <span class="status-badge verified" aria-label="Verified account">
+            <mat-icon>verified</mat-icon>
+          </span>
         }
       </div>
-      
-      <div class="text-content">
-        <h3 class="user-name">{{ user().name }}</h3>
-        <p class="user-email">{{ user().email }}</p>
-      </div>
 
-      <!-- Report Badge (Only for Dashboard) -->
-      @if (mode() === 'dashboard' && user().reportCount > 0) {
-        <div class="report-badge" matTooltip="Total Reports">
-          <mat-icon>report</mat-icon>
-          <span>{{ user().reportCount }}</span>
-        </div>
-      }
+      <div class="identity-section">
+        @if (mode() === 'search' && user().followsMe) {
+          <span class="badge mutual">Follows you</span>
+        }
+
+        @if (mode() === 'dashboard' && user().role) {
+          <span class="badge role">
+            {{ user().role | titlecase }}
+          </span>
+        }
+      </div>
     </div>
 
-    <!-- Middle: Dashboard Specific Status -->
-    @if (mode() === 'dashboard') {
-      <div class="status-row">
-        <span class="role-tag">{{ user().role }}</span>
-        <span class="status-tag" [attr.data-status]="user().status">
-          {{ user().status }}
-        </span>
+    <!-- Stats -->
+    <div class="stats-grid">
+      <div class="stat-item">
+        <span class="stat-value">0</span>
+        <span class="stat-label">Followers</span>
       </div>
-    }
 
-    <!-- Bottom: Actions (Conditional based on mode) -->
-    <div class="actions-section">
-      
+      <div class="stat-divider"></div>
+
+      <div class="stat-item">
+        <span class="stat-value">0</span>
+        <span class="stat-label">Following</span>
+      </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="action-row">
+
       @if (mode() === 'search') {
-        <!-- SEARCH MODE ACTIONS -->
-        <button mat-flat-button color="primary" (click)="onFollow.emit(user())">
-          <mat-icon>person_add</mat-icon>
-          Follow
+        <button
+          mat-flat-button
+          class="action-btn follow-btn"
+          [disabled]="user().isFollowing"
+          [class.active]="user().isFollowing"
+          (click)="onFollow.emit(user())"
+        >
+          <mat-icon>
+            {{ user().isFollowing ? 'check_circle' : 'person_add_alt_1' }}
+          </mat-icon>
+          <span>
+            {{ user().isFollowing ? 'Following' : 'Follow' }}
+          </span>
         </button>
-        <button mat-stroked-button (click)="onViewProfile.emit(user())">
-          Profile
+
+        <button
+          mat-stroked-button
+          class="action-btn view-btn"
+          (click)="onViewProfile.emit(user())"
+        >
+          <span>View Profile</span>
         </button>
-      } 
-      
+      }
+
       @else {
-        <!-- DASHBOARD MODE ACTIONS -->
         <div class="admin-actions">
-          @if (!user().banned) {
-            <button mat-stroked-button color="warn" (click)="onBan.emit(user())">
-              <mat-icon>block</mat-icon> Ban
+
+          @if (!user().isBanned) {
+            <button
+              mat-stroked-button
+              color="warn"
+              class="action-btn ban-btn"
+              (click)="onBan.emit(user())"
+            >
+              <mat-icon>block</mat-icon>
+              <span>Ban</span>
             </button>
           } @else {
-            <button mat-flat-button color="primary" (click)="onUnban.emit(user())">
-              <mat-icon>restore</mat-icon> Unban
+            <button
+              mat-flat-button
+              color="primary"
+              class="action-btn unban-btn"
+              (click)="onUnban.emit(user())"
+            >
+              <mat-icon>restore_from_trash</mat-icon>
+              <span>Unban</span>
             </button>
           }
 
-          <button mat-icon-button [matMenuTriggerFor]="adminMenu">
-            <mat-icon>more_horiz</mat-icon>
+          <button
+            mat-icon-button
+            color="warn"
+            class="delete-btn"
+            (click)="onDelete.emit(user())"
+          >
+            <mat-icon>delete_outline</mat-icon>
           </button>
-          
-          <mat-menu #adminMenu="matMenu">
-            <button mat-menu-item (click)="onViewProfile.emit(user())">
-              <mat-icon>visibility</mat-icon> View Activity
-            </button>
-            <button mat-menu-item color="warn" (click)="onDelete.emit(user())">
-              <mat-icon>delete</mat-icon> Delete User
-            </button>
-          </mat-menu>
+
         </div>
       }
 

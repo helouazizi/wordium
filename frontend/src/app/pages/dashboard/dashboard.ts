@@ -23,7 +23,7 @@ interface DashboardStat {
 
 interface DashboardUser {
   id: number;
-  name: string;
+  username: string;
   email: string;
   status: 'Active' | 'Banned' | 'Pending';
   role: 'Admin' | 'User';
@@ -79,10 +79,10 @@ export class Dashboard {
   ];
 
   users: DashboardUser[] = [
-    { id: 1, name: 'Alex Rivera', email: 'alex@example.com', status: 'Active', role: 'Admin', banned: false },
-    { id: 2, name: 'Sarah Chen', email: 'sarah@example.com', status: 'Active', role: 'User', banned: false },
-    { id: 3, name: 'Mike Johnson', email: 'mike@example.com', status: 'Banned', role: 'User', banned: true },
-    { id: 4, name: 'Emily Davis', email: 'emily@example.com', status: 'Pending', role: 'User', banned: false }
+    { id: 1, username: 'Alex Rivera', email: 'alex@example.com', status: 'Active', role: 'Admin', banned: false },
+    { id: 2, username: 'Sarah Chen', email: 'sarah@example.com', status: 'Active', role: 'User', banned: false },
+    { id: 3, username: 'Mike Johnson', email: 'mike@example.com', status: 'Banned', role: 'User', banned: true },
+    { id: 4, username: 'Emily Davis', email: 'emily@example.com', status: 'Pending', role: 'User', banned: false }
   ];
   userColumns = ['name', 'email', 'status', 'role', 'actions'] as const;
 

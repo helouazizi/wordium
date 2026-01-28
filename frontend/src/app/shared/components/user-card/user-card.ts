@@ -6,6 +6,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { UserAvatar } from '../user-avatar/user-avatar';
 
 export type UserCardMode = 'dashboard' | 'search';
 
@@ -14,7 +15,7 @@ export type UserCardMode = 'dashboard' | 'search';
   standalone: true,
   imports: [
     CommonModule, MatCardModule, MatButtonModule, 
-    MatIconModule, MatChipsModule, MatMenuModule, MatTooltipModule
+    MatIconModule, MatChipsModule, MatMenuModule, MatTooltipModule,UserAvatar
   ],
   templateUrl: './user-card.html',
   styleUrl: './user-card.scss'

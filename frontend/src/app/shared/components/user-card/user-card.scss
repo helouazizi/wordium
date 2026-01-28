@@ -1,121 +1,204 @@
-:host { display: block; }
+.user-card.modern {
+  --gap: 12px;
 
-.user-card {
-  border-radius: 24px !important;
-  background-color: var(--mat-sys-surface-container-low) !important;
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-  overflow: hidden;
+  border-radius: var(--radius);
+  padding: 0;
+  background: var(--mat-sys-surface);
 
   &:hover {
-    transform: translateY(-4px);
-    background-color: var(--mat-sys-surface-container) !important;
-    box-shadow: 0 8px 16px rgba(0,0,0,0.08);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+    transform: translateY(-1px);
   }
 
-  .card-inner { padding: 16px; }
-}
+  .card-content {
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap);
+  }
 
-.user-info-section {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  position: relative;
-  margin-bottom: 16px;
-
-  .avatar {
-    width: 56px;
-    height: 56px;
-    border-radius: 18px;
-    background: var(--mat-sys-primary-container);
-    color: var(--mat-sys-on-primary-container);
+  .header-row {
     display: flex;
     align-items: center;
-    justify-content: center;
-    font-size: 1.4rem;
-    font-weight: 800;
-    position: relative;
-
-    &.banned {
-      filter: grayscale(1);
-      opacity: 0.7;
-    }
+    justify-content: space-between;
+    gap: var(--gap);
   }
 
-  .status-indicator.banned {
+  .avatar-container {
+    position: relative;
+    flex-shrink: 0;
+  }
+
+  .avatar ::ng-deep img {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+
+  .status-badge {
     position: absolute;
     bottom: -4px;
     right: -4px;
-    background: var(--mat-sys-error);
-    color: white;
+    width: 20px;
+    height: 20px;
     border-radius: 50%;
-    padding: 2px;
-    mat-icon { font-size: 14px; width: 14px; height: 14px; }
+    display: grid;
+    place-items: center;
+    font-size: 12px;
+
+    &.verified {
+      background: #e0f2fe;
+      color: #1d4ed8;
+    }
+
+    &.banned {
+      background: #fee2e2;
+      color: #b91c1c;
+    }
   }
 
-  .text-content {
+  .identity-section {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 6px;
+  }
+
+  .badge {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 999px;
+    white-space: nowrap;
+
+    &.mutual {
+      background: #dbeafe;
+      color: #1e40af;
+    }
+
+    &.role {
+      background:var(--mat-sys-on-surface);
+      color: #111827;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+  }
+
+  .stats-grid {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 10px;
+    border-top: 1px solid rgba(0, 0, 0, 0.06);
+  }
+
+  .stat-item {
     flex: 1;
-    .user-name { margin: 0; font-size: 1.1rem; font-weight: 700; }
-    .user-email { margin: 0; font-size: 0.85rem; color: var(--mat-sys-on-surface-variant); }
-  }
-}
-
-.report-badge {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  background: var(--mat-sys-error-container);
-  color: var(--mat-sys-on-error-container);
-  padding: 4px 10px;
-  border-radius: 12px;
-  font-size: 0.75rem;
-  font-weight: bold;
-  mat-icon { font-size: 16px; width: 16px; height: 16px; }
-}
-
-.status-row {
-  display: flex;
-  gap: 8px;
-  margin-bottom: 16px;
-
-  .role-tag {
-    font-size: 0.7rem;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    font-weight: bold;
-    color: var(--mat-sys-primary);
+    text-align: center;
   }
 
-  .status-tag {
-    font-size: 0.75rem;
-    padding: 2px 8px;
-    border-radius: 6px;
-    background: var(--mat-sys-surface-container-highest);
-    
-    &[data-status="Active"] { color: #2e7d32; background: #e8f5e9; }
-    &[data-status="Banned"] { color: var(--mat-sys-error); background: var(--mat-sys-error-container); }
+  .stat-value {
+    display: block;
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 1.2;
   }
-}
 
-.actions-section {
-  display: flex;
-  gap: 8px;
+  .stat-label {
+    font-size: 11px;
+    opacity: 0.65;
+  }
 
-  button {
-    flex: 1;
+  .stat-divider {
+    width: 1px;
+    height: 22px;
+    background: rgba(0, 0, 0, 0.1);
+  }
+
+  .action-row {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .action-btn {
+    width: 100%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 8px 14px;
     border-radius: 12px;
+    font-size: 14px;
+    font-weight: 500;
+    text-transform: none;
+  }
+
+  .follow-btn.active {
+    background: #dbeafe !important;
+    color: #1e40af !important;
+    border-color: #bfdbfe !important;
   }
 
   .admin-actions {
     display: flex;
     gap: 8px;
     width: 100%;
-    button[mat-stroked-button] { flex: 1; }
-    button[mat-icon-button] { flex: 0 0 40px; }
   }
-}
 
-// Search mode specific tweaks
-.user-card.search {
-  .avatar { border-radius: 50%; } // Round avatars for search
-  .card-inner { padding: 20px; }
+  .ban-btn,
+  .unban-btn {
+    flex: 1;
+  }
+
+  .delete-btn {
+    width: 38px;
+    height: 38px;
+    border-radius: 12px;
+
+    &:hover {
+      color: #b91c1c;
+    }
+  }
+
+  &.dashboard {
+    border-left: 4px solid #2563eb;
+
+    .badge.mutual {
+      display: none;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .card-content {
+      padding: 12px;
+      gap: 10px;
+    }
+
+    .avatar ::ng-deep img {
+      width: 42px;
+      height: 42px;
+    }
+
+    .stats-grid {
+      padding-top: 8px;
+    }
+
+    .stat-value {
+      font-size: 14px;
+    }
+
+    .action-btn span {
+      display: none;
+    }
+
+    .action-btn mat-icon {
+      margin: 0;
+    }
+
+    .admin-actions {
+      flex-direction: column;
+    }
+  }
 }
