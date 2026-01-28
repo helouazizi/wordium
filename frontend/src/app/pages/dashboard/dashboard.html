@@ -1,68 +1,67 @@
-<!-- dashboard-home.component.html -->
-<div class="dashboard-container">
+<div class="dashboard-wrapper">
 
-  <!-- Always visible stats -->
+  <!-- Stats – always visible -->
   <div class="stats-grid">
     <mat-card *ngFor="let stat of stats" class="stat-card" [ngClass]="'stat-' + stat.color">
-      <mat-card-content>
-        <div class="stat-row">
-          <mat-icon class="stat-icon">{{ stat.icon }}</mat-icon>
-          <div class="stat-text">
-            <div class="stat-value">{{ stat.value }}</div>
-            <div class="stat-label">{{ stat.label }}</div>
-          </div>
+      <mat-card-content class="stat-content">
+        <mat-icon class="stat-icon">{{ stat.icon }}</mat-icon>
+        <div class="stat-text">
+          <div class="stat-value">{{ stat.value }}</div>
+          <div class="stat-label">{{ stat.label }}</div>
         </div>
       </mat-card-content>
     </mat-card>
   </div>
 
-  <mat-divider class="divider"></mat-divider>
+  <mat-divider></mat-divider>
 
-  <!-- Tabs – only one content visible at a time -->
+  <!-- Main content – tabs -->
   <mat-tab-group
     [(selectedIndex)]="selectedTabIndex"
-    animationDuration="300ms cubic-bezier(0.4,0,0.2,1)"
-    class="admin-tabs">
+    class="admin-tabs"
+    animationDuration="250ms cubic-bezier(0.35,0,0.25,1)">
 
+    <!-- Users Tab (default) -->
     <mat-tab label="Users">
-      <div class="tab-content">
-        <h2 class="tab-title">Recent Users</h2>
-        <div class="table-container">
-          <table mat-table [dataSource]="users" class="dashboard-table">
-
+      <div class="tab-panel">
+        <h2 class="tab-heading">Recent Users</h2>
+        <div class="table-wrapper">
+          <table mat-table [dataSource]="users" class="admin-table">
             <ng-container matColumnDef="name">
               <th mat-header-cell *matHeaderCellDef>Name</th>
-              <td mat-cell *matCellDef="let u">{{ u.name }}</td>
+              <td mat-cell *matCellDef="let user">{{ user.name }}</td>
             </ng-container>
 
             <ng-container matColumnDef="email">
               <th mat-header-cell *matHeaderCellDef>Email</th>
-              <td mat-cell *matCellDef="let u">{{ u.email }}</td>
+              <td mat-cell *matCellDef="let user">{{ user.email }}</td>
             </ng-container>
 
             <ng-container matColumnDef="status">
               <th mat-header-cell *matHeaderCellDef>Status</th>
-              <td mat-cell *matCellDef="let u">
-                <mat-chip [color]="u.banned ? 'warn' : 'primary'" selected>{{ u.status }}</mat-chip>
+              <td mat-cell *matCellDef="let user">
+                <mat-chip [color]="user.banned ? 'warn' : 'primary'" selected>
+                  {{ user.status }}
+                </mat-chip>
               </td>
             </ng-container>
 
             <ng-container matColumnDef="role">
               <th mat-header-cell *matHeaderCellDef>Role</th>
-              <td mat-cell *matCellDef="let u">{{ u.role }}</td>
+              <td mat-cell *matCellDef="let user">{{ user.role }}</td>
             </ng-container>
 
             <ng-container matColumnDef="actions">
               <th mat-header-cell *matHeaderCellDef>Actions</th>
-              <td mat-cell *matCellDef="let u">
+              <td mat-cell *matCellDef="let user">
                 <button mat-icon-button [matMenuTriggerFor]="userMenu">
                   <mat-icon>more_vert</mat-icon>
                 </button>
                 <mat-menu #userMenu="matMenu">
-                  <button mat-menu-item *ngIf="!u.banned"  (click)="banUser(u)">Ban user</button>
-                  <button mat-menu-item *ngIf="u.banned"   (click)="unbanUser(u)">Unban</button>
+                  <button mat-menu-item *ngIf="!user.banned" (click)="banUser(user)">Ban</button>
+                  <button mat-menu-item *ngIf="user.banned" (click)="unbanUser(user)">Unban</button>
                   <mat-divider></mat-divider>
-                  <button mat-menu-item color="warn" (click)="deleteUser(u)">Delete</button>
+                  <button mat-menu-item color="warn" (click)="deleteUser(user)">Delete</button>
                 </mat-menu>
               </td>
             </ng-container>
@@ -74,34 +73,47 @@
       </div>
     </mat-tab>
 
+    <!-- Posts Tab -->
     <mat-tab label="Posts">
-      <div class="tab-content">
-        <h2 class="tab-title">Recent Posts</h2>
-        <div class="table-container">
-          <table mat-table [dataSource]="posts" class="dashboard-table">
-            <!-- title | author | snippet | status | reports | actions -->
-            <ng-container matColumnDef="title">    <th mat-header-cell *matHeaderCellDef>Title</th>    <td mat-cell *matCellDef="let p">{{ p.title }}</td>    </ng-container>
-            <ng-container matColumnDef="author">   <th mat-header-cell *matHeaderCellDef>Author</th>   <td mat-cell *matCellDef="let p">{{ p.author }}</td>   </ng-container>
-            <ng-container matColumnDef="snippet">  <th mat-header-cell *matHeaderCellDef>Snippet</th>  <td mat-cell *matCellDef="let p">{{ p.snippet }}</td>  </ng-container>
+      <div class="tab-panel">
+        <h2 class="tab-heading">Recent Posts</h2>
+        <div class="table-wrapper">
+          <table mat-table [dataSource]="posts" class="admin-table">
+            <ng-container matColumnDef="title">
+              <th mat-header-cell *matHeaderCellDef>Title</th>
+              <td mat-cell *matCellDef="let post">{{ post.title }}</td>
+            </ng-container>
+            <ng-container matColumnDef="author">
+              <th mat-header-cell *matHeaderCellDef>Author</th>
+              <td mat-cell *matCellDef="let post">{{ post.author }}</td>
+            </ng-container>
+            <ng-container matColumnDef="snippet">
+              <th mat-header-cell *matHeaderCellDef>Content</th>
+              <td mat-cell *matCellDef="let post">{{ post.snippet }}</td>
+            </ng-container>
             <ng-container matColumnDef="status">
               <th mat-header-cell *matHeaderCellDef>Status</th>
-              <td mat-cell *matCellDef="let p">
-                <mat-chip [color]="p.status === 'Visible' ? 'primary' : 'warn'">{{ p.status }}</mat-chip>
+              <td mat-cell *matCellDef="let post">
+                <mat-chip [color]="post.status === 'Visible' ? 'primary' : 'warn'">
+                  {{ post.status }}
+                </mat-chip>
               </td>
             </ng-container>
-            <ng-container matColumnDef="reports">  <th mat-header-cell *matHeaderCellDef>Reports</th>  <td mat-cell *matCellDef="let p">{{ p.reports }}</td>  </ng-container>
-
+            <ng-container matColumnDef="reports">
+              <th mat-header-cell *matHeaderCellDef>Reports</th>
+              <td mat-cell *matCellDef="let post">{{ post.reports }}</td>
+            </ng-container>
             <ng-container matColumnDef="actions">
               <th mat-header-cell *matHeaderCellDef>Actions</th>
-              <td mat-cell *matCellDef="let p">
+              <td mat-cell *matCellDef="let post">
                 <button mat-icon-button [matMenuTriggerFor]="postMenu">
                   <mat-icon>more_vert</mat-icon>
                 </button>
                 <mat-menu #postMenu="matMenu">
-                  <button mat-menu-item (click)="togglePostVisibility(p)">
-                    {{ p.status === 'Visible' ? 'Hide' : 'Unhide' }}
+                  <button mat-menu-item (click)="togglePostVisibility(post)">
+                    {{ post.status === 'Visible' ? 'Hide' : 'Unhide' }}
                   </button>
-                  <button mat-menu-item color="warn" (click)="deletePost(p)">Delete</button>
+                  <button mat-menu-item color="warn" (click)="deletePost(post)">Delete</button>
                 </mat-menu>
               </td>
             </ng-container>
@@ -113,32 +125,50 @@
       </div>
     </mat-tab>
 
+    <!-- Reports Tab -->
     <mat-tab label="Reports">
-      <div class="tab-content">
-        <h2 class="tab-title">Pending Reports</h2>
-        <div class="table-container">
-          <table mat-table [dataSource]="reports" class="dashboard-table">
-            <!-- id | reason | user | post | priority | status | actions -->
-            <ng-container matColumnDef="id">       <th mat-header-cell *matHeaderCellDef>ID</th>       <td mat-cell *matCellDef="let r">{{ r.id }}</td>       </ng-container>
-            <ng-container matColumnDef="reason">   <th mat-header-cell *matHeaderCellDef>Reason</th>   <td mat-cell *matCellDef="let r">{{ r.reason }}</td>   </ng-container>
-            <ng-container matColumnDef="user">     <th mat-header-cell *matHeaderCellDef>Reported by</th><td mat-cell *matCellDef="let r">{{ r.user }}</td>     </ng-container>
-            <ng-container matColumnDef="post">     <th mat-header-cell *matHeaderCellDef>Post</th>     <td mat-cell *matCellDef="let r">{{ r.post }}</td>     </ng-container>
+      <div class="tab-panel">
+        <h2 class="tab-heading">Pending Reports</h2>
+        <div class="table-wrapper">
+          <table mat-table [dataSource]="reports" class="admin-table">
+            <ng-container matColumnDef="id">
+              <th mat-header-cell *matHeaderCellDef>ID</th>
+              <td mat-cell *matCellDef="let report">{{ report.id }}</td>
+            </ng-container>
+            <ng-container matColumnDef="reason">
+              <th mat-header-cell *matHeaderCellDef>Reason</th>
+              <td mat-cell *matCellDef="let report">{{ report.reason }}</td>
+            </ng-container>
+            <ng-container matColumnDef="user">
+              <th mat-header-cell *matHeaderCellDef>Reported by</th>
+              <td mat-cell *matCellDef="let report">{{ report.user }}</td>
+            </ng-container>
+            <ng-container matColumnDef="post">
+              <th mat-header-cell *matHeaderCellDef>Post</th>
+              <td mat-cell *matCellDef="let report">{{ report.post }}</td>
+            </ng-container>
             <ng-container matColumnDef="priority">
               <th mat-header-cell *matHeaderCellDef>Priority</th>
-              <td mat-cell *matCellDef="let r">
-                <mat-chip [color]="r.priority === 'High' ? 'warn' : 'accent'">{{ r.priority }}</mat-chip>
+              <td mat-cell *matCellDef="let report">
+                <mat-chip [color]="report.priority === 'High' ? 'warn' : 'accent'">
+                  {{ report.priority }}
+                </mat-chip>
               </td>
             </ng-container>
-            <ng-container matColumnDef="status">   <th mat-header-cell *matHeaderCellDef>Status</th>   <td mat-cell *matCellDef="let r">{{ r.status }}</td>   </ng-container>
-
+            <ng-container matColumnDef="status">
+              <th mat-header-cell *matHeaderCellDef>Status</th>
+              <td mat-cell *matCellDef="let report">{{ report.status }}</td>
+            </ng-container>
             <ng-container matColumnDef="actions">
               <th mat-header-cell *matHeaderCellDef>Actions</th>
-              <td mat-cell *matCellDef="let r">
+              <td mat-cell *matCellDef="let report">
                 <button mat-icon-button [matMenuTriggerFor]="reportMenu">
                   <mat-icon>more_vert</mat-icon>
                 </button>
                 <mat-menu #reportMenu="matMenu">
-                  <button mat-menu-item *ngIf="r.status === 'Pending'" (click)="resolveReport(r)">Resolve</button>
+                  <button mat-menu-item *ngIf="report.status === 'Pending'" (click)="resolveReport(report)">
+                    Resolve
+                  </button>
                 </mat-menu>
               </td>
             </ng-container>
@@ -151,5 +181,4 @@
     </mat-tab>
 
   </mat-tab-group>
-
 </div>
