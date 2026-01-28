@@ -20,6 +20,7 @@ import { UpdateProfileRequest } from '../../core/apis/users/users.model';
 import { User } from '../../shared/models/user.model';
 import { PostList } from '../../shared/components/post-list/post-list';
 import { NotFound } from '../../shared/components/not-found/not-found';
+import { NotificationService } from '../../core/services/notification.service';
 
 @Component({
   selector: 'app-profile',
@@ -47,6 +48,7 @@ export class Profile {
   private route = inject(ActivatedRoute);
   private dialog = inject(MatDialog);
   private device = inject(DeviceService);
+  private notif = inject(NotificationService);
 
   isMobile = this.device.isHandset;
 
@@ -55,7 +57,7 @@ export class Profile {
   readonly targetUser = signal<User | null>(null);
 
   isOwn = computed(() => this.targetUser()?.id === this.sessionUser()?.id);
-  isAdmin = computed(() => this.sessionUser()?.role === 'ADMIN');
+  isAdmin = computed(() => this.targetUser()?.role === 'ADMIN');
   err = signal<string | null>(null);
 
   ngOnInit() {
@@ -104,24 +106,41 @@ export class Profile {
   }
 
   toggleFollow() {
-
     const user = this.targetUser();
-    console.log(user);
-    
     if (!user || this.isOwn()) return;
 
-    this.usersService.followUser(user.id).subscribe({
-      next: (res) => {
-        console.log(res, 'inside');
+    const wasFollowing = user.isFollowing ?? false;
 
-        const current = this.targetUser();
-        if (current) {
-          const newTarget = { ...current, isFollowing: !current.isFollowing };
-          this.targetUser.set(newTarget);
-        }
+    const currentStats = user.stats ?? { followers: 0, following: 0, posts: 0, bookmarks: 0 };
+
+    const action$ = wasFollowing
+      ? this.usersService.unfollowUser(user.id)
+      : this.usersService.followUser(user.id);
+
+    action$.subscribe({
+      next: (res) => {
+        console.log(res);
+        
+        this.targetUser.update((current) => {
+          if (!current) return current;
+
+          const stats = current.stats ?? currentStats;
+
+          return {
+            ...current,
+            isFollowing: !wasFollowing,
+            stats: {
+              ...stats,
+              followers: wasFollowing ? Math.max(0, stats.followers - 1) : stats.followers + 1,
+            },
+          };
+
+        });
+
+        this.notif.showSuccess(res.message)
       },
-      error(err) {
-        console.log(err);
+      error: (err) => {
+         this.notif.showError(err.message)
       },
     });
   }

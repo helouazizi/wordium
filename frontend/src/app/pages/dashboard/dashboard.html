@@ -1,5 +1,4 @@
 <div class="dashboard-container">
-  <!-- STATS SECTION (Keep but refine) -->
   <div class="stats-grid">
     <mat-card *ngFor="let stat of stats; trackBy: trackByStat" [class]="'stat-card ' + stat.color">
       <mat-card-content>
@@ -14,66 +13,19 @@
     </mat-card>
   </div>
 
-  <!-- MAIN CONTENT TABS -->
-  <mat-tab-group class="admin-tabs" animationDuration="400ms">
-    <!-- USERS GRID -->
+  <mat-tab-group class="admin-tabs" animationDuration="500ms">
     <mat-tab label="Users">
       <div class="grid-content">
-        <!-- Inside the Users Tab -->
-        <div class="user-grid">
-          @for (user of users; track user.id) {
-            <app-user-card
-              [user]="user"
-              mode="dashboard"
-              (onBan)="banUser($event)"
-              (onDelete)="deleteUser($event)"
-            >
-            </app-user-card>
-          }
-        </div>
+        <app-user-list [source]="'dashboard'"></app-user-list>
       </div>
     </mat-tab>
 
-    <!-- POSTS FEED -->
     <mat-tab label="Posts">
       <div class="grid-content">
-        <div class="posts-column">
-          <mat-card
-            *ngFor="let post of posts; trackBy: trackByPost"
-            appearance="outlined"
-            class="post-item-card"
-          >
-            <div class="post-accent" [class.hidden]="post.status === 'Hidden'"></div>
-            <mat-card-content>
-              <div class="post-main-content">
-                <div class="post-header">
-                  <span class="post-author">@{{ post.author }}</span>
-                  <span class="post-reports" *ngIf="post.reports > 0">
-                    <mat-icon>report</mat-icon> {{ post.reports }} Reports
-                  </span>
-                </div>
-                <h3 class="post-title">{{ post.title }}</h3>
-                <p class="post-snippet">{{ post.snippet }}</p>
-              </div>
-
-              <div class="post-actions">
-                <button mat-stroked-button (click)="togglePostVisibility(post)">
-                  <mat-icon>{{
-                    post.status === 'Visible' ? 'visibility_off' : 'visibility'
-                  }}</mat-icon>
-                  {{ post.status === 'Visible' ? 'Hide' : 'Show' }}
-                </button>
-                <button mat-icon-button color="warn" (click)="deletePost(post)">
-                  <mat-icon>delete_outline</mat-icon>
-                </button>
-              </div>
-            </mat-card-content>
-          </mat-card>
-        </div>
+        <app-post-list [source]="'admin'"></app-post-list>
       </div>
     </mat-tab>
 
-    <!-- REPORTS LIST -->
     <mat-tab label="Reports">
       <div class="grid-content">
         <div class="reports-list">
@@ -81,7 +33,6 @@
             <app-report-card
               [report]="report"
               [type]="report.type"
-       
             >
             </app-report-card>
           </div>

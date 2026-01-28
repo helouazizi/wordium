@@ -11,6 +11,8 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { MatDividerModule } from '@angular/material/divider';
 import { UserCard } from '../../shared/components/user-card/user-card';
 import { ReportCard } from '../../shared/components/report-card/report-card';
+import { UserList } from '../../shared/components/user-list/user-list';
+import { PostList } from '../../shared/components/post-list/post-list';
 
 // ===== TYPE DEFINITIONS (Critical for maintainability) =====
 interface DashboardStat {
@@ -62,8 +64,9 @@ interface DashboardReport {
     MatMenuModule,
     MatTabsModule,
     MatDividerModule,
-    UserCard,
-    ReportCard
+    ReportCard,
+    UserList,
+    PostList,
   ],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss'

@@ -255,9 +255,7 @@ export class PostList implements OnInit, AfterViewInit {
     let request$;
     if (type === 'post') {
       request$ = this.postService.reportPost(id, reason);
-    } else if (type === 'user') {
-      console.log(type,"hhhhhhhhhhhh");
-      
+    } else if (type === 'user') {      
       request$ = this.postService.reportUser(id, reason);
     } else {
       console.error('Unknown report type:', type);

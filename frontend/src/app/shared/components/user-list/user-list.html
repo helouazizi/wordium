@@ -1,0 +1,36 @@
+<div class="user-list">
+  @if (err()) {
+    <app-not-found [resource]="err()!" [linkText]="'Go Back'"></app-not-found>
+  } @else {
+    @if (initialLoading()) {
+      <div class="loading-state">
+        <mat-spinner diameter="40"></mat-spinner>
+        <p>Loading users...</p>
+      </div>
+    }
+    @for (user of users(); track user.id) {
+     <app-user-card  [user]="user"></app-user-card>
+    }
+    @if (isEmpty()) {
+      <div class="empty-state">
+        <mat-icon>inbox</mat-icon>
+        <h3>No users yet</h3>
+        <p>{{ emptyMessage() }}</p>
+      </div>
+    }
+    @if (pageLoading()) {
+      <div class="pagination-loader">
+        <mat-progress-spinner diameter="28" mode="indeterminate" />
+      </div>
+    }
+    @if (endReached() ) {
+      <div class="end-state">
+        <mat-icon></mat-icon>
+        No more users
+
+      </div>
+    }
+
+    <div #scrollAnchor class="scroll-anchor"></div>
+  }
+</div>

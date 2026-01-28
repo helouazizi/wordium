@@ -7,6 +7,7 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { UserAvatar } from '../user-avatar/user-avatar';
+import { User } from '../../models/user.model';
 
 export type UserCardMode = 'dashboard' | 'search';
 
@@ -22,7 +23,7 @@ export type UserCardMode = 'dashboard' | 'search';
 })
 export class UserCard {
   // New Angular Signal Inputs
-  user = input.required<any>(); 
+  user = input.required<User>(); 
   mode = input<UserCardMode>('dashboard');
 
   // Outputs for parent interaction
@@ -33,6 +34,6 @@ export class UserCard {
   onViewProfile = output<any>();
 
   get avatarText(): string {
-    return this.user().name ? this.user().name[0].toUpperCase() : '?';
+    return this.user().username ? this.user().username[0].toUpperCase() : '?';
   }
 }

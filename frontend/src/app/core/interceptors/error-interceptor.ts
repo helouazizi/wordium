@@ -17,7 +17,7 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
         errorMessage = `Error: ${error.error.message}`;
       } else {
         // Server-side error
-        switch (error.error.status) {
+        switch (error.status) {
           case 400:
             errorMessage = error.error?.detail || 'Bad Request';
             break;
