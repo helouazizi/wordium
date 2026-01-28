@@ -27,12 +27,15 @@ export const routes: Routes = [
       },
       {
         path: 'posts/:id',
-        loadComponent: () =>
-          import('./pages/post-detail/post-detail').then((c) => c.PostDetail),
+        loadComponent: () => import('./pages/post-detail/post-detail').then((c) => c.PostDetail),
       },
       {
         path: 'profiles/:id', //  whrite blog
         loadComponent: () => import('./pages/profile/profile').then((c) => c.Profile),
+      },
+      {
+        path: 'dashboard', //  whrite blog
+        loadComponent: () => import('./pages/dashboard/dashboard').then((c) => c.Dashboard),
       },
       {
         path: '',

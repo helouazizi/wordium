@@ -9,5 +9,5 @@ export const NAV_LINKS: NavItem[] = [
   { label: 'Explore', icon: 'explore', route: '/explore' },
   { label: 'write', icon: 'edit_note', route: '/write' },
   
-  // { label: 'Profile', icon: 'person', route: '/profile' },
+  { label: 'Dashboard', icon: 'dashboard', route: '/dashboard' },
 ];
