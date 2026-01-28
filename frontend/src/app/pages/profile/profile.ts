@@ -118,9 +118,7 @@ export class Profile {
       : this.usersService.followUser(user.id);
 
     action$.subscribe({
-      next: (res) => {
-        console.log(res);
-        
+      next: (res) => {        
         this.targetUser.update((current) => {
           if (!current) return current;
 

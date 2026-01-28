@@ -21,7 +21,7 @@ import { NotFound } from '../not-found/not-found';
 export type UserListSource = 'dashboard' | 'search';
 @Component({
   selector: 'app-user-list',
-  imports: [UserCard,MatProgressSpinner, MatSpinner, MatIcon, NotFound],
+  imports: [UserCard, MatProgressSpinner, MatSpinner, MatIcon, NotFound],
   templateUrl: './user-list.html',
   styleUrl: './user-list.scss',
 })
@@ -92,11 +92,10 @@ export class UserList implements OnInit, AfterViewInit {
       sort: 'createdAt,desc',
     };
 
-
     this.userService.getAllUsers(params).subscribe({
       next: (res: PageResponse<User>) => {
-        console.log(res.data,"users");
-        
+        console.log(res.data, 'users');
+
         this.users.update((existing) =>
           append
             ? Array.from(new Map([...existing, ...res.data].map((p) => [p.id, p])).values())
@@ -111,6 +110,101 @@ export class UserList implements OnInit, AfterViewInit {
         this.initialLoading.set(false);
         this.pageLoading.set(false);
         this.notify.showError('Error loading users');
+      },
+    });
+  }
+
+  deleteUser(id: number) {
+    this.userService.deleteUser(id).subscribe({
+      next: () => {
+        this.users.update((list) => list.filter((u) => u.id !== id));
+        this.notify.showSuccess(`The user has been deleted.`);
+      },
+      error: () => {
+        this.notify.showError(`Failed to delete this user`);
+      },
+    });
+  }
+
+  banUser(id: number) {
+    this.userService.banUser(id).subscribe({
+      next: () => {
+        this.users.update((list) => list.map((u) => (u.id === id ? { ...u, isBanned: true } : u)));
+        this.notify.showSuccess(`The user has been banned`);
+      },
+      error: () => {
+        this.notify.showError(`Failed to ban this user`);
+      },
+    });
+  }
+
+  unbanUser(id: number) {
+    this.userService.unbanUser(id).subscribe({
+      next: () => {
+        this.users.update((list) => list.map((u) => (u.id === id ? { ...u, isBanned: false } : u)));
+        this.notify.showSuccess(`The user has been unbanned.`);
+      },
+      error: () => {
+        this.notify.showError(`Failed to unban this user`);
+      },
+    });
+  }
+
+  viewProfile(id: number) {
+    this.router.navigate(['profiles/', id]);
+  }
+  togleFollow(id: number) {
+    const target = this.users().find((u) => u.id === id);
+    if (!target|| !this.user  || this.user.id === id) return;
+
+    const wasFollowing = target.isFollowing ?? false;
+
+    const currentStats = target.stats ?? {
+      followers: 0,
+      following: 0,
+      posts: 0,
+      bookmarks: 0,
+    };
+
+    const action$ = wasFollowing
+      ? this.userService.unfollowUser(id)
+      : this.userService.followUser(id);
+
+    this.users.update((list) =>
+      list.map((u) => {
+        if (u.id === id) {
+          return {
+            ...u,
+            isFollowing: !wasFollowing,
+            stats: {
+              followers: wasFollowing
+                ? Math.max(0, (u.stats?.followers ?? 0) - 1)
+                : (u.stats?.followers ?? 0) + 1,
+              following: u.stats?.following ?? 0,
+              posts: u.stats?.posts ?? 0,
+              bookmarks: u.stats?.bookmarks ?? 0,
+            },
+          } as User; 
+        }
+        return u;
+      }),
+    );
+
+    action$.subscribe({
+      next: () => {
+        this.notify.showSuccess(
+          !wasFollowing
+            ? `You are now following ${target.username}`
+            : `Unfollowed ${target.username}`,
+        );
+      },
+      error: (err) => {
+        console.error('Follow/unfollow failed', err);
+
+        this.users.update((list) => list.map((u) => (u.id === id ? target : u)));
+        this.notify.showError(
+          `Failed to ${wasFollowing ? 'unfollow' : 'follow'} ${target.username}`,
+        );
       },
     });
   }

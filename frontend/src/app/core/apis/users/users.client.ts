@@ -27,10 +27,11 @@ export class UsersClient {
   }
 
   follow(targetUserId: number): Observable<FollowResponse> {
-    console.log(targetUserId,"user id");
-    
+    console.log(targetUserId, 'user id');
+
     return this.http.post<FollowResponse>(
-      `${this.config.usersBaseUrl}/${targetUserId}/follow`,null
+      `${this.config.usersBaseUrl}/${targetUserId}/follow`,
+      null,
     );
   }
 
@@ -65,6 +66,10 @@ export class UsersClient {
 
   unbanUser(id: number): Observable<void> {
     return this.http.patch<void>(`${this.config.usersBaseUrl}/admin/accounts/${id}/unban`, null);
+  }
+
+  deleteUser(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.config.usersBaseUrl}/admin/accounts/${id}`);
   }
 
   changeRole(id: number, role: string): Observable<any> {

@@ -15,25 +15,48 @@ export type UserCardMode = 'dashboard' | 'search';
   selector: 'app-user-card',
   standalone: true,
   imports: [
-    CommonModule, MatCardModule, MatButtonModule, 
-    MatIconModule, MatChipsModule, MatMenuModule, MatTooltipModule,UserAvatar
+    CommonModule,
+    MatCardModule,
+    MatButtonModule,
+    MatIconModule,
+    MatChipsModule,
+    MatMenuModule,
+    MatTooltipModule,
+    UserAvatar,
   ],
   templateUrl: './user-card.html',
-  styleUrl: './user-card.scss'
-})
-export class UserCard {
-  // New Angular Signal Inputs
-  user = input.required<User>(); 
+  styleUrl: './user-card.scss',
+})export class UserCard {
+  user = input.required<User>();
   mode = input<UserCardMode>('dashboard');
 
-  // Outputs for parent interaction
-  onBan = output<any>();
-  onUnban = output<any>();
-  onDelete = output<any>();
-  onFollow = output<any>();
-  onViewProfile = output<any>();
+  onBan = output<number>();
+  onUnban = output<number>();
+  onDelete = output<number>();
+  onFollow = output<number>();
+  onViewProfile = output<number>();
 
   get avatarText(): string {
     return this.user().username ? this.user().username[0].toUpperCase() : '?';
+  }
+
+  ban() {
+    if (this.user()?.id) this.onBan.emit(this.user().id);
+  }
+
+  unban() {
+    if (this.user()?.id) this.onUnban.emit(this.user().id);
+  }
+
+  deleteUser() {
+    if (this.user()?.id) this.onDelete.emit(this.user().id);
+  }
+
+  follow() {
+    if (this.user()?.id) this.onFollow.emit(this.user().id);
+  }
+
+  viewProfile() {
+    if (this.user()?.id) this.onViewProfile.emit(this.user().id);
   }
 }

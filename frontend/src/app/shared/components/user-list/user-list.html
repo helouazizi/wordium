@@ -9,7 +9,15 @@
       </div>
     }
     @for (user of users(); track user.id) {
-     <app-user-card  [user]="user"></app-user-card>
+      <app-user-card
+        [user]="user"
+        [mode]="source()"
+        (onBan)="banUser(user.id)"
+        (onUnban)="unbanUser(user.id)"
+        (onDelete)="deleteUser(user.id)"
+        (onFollow)="togleFollow(user.id)"
+        (onViewProfile)="viewProfile(user.id)"
+      ></app-user-card>
     }
     @if (isEmpty()) {
       <div class="empty-state">
@@ -23,11 +31,10 @@
         <mat-progress-spinner diameter="28" mode="indeterminate" />
       </div>
     }
-    @if (endReached() ) {
+    @if (endReached()) {
       <div class="end-state">
-        <mat-icon></mat-icon>
-        No more users
-
+        <mat-icon>person_outline</mat-icon>
+        <span>You've reached the end! No more users to show.</span>
       </div>
     }
 

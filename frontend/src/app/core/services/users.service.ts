@@ -48,6 +48,10 @@ export class UsersService {
     return this.client.unbanUser(userId);
   }
 
+  deleteUser(userId: number): Observable<void> {
+    return this.client.deleteUser(userId);
+  }
+
   changeUserRole(userId: number, role: string): Observable<void> {
     return this.client.changeRole(userId, role);
   }
