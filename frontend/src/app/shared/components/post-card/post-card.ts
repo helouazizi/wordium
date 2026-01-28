@@ -163,7 +163,7 @@ export class PostCard {
   }
 
   handleNavigate() {
-    if (this.mode() === 'feed') this.router.navigate(['/posts/', this.post().id]);
+    if (this.mode() !== 'detail') this.router.navigate(['/posts/', this.post().id]);
   }
 
   loadMoreComments() {

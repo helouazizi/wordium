@@ -97,19 +97,21 @@
 
   <div class="card-body">
     <h2 class="post-title">{{ post().title }}</h2>
-    <div class="content-wrapper" [class.teaser-mode]="mode() === 'feed'">
-      <mat-card-content
-        class="markdown-body content-inner"
-        [innerHTML]="post().content | safeHtml | async"
-      >
-      </mat-card-content>
+    @if (mode() !== 'admin') {
+      <div class="content-wrapper" [class.teaser-mode]="mode() === 'feed'">
+        <mat-card-content
+          class="markdown-body content-inner"
+          [innerHTML]="post().content | safeHtml | async"
+        >
+        </mat-card-content>
 
-      @if (mode() === 'feed' || mode() === 'profile') {
-        <div class="read-more-overlay">
-          <button mat-flat-button class="read-more-btn">Read more</button>
-        </div>
-      }
-    </div>
+        @if (mode() === 'feed' || mode() === 'profile') {
+          <div class="read-more-overlay">
+            <button mat-flat-button class="read-more-btn">Read more</button>
+          </div>
+        }
+      </div>
+    }
   </div>
 
   <mat-card-actions align="start">
@@ -136,6 +138,7 @@
       >
         <mat-icon>outlined_flag</mat-icon>
       </button>
+      <span>{{ post().reportsCount }}</span>
     }
   </mat-card-actions>
 
@@ -179,7 +182,7 @@
               </div>
             </div>
 
-            @if (comment.actor.id ===user().id) {
+            @if (comment.actor.id === user().id) {
               <div class="comment-actions">
                 <button
                   mat-menu-item
@@ -223,6 +226,16 @@
     <button mat-menu-item class="danger-item" (click)="confirmDelete()">
       <mat-icon color="warn">delete_outline</mat-icon>
       <span>Delete Post</span>
+    </button>
+  }
+
+  <!-- Toggle visibility -->
+  @if (isAdmin()) {
+    <button mat-menu-item>
+      <mat-icon>
+        {{ post().isFlagged ? 'visibility_off' : 'visibility' }}
+      </mat-icon>
+      <span>{{ post().isFlagged ? 'Unhide Post' : 'Hide Post' }}</span>
     </button>
   }
 </mat-menu>
