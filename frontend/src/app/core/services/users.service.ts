@@ -4,7 +4,7 @@ import { UsersClient } from '../apis/users/users.client';
 import { User } from '../../shared/models/user.model';
 import { FollowResponse, UpdateProfileRequest } from '../apis/users/users.model';
 import { PageRequest, PageResponse } from '../../shared/models/pagination.model';
-import { SignatureResponse } from '../apis/posts/post.model';
+import { Report, SignatureResponse } from '../apis/posts/post.model';
 
 @Injectable({
   providedIn: 'root',
@@ -28,6 +28,8 @@ export class UsersService {
     return this.client.follow(targetUserId);
   }
 
+
+
   unfollowUser(targetUserId: number): Observable<FollowResponse> {
     return this.client.unfollow(targetUserId);
   }
@@ -38,6 +40,20 @@ export class UsersService {
 
   getAllUsers(params?: PageRequest): Observable<PageResponse<User>> {
     return this.client.getAllUsers(params);
+  }
+
+  getAllReports(params?: PageRequest): Observable<PageResponse<Report>> {
+    return this.client.getAllReports(params);
+  }
+
+  
+  resolve(id: number): Observable<void> {
+    return this.client.resolve(id);
+  }
+
+    
+  deleteReport(id: number): Observable<void> {
+    return this.client.deleteReport(id);
   }
 
   banUser(userId: number): Observable<void> {

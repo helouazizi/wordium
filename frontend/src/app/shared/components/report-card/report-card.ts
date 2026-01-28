@@ -1,33 +1,32 @@
 import { Component, input, output, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MatCardModule } from '@angular/material/card';
+import { MatCard, MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
+import { MatIcon, MatIconModule } from '@angular/material/icon';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatTooltipModule } from '@angular/material/tooltip';
-
-export type ReportType = 'user' | 'post';
+import { UserAvatar } from '../user-avatar/user-avatar';
+import { Report } from '../../../core/apis/posts/post.model';
 
 @Component({
   selector: 'app-report-card',
   standalone: true,
-  imports: [CommonModule, MatCardModule, MatButtonModule, MatIconModule, MatChipsModule, MatTooltipModule],
   templateUrl: './report-card.html',
-  styleUrl: './report-card.scss'
+  styleUrl: './report-card.scss',
+  imports: [UserAvatar, MatIcon,MatCard],
 })
 export class ReportCard {
-  report = input.required<any>();
-  type = input.required<ReportType>();
+  report = input.required<Report>();
 
-  onResolve = output<any>();
-  onIgnore = output<any>();
-  onInspect = output<any>();
+  onResolve = output<number>();
+  onDelete = output<number>();
+  onViewTarget = output<Report>();
 
-  // Creative Logic: Determine severity color based on report count
-  severityClass = computed(() => {
-    const count = this.report().reportCount;
-    if (count > 10) return 'severity-high';
-    if (count > 5) return 'severity-medium';
-    return 'severity-low';
-  });
+  get isPostReport() {
+    return this.report().type === 'post';
+  }
+
+  get isUserReport() {
+    return this.report().type === 'user';
+  }
 }

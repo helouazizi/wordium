@@ -28,15 +28,7 @@
 
     <mat-tab label="Reports">
       <div class="grid-content">
-        <div class="reports-list">
-          <div *ngFor="let report of reports; trackBy: trackByReport" class="report-strip">
-            <app-report-card
-              [report]="report"
-              [type]="report.type"
-            >
-            </app-report-card>
-          </div>
-        </div>
+        <app-report-list></app-report-list>
       </div>
     </mat-tab>
   </mat-tab-group>

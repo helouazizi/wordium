@@ -1,0 +1,40 @@
+<div class="report-list">
+  @if (err()) {
+    <app-not-found [resource]="err()!" [linkText]="'Go Back'"></app-not-found>
+  } @else {
+    @if (initialLoading()) {
+      <div class="loading-state">
+        <mat-spinner diameter="40"></mat-spinner>
+        <p>Loading reports...</p>
+      </div>
+    }
+    @for (report of reports(); track report.id) {
+      <app-report-card
+        [report]="report"
+        (onResolve)="resolveReport(report.id)"
+        (onDelete)="deleteReport(report.id)"
+        (onViewTarget)="viewTarget(report)"
+      ></app-report-card>
+    }
+    @if (isEmpty()) {
+      <div class="empty-state">
+        <mat-icon>inbox</mat-icon>
+        <h3>No reports yet</h3>
+        <p>{{ emptyMessage() }}</p>
+      </div>
+    }
+    @if (pageLoading()) {
+      <div class="pagination-loader">
+        <mat-progress-spinner diameter="28" mode="indeterminate" />
+      </div>
+    }
+    @if (endReached()) {
+      <div class="end-state">
+        <mat-icon>person_outline</mat-icon>
+        <span>You've reached the end! No more reports to show.</span>
+      </div>
+    }
+
+    <div #scrollAnchor class="scroll-anchor"></div>
+  }
+</div>

@@ -37,7 +37,7 @@ export interface CreatePostRequest {
 }
 
 export type Reaction = 'like' | 'unlike';
-export type ReportType = 'post' | 'user';
+
 export interface Comment {
   id: number;
   postId: number;
@@ -51,4 +51,27 @@ export type MediaType = 'IMAGE' | 'VIDEO';
 export interface MediaRequest {
   publicId: string;
   type: MediaType;
+}
+
+
+
+
+
+export type ReportType = 'post' | 'user';
+
+export interface Report {
+  id: number;
+  type: ReportType;
+
+  reporter: User;
+
+  reportedPostId?: number;
+  reportedUserId?: number;
+
+  reason: string;
+
+  resolved: boolean;
+  resolvedAt?: string;
+
+  createdAt: string;
 }

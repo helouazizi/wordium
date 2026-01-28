@@ -5,7 +5,7 @@ import { FollowResponse, UpdateProfileRequest } from './users.model';
 import { API_CONFIG } from '../../config/apis.config';
 import { User } from '../../../shared/models/user.model';
 import { PageRequest, PageResponse } from '../../../shared/models/pagination.model';
-import { SignatureData, SignatureResponse } from '../posts/post.model';
+import { Report, SignatureData, SignatureResponse } from '../posts/post.model';
 
 @Injectable({
   providedIn: 'root',
@@ -58,6 +58,32 @@ export class UsersClient {
     }
 
     return this.http.get(`${this.config.usersBaseUrl}/admin/accounts`, { params: httpParams });
+  }
+
+  getAllReports(params?: PageRequest): Observable<PageResponse<Report>> {
+    let httpParams = new HttpParams();
+
+    if (params?.page !== undefined) {
+      httpParams = httpParams.set('page', params.page);
+    }
+    if (params?.size !== undefined) {
+      httpParams = httpParams.set('size', params.size);
+    }
+    if (params?.sort) {
+      httpParams = httpParams.set('sort', params.sort);
+    }
+
+    return this.http.get<PageResponse<Report>>(`${this.config.usersBaseUrl}/admin/reports`, {
+      params: httpParams,
+    });
+  }
+
+  resolve(id: number): Observable<void> {
+    return this.http.patch<void>(`${this.config.usersBaseUrl}/admin/reports/${id}/resolve`, null);
+  }
+
+  deleteReport(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.config.usersBaseUrl}/admin/reports/${id}`);
   }
 
   banUser(id: number): Observable<void> {
