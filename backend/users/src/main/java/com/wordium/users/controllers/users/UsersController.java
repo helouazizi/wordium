@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.wordium.users.dto.auth.SignUpRequest;
 import com.wordium.users.dto.auth.SignUpResponse;
+import com.wordium.users.dto.report.CreateUserReportRequest;
 import com.wordium.users.dto.users.BatchUsersRequest;
 import com.wordium.users.dto.users.UpdateProfileRequest;
 import com.wordium.users.dto.users.UserProfile;
@@ -44,7 +45,7 @@ public class UsersController {
     private final UsersService userService;
     private final CloudinaryService CloudinaryService;
 
-    public UsersController(UsersService userService,CloudinaryService CloudinaryService) {
+    public UsersController(UsersService userService, CloudinaryService CloudinaryService) {
         this.userService = userService;
         this.CloudinaryService = CloudinaryService;
     }
@@ -115,6 +116,17 @@ public class UsersController {
     public ResponseEntity<UsersSegnatureResponse> getUploadSignature() {
         var res = CloudinaryService.getSignature();
         return ResponseEntity.ok(new UsersSegnatureResponse(res));
+    }
+
+    @Operation(summary = "Report a user", description = "Report a user for inappropriate behavior.")
+    @PostMapping("/{userId}/reports")
+    public ResponseEntity<Void> reportUser(
+            @RequestHeader("User-Id") Long reporterId,
+            @PathVariable Long userId,
+            @RequestBody CreateUserReportRequest request) {
+
+        userService.reportUser(reporterId, userId, request);
+        return ResponseEntity.ok().build();
     }
 
 }

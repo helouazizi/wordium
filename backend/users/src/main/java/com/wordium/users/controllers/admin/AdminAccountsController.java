@@ -9,12 +9,15 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.wordium.users.dto.PaginatedResponse;
 import com.wordium.users.dto.PaginationRequest;
+import com.wordium.users.dto.users.CountResponse;
 import com.wordium.users.dto.users.RoleChangeRequest;
+import com.wordium.users.dto.users.UserProfile;
 import com.wordium.users.models.Users;
 import com.wordium.users.services.admin.impl.AdminAccountServiceImpl;
 
@@ -45,9 +48,10 @@ public class AdminAccountsController {
                         @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = ProblemDetail.class)))
         })
         @GetMapping
-        public ResponseEntity<PaginatedResponse<Users>> getAllAccounts(@Valid PaginationRequest paginationRequest) {
+        public ResponseEntity<PaginatedResponse<UserProfile>> getAllAccounts(@RequestHeader("User-Id") Long id,
+                        @Valid PaginationRequest paginationRequest) {
                 Pageable pageable = paginationRequest.toPageable();
-                Page<Users> accounts = adminAccountService.getAllAccounts(pageable);
+                Page<UserProfile> accounts = adminAccountService.getAllAccounts(id, pageable);
                 return ResponseEntity.ok(PaginatedResponse.fromPage(accounts));
         }
 
@@ -123,4 +127,11 @@ public class AdminAccountsController {
                 adminAccountService.deleteAccount(id);
                 return ResponseEntity.noContent().build();
         }
+
+        @GetMapping("/count")
+        public ResponseEntity<CountResponse> getTotalUsers() {
+                return ResponseEntity.ok(
+                                new CountResponse(adminAccountService.getTotalUsers()));
+        }
+
 }

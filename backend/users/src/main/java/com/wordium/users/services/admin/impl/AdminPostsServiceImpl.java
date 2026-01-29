@@ -1,6 +1,5 @@
 package com.wordium.users.services.admin.impl;
 
-
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -41,5 +40,10 @@ public class AdminPostsServiceImpl implements AdminPostsService {
     @Override
     public PostResponse unflagPost(Long id) {
         return postServiceClient.unflagPost(id);
+    }
+
+    @Override
+    public Long getTotalPostsReports() {
+        return postServiceClient.count();
     }
 }

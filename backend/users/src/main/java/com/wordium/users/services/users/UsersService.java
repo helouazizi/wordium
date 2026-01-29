@@ -10,14 +10,17 @@ import com.wordium.users.dto.Social;
 import com.wordium.users.dto.Stats;
 import com.wordium.users.dto.auth.SignUpRequest;
 import com.wordium.users.dto.auth.SignUpResponse;
+import com.wordium.users.dto.report.CreateUserReportRequest;
 import com.wordium.users.dto.users.BatchUsersRequest;
 import com.wordium.users.dto.users.UpdateProfileRequest;
 import com.wordium.users.dto.users.UserProfile;
 import com.wordium.users.exceptions.BadRequestException;
 import com.wordium.users.exceptions.ConflictException;
 import com.wordium.users.exceptions.NotFoundException;
+import com.wordium.users.models.UserReport;
 import com.wordium.users.models.Users;
 import com.wordium.users.repo.FollowersRepo;
+import com.wordium.users.repo.UserReportRepo;
 import com.wordium.users.repo.UsersRepo;
 import com.wordium.users.services.cloudinary.CloudinaryService;
 
@@ -27,11 +30,32 @@ public class UsersService {
     private final UsersRepo usersRepo;
     private final FollowersRepo followersRepo;
     private final CloudinaryService cloudinaryService;
+    private final UserReportRepo userReportRepo;
 
-    public UsersService(UsersRepo usersRepo, FollowersRepo followersRepo, CloudinaryService cloudinaryService) {
+    public UsersService(UsersRepo usersRepo, FollowersRepo followersRepo, CloudinaryService cloudinaryService,UserReportRepo userReportRepo) {
         this.usersRepo = usersRepo;
         this.followersRepo = followersRepo;
         this.cloudinaryService = cloudinaryService;
+        this.userReportRepo = userReportRepo;
+    }
+
+    public void reportUser(Long reporterId, Long reportedUserId, CreateUserReportRequest request) {
+        if (userReportRepo.existsByReportedBy_IdAndReportedUser_Id(reporterId, reportedUserId)) {
+            throw new IllegalStateException("You already reported this user");
+        }
+
+        Users reporter = usersRepo.findById(reporterId)
+                .orElseThrow(() -> new NotFoundException("Reporter not found"));
+
+        Users reported = usersRepo.findById(reportedUserId)
+                .orElseThrow(() -> new NotFoundException("User not found"));
+
+        UserReport report = new UserReport();
+        report.setReportedBy(reporter);
+        report.setReportedUser(reported);
+        report.setReason(request.reason());
+
+        userReportRepo.save(report);
     }
 
     public SignUpResponse createUser(SignUpRequest req) {
@@ -141,13 +165,13 @@ public class UsersService {
         if (req.location() != null) {
             user.setLocation(req.location());
         }
-        if (req.avatar() != null) {
+        if (req.avatarPublicId() != null) {
             this.cloudinaryService.finalizeUpload(req.avatarPublicId());
             user.setAvatar(req.avatar());
 
         }
 
-        if (req.cover() != null) {
+        if (req.coverPublicId() != null) {
             this.cloudinaryService.finalizeUpload(req.coverPublicId());
             user.setCover(req.cover());
         }

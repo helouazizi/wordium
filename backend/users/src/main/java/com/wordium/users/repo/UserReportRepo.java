@@ -1,0 +1,18 @@
+package com.wordium.users.repo;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import com.wordium.users.models.UserReport;
+
+public interface UserReportRepo extends JpaRepository<UserReport, Long> {
+
+    Page<UserReport> findAll(Pageable pageable);
+
+    Page<UserReport> findByReportedUser_Id(Long userId, Pageable pageable);
+
+    long countByReportedUser_Id(Long userId);
+
+    boolean existsByReportedBy_IdAndReportedUser_Id(Long reporterId, Long reportedUserId);
+}

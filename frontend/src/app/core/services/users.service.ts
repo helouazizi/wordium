@@ -28,8 +28,6 @@ export class UsersService {
     return this.client.follow(targetUserId);
   }
 
-
-
   unfollowUser(targetUserId: number): Observable<FollowResponse> {
     return this.client.unfollow(targetUserId);
   }
@@ -42,18 +40,30 @@ export class UsersService {
     return this.client.getAllUsers(params);
   }
 
-  getAllReports(params?: PageRequest): Observable<PageResponse<Report>> {
-    return this.client.getAllReports(params);
+  getPostReports(params?: PageRequest): Observable<PageResponse<Report>> {
+    return this.client.getPostReports(params);
   }
 
-  
-  resolve(id: number): Observable<void> {
-    return this.client.resolve(id);
+  getUserReports(params?: PageRequest): Observable<PageResponse<Report>> {
+    return this.client.getUserReports(params);
   }
 
-    
-  deleteReport(id: number): Observable<void> {
-    return this.client.deleteReport(id);
+  resolveUserReport(id: number): Observable<void> {
+    return this.client.resolveUserReport(id);
+  }
+
+  resolvePostReport(id: number): Observable<void> {
+    return this.client.resolvePostReport(id);
+  }
+
+ 
+
+  deletePostReport(id: number): Observable<void> {
+    return this.client.deletePostReport(id);
+  }
+
+  deleteUserReport(id: number): Observable<void> {
+    return this.client.deleteUserReport(id);
   }
 
   banUser(userId: number): Observable<void> {

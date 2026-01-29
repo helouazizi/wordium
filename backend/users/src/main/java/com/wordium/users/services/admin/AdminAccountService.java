@@ -4,10 +4,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import com.wordium.users.dto.Role;
+import com.wordium.users.dto.users.UserProfile;
 import com.wordium.users.models.Users;
 
 public interface AdminAccountService {
-    Page<Users> getAllAccounts(Pageable pageable);
+    Page<UserProfile> getAllAccounts(    Long viewerId,Pageable pageable);
     Users getAccountById(Long id);
     Users banAccount(Long id);
     Users unbanAccount(Long id);

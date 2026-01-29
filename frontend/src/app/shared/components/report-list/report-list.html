@@ -8,11 +8,11 @@
         <p>Loading reports...</p>
       </div>
     }
-    @for (report of reports(); track report.id) {
+    @for (report of reports(); track `${report.type}-${report.id}`) {
       <app-report-card
         [report]="report"
-        (onResolve)="resolveReport(report.id)"
-        (onDelete)="deleteReport(report.id)"
+        (onResolve)="resolveReport(report)"
+        (onDelete)="deleteReport(report)"
         (onViewTarget)="viewTarget(report)"
       ></app-report-card>
     }

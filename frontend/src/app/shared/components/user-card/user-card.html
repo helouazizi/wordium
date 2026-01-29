@@ -1,4 +1,19 @@
 <mat-card appearance="outlined" [class]="'user-card modern ' + mode()">
+  @if (isConfirmingDelete()) {
+    <div class="card-overlay confirm-delete" (click)="$event.stopPropagation()">
+      <div class="overlay-content">
+        <mat-icon color="warn">delete_forever</mat-icon>
+        <h3>Delete this user?</h3>
+        <p>This action cannot be undone.</p>
+        <div class="overlay-actions">
+          <button mat-button (click)="cancelDelete()">Cancel</button>
+          <button mat-flat-button color="warn" class="danger" (click)="executeDelete()">
+            Delete
+          </button>
+        </div>
+      </div>
+    </div>
+  }
   <div class="card-content">
     <div class="header-row">
       <div class="avatar-container">
@@ -63,7 +78,6 @@
         <button mat-stroked-button class="action-btn view-btn" (click)="viewProfile()">
           <span>View Profile</span>
         </button>
-
       } @else {
         <div class="admin-actions">
           @if (!user().isBanned) {
@@ -78,7 +92,7 @@
             </button>
           }
 
-          <button mat-icon-button color="warn" class="delete-btn" (click)="deleteUser()">
+          <button mat-icon-button color="warn" class="delete-btn" (click)="confirmDelete()">
             <mat-icon>delete_outline</mat-icon>
           </button>
         </div>

@@ -1,4 +1,4 @@
-import { Component, input, output } from '@angular/core';
+import { Component, input, output, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
@@ -26,7 +26,8 @@ export type UserCardMode = 'dashboard' | 'search';
   ],
   templateUrl: './user-card.html',
   styleUrl: './user-card.scss',
-})export class UserCard {
+})
+export class UserCard {
   user = input.required<User>();
   mode = input<UserCardMode>('dashboard');
 
@@ -36,6 +37,19 @@ export type UserCardMode = 'dashboard' | 'search';
   onFollow = output<number>();
   onViewProfile = output<number>();
 
+  isConfirmingDelete = signal(false);
+
+  confirmDelete() {
+    this.isConfirmingDelete.set(true);
+  }
+  cancelDelete() {
+    this.isConfirmingDelete.set(false);
+  }
+
+  executeDelete() {
+    this.onDelete.emit(this.user().id);
+    this.isConfirmingDelete.set(false);
+  }
   get avatarText(): string {
     return this.user().username ? this.user().username[0].toUpperCase() : '?';
   }
@@ -48,9 +62,7 @@ export type UserCardMode = 'dashboard' | 'search';
     if (this.user()?.id) this.onUnban.emit(this.user().id);
   }
 
-  deleteUser() {
-    if (this.user()?.id) this.onDelete.emit(this.user().id);
-  }
+
 
   follow() {
     if (this.user()?.id) this.onFollow.emit(this.user().id);

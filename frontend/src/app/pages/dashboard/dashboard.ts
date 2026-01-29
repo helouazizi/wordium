@@ -9,8 +9,6 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatDividerModule } from '@angular/material/divider';
-import { UserCard } from '../../shared/components/user-card/user-card';
-import { ReportCard } from '../../shared/components/report-card/report-card';
 import { UserList } from '../../shared/components/user-list/user-list';
 import { PostList } from '../../shared/components/post-list/post-list';
 import { ReportList } from '../../shared/components/report-list/report-list';
@@ -25,17 +23,6 @@ interface DashboardStat {
 
 
 
-
-interface DashboardReport {
-  id: string;
-  reason: string;
-  user: string;
-  post: string;
-  priority: 'High' | 'Medium' | 'Low';
-  status: 'Pending' | 'Resolved';
-  type : 'user' | 'post';
-  reporter: string
-}
 
 @Component({
   selector: 'app-dashboard-home',
@@ -63,14 +50,10 @@ export class Dashboard {
   stats: DashboardStat[] = [
     { id: 'users', label: 'Total Users', value: '2,840', icon: 'people', color: 'primary' },
     { id: 'posts', label: 'Total Posts', value: '1,452', icon: 'article', color: 'accent' },
-    { id: 'reports', label: 'Pending Reports', value: '18', icon: 'report_problem', color: 'warn' }
+    { id: 'reports', label: 'Total Reports', value: '18', icon: 'report_problem', color: 'warn' }
   ];
 
 
   protected readonly trackByStat: TrackByFunction<DashboardStat> = (_, stat) => stat.id;
-
-  protected readonly trackByReport: TrackByFunction<DashboardReport> = (_, report) => report.id;
-
-
 
 }

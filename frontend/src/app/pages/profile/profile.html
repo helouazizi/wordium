@@ -64,10 +64,6 @@
 
         <div class="stats-row">
           <div class="stat-pill" matRipple>
-            <span class="num">{{ targetUser()?.stats?.posts | number }}</span>
-            <span class="lab">Posts</span>
-          </div>
-          <div class="stat-pill" matRipple>
             <span class="num">{{ targetUser()?.stats?.followers | number }}</span>
             <span class="lab">Followers</span>
           </div>
@@ -163,6 +159,16 @@
         <mat-tab label="Posts">
           <div class="tab-body empty-state">
             <app-post-list [source]="'profile'"></app-post-list>
+          </div>
+        </mat-tab>
+        <mat-tab label="Followers">
+          <div class="tab-body empty-state">
+            <!-- <app-user-list [source]="'search'"></app-user-list> -->
+          </div>
+        </mat-tab>
+        <mat-tab label="Following">
+          <div class="tab-body empty-state">
+            <!-- <app-user-list [source]="'search'"></app-user-list> -->
           </div>
         </mat-tab>
       </mat-tab-group>

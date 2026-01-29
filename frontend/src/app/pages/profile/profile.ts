@@ -21,6 +21,7 @@ import { User } from '../../shared/models/user.model';
 import { PostList } from '../../shared/components/post-list/post-list';
 import { NotFound } from '../../shared/components/not-found/not-found';
 import { NotificationService } from '../../core/services/notification.service';
+import { UserList } from '../../shared/components/user-list/user-list';
 
 @Component({
   selector: 'app-profile',
@@ -38,6 +39,7 @@ import { NotificationService } from '../../core/services/notification.service';
     MatRippleModule,
     PostList,
     NotFound,
+    UserList
   ],
   templateUrl: './profile.html',
   styleUrls: ['./profile.scss'],

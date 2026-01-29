@@ -1,4 +1,4 @@
-import { Component, input, output, computed } from '@angular/core';
+import { Component, input, output, computed, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCard, MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
@@ -21,6 +21,20 @@ export class ReportCard {
   onResolve = output<number>();
   onDelete = output<number>();
   onViewTarget = output<Report>();
+
+    isConfirmingDelete = signal(false);
+
+  confirmDelete() {
+    this.isConfirmingDelete.set(true);
+  }
+  cancelDelete() {
+    this.isConfirmingDelete.set(false);
+  }
+
+  executeDelete() {
+    this.onDelete.emit(this.report().id);
+    this.isConfirmingDelete.set(false);
+  }
 
   get isPostReport() {
     return this.report().type === 'post';

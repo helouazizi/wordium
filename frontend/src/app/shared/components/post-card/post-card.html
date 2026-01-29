@@ -47,8 +47,6 @@
   @if (isReporting()) {
     <div class="card-overlay report-flow" (click)="$event.stopPropagation()">
       <div class="overlay-content">
-        <h3>Report Content</h3>
-
         @if (!reportingTarget()) {
           <p>What would you like to report?</p>
           <div class="target-selector">
@@ -57,6 +55,7 @@
                 {{ opt.label }}
               </button>
             }
+            <button mat-flat-button (click)="cancelReport()">Cancel</button>
           </div>
         } @else {
           <p>
@@ -68,15 +67,22 @@
               matInput
               [(ngModel)]="reportReason"
               placeholder="Describe the issue..."
+              rows="1"
             ></textarea>
           </mat-form-field>
           <div class="overlay-actions">
-            <button mat-button [disabled]="!reportReason().trim()" (click)="confirmReport()">
-              Submit Report
+            <button mat-flat-button (click)="cancelReport()">Cancel</button>
+
+            <button
+              mat-button
+              [disabled]="!reportReason().trim()"
+              class="danger"
+              (click)="confirmReport()"
+            >
+              Report
             </button>
           </div>
         }
-        <button mat-flat-button (click)="cancelReport()">Cancel</button>
       </div>
     </div>
   }
@@ -222,7 +228,7 @@
 </mat-card>
 
 <mat-menu #postMenu="matMenu" xPosition="before">
-  @if (!canDelete()) {
+  @if (!canDelete() || isAdmin()) {
     <button mat-menu-item (click)="isReporting.set(true)">
       <mat-icon>flag</mat-icon>
       <span>Report Post</span>

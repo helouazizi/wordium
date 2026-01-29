@@ -60,7 +60,7 @@ export class UsersClient {
     return this.http.get(`${this.config.usersBaseUrl}/admin/accounts`, { params: httpParams });
   }
 
-  getAllReports(params?: PageRequest): Observable<PageResponse<Report>> {
+  getPostReports(params?: PageRequest): Observable<PageResponse<Report>> {
     let httpParams = new HttpParams();
 
     if (params?.page !== undefined) {
@@ -73,17 +73,48 @@ export class UsersClient {
       httpParams = httpParams.set('sort', params.sort);
     }
 
-    return this.http.get<PageResponse<Report>>(`${this.config.usersBaseUrl}/admin/reports`, {
+    return this.http.get<PageResponse<Report>>(`${this.config.usersBaseUrl}/admin/reports/posts`, {
       params: httpParams,
     });
   }
 
-  resolve(id: number): Observable<void> {
-    return this.http.patch<void>(`${this.config.usersBaseUrl}/admin/reports/${id}/resolve`, null);
+  getUserReports(params?: PageRequest): Observable<PageResponse<Report>> {
+    let httpParams = new HttpParams();
+
+    if (params?.page !== undefined) {
+      httpParams = httpParams.set('page', params.page);
+    }
+    if (params?.size !== undefined) {
+      httpParams = httpParams.set('size', params.size);
+    }
+    if (params?.sort) {
+      httpParams = httpParams.set('sort', params.sort);
+    }
+
+    return this.http.get<PageResponse<Report>>(`${this.config.usersBaseUrl}/admin/reports/users`, {
+      params: httpParams,
+    });
   }
 
-  deleteReport(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.config.usersBaseUrl}/admin/reports/${id}`);
+  resolvePostReport(id: number): Observable<void> {
+    return this.http.patch<void>(
+      `${this.config.usersBaseUrl}/admin/reports/posts/${id}/resolve`,
+      null,
+    );
+  }
+  resolveUserReport(id: number): Observable<void> {
+    return this.http.patch<void>(
+      `${this.config.usersBaseUrl}/admin/reports/users/${id}/resolve`,
+      null,
+    );
+  }
+
+  deletePostReport(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.config.usersBaseUrl}/admin/reports/posts/${id}`);
+  }
+
+  deleteUserReport(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.config.usersBaseUrl}/admin/reports/users/${id}`);
   }
 
   banUser(id: number): Observable<void> {

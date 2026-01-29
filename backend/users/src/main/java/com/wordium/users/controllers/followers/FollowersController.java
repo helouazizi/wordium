@@ -1,7 +1,7 @@
 package com.wordium.users.controllers.followers;
 
-import java.util.List;
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.wordium.users.dto.PaginatedResponse;
+import com.wordium.users.dto.PaginationRequest;
 import com.wordium.users.dto.users.FollowResponse;
 import com.wordium.users.dto.users.UserProfile;
 import com.wordium.users.dto.users.UsersResponse;
@@ -23,6 +25,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+
 @Tag(name = "Followers - Management", description = "Followers endpoints")
 @RestController
 @RequestMapping("/users")
@@ -87,8 +91,23 @@ public class FollowersController {
             @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(implementation = ProblemDetail.class))),
     })
     @GetMapping("/{userId}/followers")
-    public ResponseEntity<List<UserProfile>> followers(
+    public ResponseEntity<PaginatedResponse<UserProfile>> followers(
+            @Valid PaginationRequest paginationRequest,
+            @RequestHeader("User-Id") Long id,
             @PathVariable Long userId) {
-        return ResponseEntity.ok(followersService.getFollowers(userId));
+        Pageable pageable = paginationRequest.toPageable();
+        Page<UserProfile> page = followersService.getFollowers(id, userId, pageable);
+
+        return ResponseEntity.ok(PaginatedResponse.fromPage(page));
+    }
+
+    @GetMapping("/{userId}/following")
+    public ResponseEntity<PaginatedResponse<UserProfile>> following(
+            @Valid PaginationRequest paginationRequest,
+            @RequestHeader("User-Id") Long id,
+            @PathVariable Long userId) {
+        Pageable pageable = paginationRequest.toPageable();
+        Page<UserProfile> page = followersService.getFollowing(id, userId, pageable);
+        return ResponseEntity.ok(PaginatedResponse.fromPage(page));
     }
 }

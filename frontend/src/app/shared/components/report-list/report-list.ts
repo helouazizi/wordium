@@ -18,10 +18,11 @@ import { NotFound } from '../not-found/not-found';
 import { MatIcon } from '@angular/material/icon';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { ReportCard } from '../report-card/report-card';
+import { forkJoin } from 'rxjs';
 
 @Component({
   selector: 'app-report-list',
-  imports: [NotFound,MatIcon,MatProgressSpinner,ReportCard],
+  imports: [NotFound, MatIcon, MatProgressSpinner, ReportCard],
   templateUrl: './report-list.html',
   styleUrl: './report-list.scss',
 })
@@ -86,63 +87,79 @@ export class ReportList implements OnInit, AfterViewInit {
       sort: 'createdAt,desc',
     };
 
-    this.userService.getAllReports(params).subscribe({
-      next: (res: PageResponse<Report>) => {
-        console.log(res.data, 'reports');
+    forkJoin({
+      posts: this.userService.getPostReports(params),
+      users: this.userService.getUserReports(params),
+    }).subscribe({
+      next: ({ posts, users }) => {
+        // merge both arrays
+        const merged = [...posts.data, ...users.data].sort(
+          (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+        );
 
         this.reports.update((existing) =>
           append
-            ? Array.from(new Map([...existing, ...res.data].map((p) => [p.id, p])).values())
-            : res.data,
+            ? Array.from(
+                new Map([...existing, ...merged].map((p) => [`${p.type}-${p.id}`, p])).values(),
+              )
+            : merged,
         );
 
-        this.isLastPage.set(res.isLast);
+        // determine isLastPage (if either posts or users page is last)
+        this.isLastPage.set(posts.isLast && users.isLast);
+
         this.initialLoading.set(false);
         this.pageLoading.set(false);
       },
-      error: () => {
-        this.initialLoading.set(false);
-        this.pageLoading.set(false);
-        this.notify.showError('Error loading reports');
-      },
-    });
-  }
-
-  resolveReport(id: number) {
-    this.userService.resolve(id).subscribe({
-      next: () => {
-        this.reports.update((list) =>
-          list.map((r) =>
-            r.id === id ? { ...r, resolved: true, resolvedAt: new Date().toISOString() } : r,
-          ),
-        );
-
-        this.notify.showSuccess('Report marked as resolved');
-      },
-      error: (err) => {
-        console.error('Resolve report failed', err);
-        this.notify.showError('Failed to resolve report');
-      },
-    });
-  }
-
-  deleteReport(id: number) {
-    this.userService.deleteReport(id).subscribe({
-      next: () => {
-        this.reports.update((list) => list.filter((r) => r.id !== id));
-        this.notify.showSuccess('Report deleted');
-      },
-      error: () => {
-        this.notify.showError('Failed to delete report');
-      },
+      error: () => this.handleError(),
     });
   }
 
   viewTarget(report: Report) {
-    if (report.type === 'post') {
-      this.router.navigate(['/posts/reports', report.reportedPostId]);
+    if (report.type === 'user' && report.reportedUserId != null) {
+      this.router.navigate(['/profiles', report.reportedUserId]);
     } else {
-      this.router.navigate(['/profiles/reports', report.reportedUserId]);
+      this.router.navigate(['/posts', report.reportedPostId]);
     }
+  }
+
+  private handleError() {
+    this.initialLoading.set(false);
+    this.pageLoading.set(false);
+    this.notify.showError('Error loading reports');
+  }
+
+  resolveReport(report: Report) {
+    const call =
+      report.type === 'user'
+        ? this.userService.resolveUserReport(report.id)
+        : this.userService.resolvePostReport(report.id);
+
+    call.subscribe({
+      next: () => {
+        this.reports.update((list) =>
+          list.map((r) =>
+            r.id === report.id ? { ...r, resolved: true, resolvedAt: new Date().toISOString() } : r,
+          ),
+        );
+        this.notify.showSuccess('Report resolved');
+      },
+      error: () => this.notify.showError('Failed to resolve report'),
+    });
+  }
+
+  deleteReport(report: Report) {
+    const call =
+      report.type === 'user'
+        ? this.userService.deleteUserReport(report.id)
+        : this.userService.deletePostReport(report.id);
+
+    call.subscribe({
+      next: () => {
+        this.reports.update((list) => list.filter((r) => r.id !== report.id));
+        this.notify.showSuccess('Report deleted');
+      },
+      error: () => this.notify.showError('Failed to delete report'),
+    });
   }
 }

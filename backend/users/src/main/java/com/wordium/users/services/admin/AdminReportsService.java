@@ -1,17 +1,31 @@
 package com.wordium.users.services.admin;
 
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import com.wordium.users.dto.PaginatedResponse;
 import com.wordium.users.dto.report.ReportPostResponse;
+import com.wordium.users.dto.report.UserReportResponse;
 
 public interface AdminReportsService {
 
-    PaginatedResponse<ReportPostResponse> getAllReports(Pageable page);
+    PaginatedResponse<ReportPostResponse> getAllPostReports(Pageable page);
 
-    ReportPostResponse getReportById(Long id);
+    ReportPostResponse getPostReportById(Long id);
 
-    ReportPostResponse resolveReport(Long id);
+    ReportPostResponse resolvePostReport(Long id);
 
-    void deleteReport(Long id);
+    void deletePostReport(Long id);
+
+    // void reportUser(Long reporterId, Long reportedUserId, CreateUserReportRequest request);
+
+    Page<UserReportResponse> getAllUserReports(Long viewerId,Pageable pageable);
+
+    UserReportResponse getUserReportById(Long id, Long viewerId);
+
+    void resolveUserReport(Long reportId, Long adminId);
+
+    Long getTotalUserReports();
+
+    void deleteUserReport(Long reportId);
 }
