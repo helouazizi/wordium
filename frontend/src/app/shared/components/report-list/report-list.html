@@ -14,6 +14,7 @@
         (onResolve)="resolveReport(report)"
         (onDelete)="deleteReport(report)"
         (onViewTarget)="viewTarget(report)"
+        (isHandset)="isHandset()"
       ></app-report-card>
     }
     @if (isEmpty()) {

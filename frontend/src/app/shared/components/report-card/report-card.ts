@@ -13,16 +13,18 @@ import { Report } from '../../../core/apis/posts/post.model';
   standalone: true,
   templateUrl: './report-card.html',
   styleUrl: './report-card.scss',
-  imports: [UserAvatar, MatIcon,MatCard],
+  imports: [UserAvatar, MatIcon, MatCard],
 })
 export class ReportCard {
   report = input.required<Report>();
+
+  isHandset = input<boolean>();
 
   onResolve = output<number>();
   onDelete = output<number>();
   onViewTarget = output<Report>();
 
-    isConfirmingDelete = signal(false);
+  isConfirmingDelete = signal(false);
 
   confirmDelete() {
     this.isConfirmingDelete.set(true);

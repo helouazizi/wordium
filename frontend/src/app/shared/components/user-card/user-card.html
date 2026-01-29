@@ -59,7 +59,25 @@
 
     <!-- Actions -->
     <div class="action-row">
-      @if (mode() === 'search') {
+      @if (mode() === 'dashboard') {
+        <div class="admin-actions">
+          @if (!user().isBanned) {
+            <button mat-stroked-button color="warn" class="action-btn ban-btn" (click)="ban()">
+              <mat-icon>block</mat-icon>
+              <span>Ban</span>
+            </button>
+          } @else {
+            <button mat-flat-button color="primary" class="action-btn unban-btn" (click)="unban()">
+              <mat-icon>restore_from_trash</mat-icon>
+              <span>Unban</span>
+            </button>
+          }
+
+          <button mat-icon-button color="warn" class="delete-btn" (click)="confirmDelete()">
+            <mat-icon>delete_outline</mat-icon>
+          </button>
+        </div>
+      } @else {
         <button
           mat-flat-button
           class="action-btn follow-btn"
@@ -78,24 +96,6 @@
         <button mat-stroked-button class="action-btn view-btn" (click)="viewProfile()">
           <span>View Profile</span>
         </button>
-      } @else {
-        <div class="admin-actions">
-          @if (!user().isBanned) {
-            <button mat-stroked-button color="warn" class="action-btn ban-btn" (click)="ban()">
-              <mat-icon>block</mat-icon>
-              <span>Ban</span>
-            </button>
-          } @else {
-            <button mat-flat-button color="primary" class="action-btn unban-btn" (click)="unban()">
-              <mat-icon>restore_from_trash</mat-icon>
-              <span>Unban</span>
-            </button>
-          }
-
-          <button mat-icon-button color="warn" class="delete-btn" (click)="confirmDelete()">
-            <mat-icon>delete_outline</mat-icon>
-          </button>
-        </div>
       }
     </div>
   </div>

@@ -2,7 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { Observable, switchMap, tap } from 'rxjs';
 import { UsersClient } from '../apis/users/users.client';
 import { User } from '../../shared/models/user.model';
-import { FollowResponse, UpdateProfileRequest } from '../apis/users/users.model';
+import { CountResponse, FollowResponse, UpdateProfileRequest } from '../apis/users/users.model';
 import { PageRequest, PageResponse } from '../../shared/models/pagination.model';
 import { Report, SignatureResponse } from '../apis/posts/post.model';
 
@@ -14,6 +14,14 @@ export class UsersService {
 
   getMyProfile(): Observable<User> {
     return this.client.getMe();
+  }
+
+  getUsersReportsCount(): Observable<CountResponse> {
+    return this.client.getUsersReportsCount();
+  }
+
+  getUsersCount(): Observable<CountResponse> {
+    return this.client.getUsersCount();
   }
 
   getUserProfile(userId: number): Observable<User> {
@@ -32,10 +40,13 @@ export class UsersService {
     return this.client.unfollow(targetUserId);
   }
 
-  getUserFollowers(userId: number): Observable<PageResponse<User>> {
-    return this.client.getFollowers(userId);
+  getUserFollowers(userId: number, params: PageRequest): Observable<PageResponse<User>> {
+    return this.client.getFollowers(userId, params);
   }
 
+  getUserFollowing(userId: number, params: PageRequest): Observable<PageResponse<User>> {
+    return this.client.getFollowing(userId, params);
+  }
   getAllUsers(params?: PageRequest): Observable<PageResponse<User>> {
     return this.client.getAllUsers(params);
   }
@@ -55,8 +66,6 @@ export class UsersService {
   resolvePostReport(id: number): Observable<void> {
     return this.client.resolvePostReport(id);
   }
-
- 
 
   deletePostReport(id: number): Observable<void> {
     return this.client.deletePostReport(id);

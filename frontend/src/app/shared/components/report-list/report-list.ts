@@ -19,6 +19,7 @@ import { MatIcon } from '@angular/material/icon';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { ReportCard } from '../report-card/report-card';
 import { forkJoin } from 'rxjs';
+import { DeviceService } from '../../../core/services/device.service';
 
 @Component({
   selector: 'app-report-list',
@@ -31,6 +32,8 @@ export class ReportList implements OnInit, AfterViewInit {
   private observer?: IntersectionObserver;
 
   private userService = inject(UsersService);
+
+  private device = inject(DeviceService);
   private auth = inject(AuthService);
   private notify = inject(NotificationService);
   private router = inject(Router);
@@ -38,7 +41,7 @@ export class ReportList implements OnInit, AfterViewInit {
 
   emptyMessage = input<string>('No reports found here yet.');
   user = this.auth.user();
-
+  isHandset = this.device.isHandset;
   currentPage = signal(0);
   isLastPage = signal(false);
 

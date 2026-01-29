@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { FollowResponse, UpdateProfileRequest } from './users.model';
+import { CountResponse, FollowResponse, UpdateProfileRequest } from './users.model';
 import { API_CONFIG } from '../../config/apis.config';
 import { User } from '../../../shared/models/user.model';
 import { PageRequest, PageResponse } from '../../../shared/models/pagination.model';
@@ -16,6 +16,14 @@ export class UsersClient {
 
   getMe(): Observable<User> {
     return this.http.get<User>(`${this.config.usersBaseUrl}/me`);
+  }
+
+  getUsersReportsCount(): Observable<CountResponse> {
+    return this.http.get<CountResponse>(`${this.config.usersBaseUrl}/admin/reports/count`);
+  }
+
+  getUsersCount(): Observable<CountResponse> {
+    return this.http.get<CountResponse>(`${this.config.usersBaseUrl}/admin/accounts/count`);
   }
 
   getUserById(targetId: number): Observable<User> {
@@ -39,8 +47,38 @@ export class UsersClient {
     return this.http.delete<FollowResponse>(`${this.config.usersBaseUrl}/${targetUserId}/unfollow`);
   }
 
-  getFollowers(userId: number): Observable<PageResponse<User>> {
-    return this.http.get<PageResponse<User>>(`${this.config.usersBaseUrl}/${userId}/followers`);
+  getFollowers(userId: number, params: PageRequest): Observable<PageResponse<User>> {
+    let httpParams = new HttpParams();
+
+    if (params?.page !== undefined) {
+      httpParams = httpParams.set('page', params.page);
+    }
+    if (params?.size !== undefined) {
+      httpParams = httpParams.set('size', params.size);
+    }
+    if (params?.sort) {
+      httpParams = httpParams.set('sort', params.sort);
+    }
+    return this.http.get<PageResponse<User>>(`${this.config.usersBaseUrl}/${userId}/followers`, {
+      params: httpParams,
+    });
+  }
+
+  getFollowing(userId: number, params: PageRequest): Observable<PageResponse<User>> {
+    let httpParams = new HttpParams();
+
+    if (params?.page !== undefined) {
+      httpParams = httpParams.set('page', params.page);
+    }
+    if (params?.size !== undefined) {
+      httpParams = httpParams.set('size', params.size);
+    }
+    if (params?.sort) {
+      httpParams = httpParams.set('sort', params.sort);
+    }
+    return this.http.get<PageResponse<User>>(`${this.config.usersBaseUrl}/${userId}/following`, {
+      params: httpParams,
+    });
   }
 
   // ---------- admin ----------

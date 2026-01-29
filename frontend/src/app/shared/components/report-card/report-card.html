@@ -31,7 +31,9 @@
       <mat-icon>
         {{ report().resolved ? 'check_circle' : 'hourglass_top' }}
       </mat-icon>
-      {{ report().resolved ? 'Resolved' : 'Pending' }}
+      @if (!isHandset()) {
+        {{ report().resolved ? 'Resolved' : 'Pending' }}
+      }
     </span>
   </div>
 

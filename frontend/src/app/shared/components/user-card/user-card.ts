@@ -8,8 +8,8 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { UserAvatar } from '../user-avatar/user-avatar';
 import { User } from '../../models/user.model';
+import { UserListSource } from '../user-list/user-list';
 
-export type UserCardMode = 'dashboard' | 'search';
 
 @Component({
   selector: 'app-user-card',
@@ -29,7 +29,7 @@ export type UserCardMode = 'dashboard' | 'search';
 })
 export class UserCard {
   user = input.required<User>();
-  mode = input<UserCardMode>('dashboard');
+  mode = input<UserListSource>('dashboard');
 
   onBan = output<number>();
   onUnban = output<number>();

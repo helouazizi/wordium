@@ -2,6 +2,9 @@ export interface FollowResponse {
   message: string;
 }
 
+export interface CountResponse {
+  total: number;
+}
 export interface UpdateProfileRequest {
   displayName?: string;
   bio?: string;

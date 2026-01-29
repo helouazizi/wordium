@@ -18,7 +18,8 @@ import { UserCard } from '../user-card/user-card';
 import { MatProgressSpinner, MatSpinner } from '@angular/material/progress-spinner';
 import { MatIcon } from '@angular/material/icon';
 import { NotFound } from '../not-found/not-found';
-export type UserListSource = 'dashboard' | 'search';
+import { distinctUntilChanged, filter, map, Observable, switchMap } from 'rxjs';
+export type UserListSource = 'dashboard' | 'search' | 'followers' | 'following';
 @Component({
   selector: 'app-user-list',
   imports: [UserCard, MatProgressSpinner, MatSpinner, MatIcon, NotFound],
@@ -91,8 +92,9 @@ export class UserList implements OnInit, AfterViewInit {
       size: 10,
       sort: 'createdAt,desc',
     };
+    let result$ = this.resolveApiCall(params);
 
-    this.userService.getAllUsers(params).subscribe({
+    result$.subscribe({
       next: (res: PageResponse<User>) => {
         console.log(res.data, 'users');
 
@@ -112,6 +114,25 @@ export class UserList implements OnInit, AfterViewInit {
         this.notify.showError('Error loading users');
       },
     });
+  }
+
+  private resolveApiCall(params: PageRequest): Observable<PageResponse<User>> {
+    switch (this.source()) {
+      case 'following':
+        return this.userId$.pipe(
+          filter((id): id is number => id !== null),
+          switchMap((id) => this.userService.getUserFollowing(id, params)),
+        );
+
+      case 'followers':
+        return this.userId$.pipe(
+          filter((id): id is number => id !== null),
+          switchMap((id) => this.userService.getUserFollowers(id, params)),
+        );
+
+      default:
+        return this.userService.getAllUsers(params);
+    }
   }
 
   deleteUser(id: number) {
@@ -155,7 +176,7 @@ export class UserList implements OnInit, AfterViewInit {
   }
   togleFollow(id: number) {
     const target = this.users().find((u) => u.id === id);
-    if (!target|| !this.user  || this.user.id === id) return;
+    if (!target || !this.user || this.user.id === id) return;
 
     const wasFollowing = target.isFollowing ?? false;
 
@@ -184,7 +205,7 @@ export class UserList implements OnInit, AfterViewInit {
               posts: u.stats?.posts ?? 0,
               bookmarks: u.stats?.bookmarks ?? 0,
             },
-          } as User; 
+          } as User;
         }
         return u;
       }),
@@ -208,4 +229,13 @@ export class UserList implements OnInit, AfterViewInit {
       },
     });
   }
+
+  private userId$ = this.route.paramMap.pipe(
+    map((pm) => {
+      const idParam = pm.get('id');
+      const id = Number(idParam);
+      return idParam && !isNaN(id) ? id : null;
+    }),
+    distinctUntilChanged(),
+  );
 }
