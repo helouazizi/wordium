@@ -46,4 +46,8 @@ public interface PostRepository extends JpaRepository<Post, Long>, JpaSpecificat
     @Query("UPDATE Post p SET p.reportCount = p.reportCount + 1, p.reported = true WHERE p.id = :postId")
     void incrementReportCount(Long postId);
 
+    List<Post> findAllByUserId(Long userId);
+
+    void deleteAllByUserId(Long userId);
+
 }

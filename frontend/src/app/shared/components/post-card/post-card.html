@@ -228,16 +228,17 @@
 </mat-card>
 
 <mat-menu #postMenu="matMenu" xPosition="before">
-  @if (!canDelete() || isAdmin()) {
+  @if (!canDelete() || (isAdmin() && !isOwn())) {
     <button mat-menu-item (click)="isReporting.set(true)">
       <mat-icon>flag</mat-icon>
       <span>Report Post</span>
     </button>
   }
-  @if (canDelete()) {
-    <button mat-menu-item class="danger-item" (click)="confirmDelete()">
-      <mat-icon color="warn">delete_outline</mat-icon>
-      <span>Delete Post</span>
+
+  @if (isOwn()) {
+    <button mat-menu-item (click)="handleUpdate()">
+      <mat-icon>edit</mat-icon>
+      <span>Edit Post</span>
     </button>
   }
 
@@ -247,6 +248,13 @@
         {{ post().isFlagged ? 'visibility_off' : 'visibility' }}
       </mat-icon>
       <span>{{ post().isFlagged ? 'Unhide Post' : 'Hide Post' }}</span>
+    </button>
+  }
+
+  @if (canDelete()) {
+    <button mat-menu-item class="danger-item" (click)="confirmDelete()">
+      <mat-icon color="warn">delete_outline</mat-icon>
+      <span>Delete Post</span>
     </button>
   }
 </mat-menu>

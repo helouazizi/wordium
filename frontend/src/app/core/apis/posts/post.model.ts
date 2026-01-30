@@ -31,6 +31,7 @@ export interface SignatureResponse {
 }
 
 export interface CreatePostRequest {
+  id?: number;
   title: string;
   content: String;
   media?: MediaRequest[];
@@ -52,10 +53,6 @@ export interface MediaRequest {
   publicId: string;
   type: MediaType;
 }
-
-
-
-
 
 export type ReportType = 'post' | 'user';
 

@@ -110,17 +110,15 @@
   border-radius: 8px;
 
   p {
-    margin: 0;
+    margin: 1px;
     font-size: 14px;
+    word-break: break-all;
   }
+
 }
 
 .actions {
   display: flex;
   gap: 8px;
   justify-content: flex-end;
-
-  // button{
-
-  // }
 }

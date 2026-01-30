@@ -5,6 +5,7 @@ import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -55,6 +56,14 @@ public class PublicPostController {
                         @RequestHeader("User-Id") Long userId,
                         @RequestBody @Valid PostRequest request) {
                 PostResponse post = postService.createPost(userId, request);
+                return ResponseEntity.status(201).body(post);
+        }
+
+        @PatchMapping()
+        public ResponseEntity<PostResponse> updatePost(
+                        @RequestHeader("User-Id") Long userId,
+                        @RequestBody @Valid PostRequest request) {
+                PostResponse post = postService.updatePost(userId, request);
                 return ResponseEntity.status(201).body(post);
         }
 

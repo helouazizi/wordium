@@ -15,11 +15,11 @@ public interface PostService {
     // posts
     PostResponse createPost(Long userId, PostRequest request);
 
-    PostResponse getPostById(Long userId,Long id);
+    PostResponse getPostById(Long userId, Long id);
 
     Page<PostResponse> getFeed(Pageable pageable, Long userId);
 
-    Page<PostResponse> getAllposts(Long userId,Pageable pageable);
+    Page<PostResponse> getAllposts(Long userId, Pageable pageable);
 
     Page<PostResponse> getPostsByUser(Long userId, Pageable pageable);
 
@@ -39,6 +39,8 @@ public interface PostService {
 
     Page<CommentResponse> getPostComments(Long postId, Pageable pageable);
 
-    void deleteComment(Long userId, String role,Long id, Long commentId);
+    void deleteComment(Long userId, String role, Long id, Long commentId);
+
+    void handleUserDeleted(Long userId);
 
 }

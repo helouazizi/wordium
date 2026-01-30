@@ -2,6 +2,7 @@ package com.wordium.posts.controllers;
 
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -30,18 +31,21 @@ public class ReportsInternalController {
 
     @GetMapping
     public ResponseEntity<PaginatedResponse<ReportPostResponse>> getReports(
-            @Valid PaginationRequest paginationRequest
-    ) {
+            @Valid PaginationRequest paginationRequest) {
         Pageable pageable = paginationRequest.toPageable();
         var page = reportService.getReports(pageable);
         return ResponseEntity.ok(PaginatedResponse.fromPage(page));
     }
 
+    @GetMapping("/count")
+    public ResponseEntity<Long> reportsCount() {
+        return ResponseEntity.ok(reportService.reportsCount());
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<ReportPostResponse> getReport(
-            @PathVariable Long id
-    ) {
-         ReportPostResponse report = reportService.getReport( id);
+            @PathVariable Long id) {
+        ReportPostResponse report = reportService.getReport(id);
         return ResponseEntity.ok(report);
     }
 
@@ -53,9 +57,16 @@ public class ReportsInternalController {
     @PatchMapping("/{id}/resolve")
     public ResponseEntity<Void> resolveReport(
             @RequestHeader("User-Id") Long userId,
-            @PathVariable Long id
-    ) {
+            @PathVariable Long id) {
         reportService.resolveReport(userId, id);
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteReport(
+            @RequestHeader("User-Id") Long userId,
+            @PathVariable Long id) {
+        reportService.deleteReport(id);
         return ResponseEntity.ok().build();
     }
 }

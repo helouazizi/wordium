@@ -1,4 +1,8 @@
-<div class="post-list"  [class.feed]="source() === 'feed'" [class.grid-layout]="source() === 'profile' || source() === 'admin'" >
+<div
+  class="post-list"
+  [class.feed]="source() === 'feed'"
+  [class.grid-layout]="source() === 'profile' || source() === 'admin'"
+>
   @if (err()) {
     <app-not-found [resource]="err()!" [linkText]="'Go Back'"></app-not-found>
   } @else {
@@ -13,6 +17,7 @@
         [user]="user!"
         [post]="post"
         (onReact)="reactToPost(post.id)"
+        (onUpdate)="handleUpdatePost(post)"
         (onComment)="addComment(post.id, $event)"
         (onDelete)="deletePost(post.id)"
         (onReport)="reportPost(post.id, $event.type, $event.reason)"
@@ -22,7 +27,7 @@
         [commentsLoading]="commentsLoading()"
         [commentsLastPage]="commentsLastPage()"
         (onLoadMoreComments)="loadMoreComments()"
-        (onDeleteComment)="deleteComment(post.id,$event)"
+        (onDeleteComment)="deleteComment(post.id, $event)"
       />
     }
     @if (isEmpty()) {

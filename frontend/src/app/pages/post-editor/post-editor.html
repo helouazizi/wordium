@@ -22,25 +22,55 @@
 
       <mat-divider vertical></mat-divider>
 
-      <button mat-icon-button (click)="insertFormat('bold')" matTooltip="Bold">
+      <button
+        [disabled]="viewMode() !== 'edit'"
+        mat-icon-button
+        (click)="insertFormat('bold')"
+        matTooltip="Bold"
+      >
         <mat-icon>format_bold</mat-icon>
       </button>
-      <button mat-icon-button (click)="insertFormat('italic')" matTooltip="Italic">
+      <button
+        mat-icon-button
+        [disabled]="viewMode() !== 'edit'"
+        (click)="insertFormat('italic')"
+        matTooltip="Italic"
+      >
         <mat-icon>format_italic</mat-icon>
       </button>
-      <button mat-icon-button (click)="insertFormat('link')" matTooltip="Link">
+      <button
+        mat-icon-button
+        [disabled]="viewMode() !== 'edit'"
+        (click)="insertFormat('link')"
+        matTooltip="Link"
+      >
         <mat-icon>insert_link</mat-icon>
       </button>
 
       <mat-divider vertical></mat-divider>
 
-      <button mat-icon-button (click)="insertFormat('list')" matTooltip="Bullet list">
+      <button
+        mat-icon-button
+        [disabled]="viewMode() !== 'edit'"
+        (click)="insertFormat('list')"
+        matTooltip="Bullet list"
+      >
         <mat-icon>format_list_bulleted</mat-icon>
       </button>
-      <button mat-icon-button (click)="insertFormat('quote')" matTooltip="Quote">
+      <button
+        mat-icon-button
+        [disabled]="viewMode() !== 'edit'"
+        (click)="insertFormat('quote')"
+        matTooltip="Quote"
+      >
         <mat-icon>format_quote</mat-icon>
       </button>
-      <button mat-icon-button (click)="insertFormat('code')" matTooltip="Code block">
+      <button
+        mat-icon-button
+        [disabled]="viewMode() !== 'edit'"
+        (click)="insertFormat('code')"
+        matTooltip="Code block"
+      >
         <mat-icon>code</mat-icon>
       </button>
 
@@ -56,6 +86,7 @@
           mat-icon-button
           color="accent"
           (click)="fileInput.click()"
+          [disabled]="viewMode() !== 'edit'"
           [disabled]="isUploading()"
           matTooltip="Upload image or video"
         >

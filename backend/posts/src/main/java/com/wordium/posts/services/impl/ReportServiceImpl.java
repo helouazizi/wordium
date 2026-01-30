@@ -52,7 +52,8 @@ public class ReportServiceImpl implements ReportService {
 
         postRepository.incrementReportCount(posId);
 
-        return mapToResponse(data, new UserProfile(userId, null, null, "null", null, "null", null,null,null,null,null,null,null,null,null,null,null,null));
+        return mapToResponse(data, new UserProfile(userId, null, null, "null", null, "null", null, null, null, null,
+                null, null, null, null, null, null, null, null));
     }
 
     private ReportPostResponse mapToResponse(Report report, UserProfile reporterProfile) {
@@ -72,6 +73,12 @@ public class ReportServiceImpl implements ReportService {
     }
 
     @Override
+    public void deleteReport(Long id) {
+        Report report = reportRepository.findById(id).orElseThrow(() -> new NotFoundException("Report Not Found"));
+        reportRepository.delete(report);
+    }
+
+    @Override
     public ReportPostResponse resolveReport(Long userId, Long reportId) {
         Report report = reportRepository.findById(reportId)
                 .orElseThrow(() -> new NotFoundException("Report not found"));
@@ -79,7 +86,8 @@ public class ReportServiceImpl implements ReportService {
         report.setResolved(true);
         reportRepository.save(report);
 
-        return mapToResponse(report, new UserProfile(userId, null, null, "null", null, "null", null,null,null,null,null,null,null,null,null,null,null,null));
+        return mapToResponse(report, new UserProfile(userId, null, null, "null", null, "null", null, null, null, null,
+                null, null, null, null, null, null, null, null));
     }
 
     @Override
@@ -98,6 +106,11 @@ public class ReportServiceImpl implements ReportService {
                 page,
                 Report::getReporterId,
                 this::mapToResponse);
+    }
+
+    @Override
+    public Long reportsCount() {
+        return reportRepository.count();
     }
 
 }

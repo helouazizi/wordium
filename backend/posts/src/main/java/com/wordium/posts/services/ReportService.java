@@ -14,7 +14,11 @@ public interface ReportService {
 
     ReportPostResponse getReport(Long id);
 
+    void deleteReport(Long id);
+
     long countUnresolvedReports();
+
+    Long reportsCount();
 
     ReportPostResponse resolveReport(Long reportId, Long resolverId);
 

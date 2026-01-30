@@ -3,7 +3,6 @@ import {
   input,
   output,
   signal,
-  effect,
   computed,
   inject,
   EventEmitter,
@@ -56,6 +55,7 @@ export class PostCard {
   mode = input<PostListSource>('feed');
 
   onReact = output<number>();
+  onUpdate = output<Post>();
   onBookmark = output<number>();
   onDelete = output<number>();
   onVisible = output<number>();
@@ -124,10 +124,21 @@ export class PostCard {
     return user.role === 'ADMIN';
   });
 
+  readonly isOwn = computed(() => {
+    const user = this.user();
+    const post = this.post();
+    if (!user || !post) return false;
+    return String(post.actor.id) === String(user.id);
+  });
+
   handleReact(id: number) {
     this.onReact.emit(id);
   }
-  
+
+  handleUpdate() {
+    this.onUpdate.emit(this.post());
+  }
+
   handleVisibility() {
     this.onVisible.emit(this.post().id);
   }

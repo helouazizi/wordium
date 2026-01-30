@@ -134,6 +134,10 @@ export class PostsClient {
   createPost(post: CreatePostRequest): Observable<Post> {
     return this.http.post<Post>(`${this.config.postsBaseUrl}`, post);
   }
+  updatePost(post: CreatePostRequest): Observable<Post> {
+    return this.http.patch<Post>(`${this.config.postsBaseUrl}`, post);
+  }
+
   getPostById(id: number): Observable<Post> {
     return this.http.get<Post>(`${this.config.postsBaseUrl}/${id}`);
   }

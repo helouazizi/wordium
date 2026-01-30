@@ -18,7 +18,19 @@ spring:
     default-property-inclusion: non_null
   cache:
     type: redis
+  kafka:
+    bootstrap-servers: ${KAFKA_HOST}:${KAFKA_PORT}
+    consumer:
+      group-id: ws-gateway
+      auto-offset-reset: earliest
+      enable-auto-commit: true
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
 
+      properties:
+        spring.json.use.type.headers: false
+        spring.json.value.default.type: com.wordium.posts.dto.NotificationEvent
+        spring.json.trusted.packages: "*"
   data:
     redis:
       host: ${REDIS_HOST:redis}

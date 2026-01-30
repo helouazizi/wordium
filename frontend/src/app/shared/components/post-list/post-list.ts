@@ -269,6 +269,12 @@ export class PostList implements OnInit, AfterViewInit {
     });
   }
 
+  handleUpdatePost(post: Post) {
+    this.router.navigate(['write'], {
+      state: { post },
+    });
+  }
+
   reportPost(id: number, type: ReportType, reason: string) {
     if (type === 'post') {
       this.updatePost(id, (p) => ({

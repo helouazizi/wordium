@@ -20,4 +20,7 @@ public interface ReactionRepository extends JpaRepository<PostReaction, Long> {
      @Query("SELECT r.postId FROM PostReaction r WHERE r.userId = :userId AND r.postId IN :postIds")
      Set<Long> findLikedPostIdsByUserIdAndPostIdIn(@Param("userId") Long userId,
                @Param("postIds") Collection<Long> postIds);
+
+     void deleteAllByUserId(Long userId);
+
 }

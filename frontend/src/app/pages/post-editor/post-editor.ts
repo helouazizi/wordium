@@ -13,8 +13,10 @@ import { PostService } from '../../core/services/post.service';
 import { NotificationService } from '../../core/services/notification.service';
 import { MatSpinner } from '@angular/material/progress-spinner';
 import { SafeHtmlPipe } from '../../shared/pipes/safe-html.pipe';
-import { MediaRequest, MediaType } from '../../core/apis/posts/post.model';
-
+import { MediaRequest, MediaType, Post } from '../../core/apis/posts/post.model';
+import { Router } from '@angular/router';
+const MAX_IMAGE_SIZE = 5 * 1024 * 1024; // 5MB
+const MAX_VIDEO_SIZE = 50 * 1024 * 1024; // 50MB
 @Component({
   selector: 'app-post-editor',
   standalone: true,
@@ -38,8 +40,12 @@ import { MediaRequest, MediaType } from '../../core/apis/posts/post.model';
 export class PostEditor {
   private postService = inject(PostService);
   private notify = inject(NotificationService);
+  private router = inject(Router);
+  post!: Post;
 
   @ViewChild('editorTextarea') textarea!: ElementRef<HTMLTextAreaElement>;
+
+  isEditMode = signal(false);
 
   title = signal('');
   content = signal('');
@@ -48,10 +54,36 @@ export class PostEditor {
   isSubmitting = signal(false);
   media: MediaRequest[] = [];
 
+  constructor() {
+    const nav = this.router.getCurrentNavigation();
+    this.post = nav?.extras.state?.['post'];
+    if (this.post != null) {
+      this.isEditMode.set(true);
+      this.title.set(this.post.title);
+      this.content.set(this.post.content);
+    }
+  }
+
   onMediaUpload(event: Event) {
     const file = (event.target as HTMLInputElement).files?.[0];
     if (!file) return;
+    const isImage = file.type.startsWith('image/');
+    const isVideo = file.type.startsWith('video/');
 
+    if (!isImage && !isVideo) {
+      this.notify.showError('Only images and videos are allowed');
+      return;
+    }
+
+    if (isImage && file.size > MAX_IMAGE_SIZE) {
+      this.notify.showError('Image size must be less than 5MB');
+      return;
+    }
+
+    if (isVideo && file.size > MAX_VIDEO_SIZE) {
+      this.notify.showError('Video size must be less than 50MB');
+      return;
+    }
     this.isUploading.set(true);
 
     this.postService.uploadImage(file).subscribe({
@@ -122,24 +154,31 @@ export class PostEditor {
 
     const filteredMedia = this.media.filter((m) => usedPublicIds.has(m.publicId));
 
-    this.isSubmitting.set(true);    
+    this.isSubmitting.set(true);
 
-    this.postService
-      .createPost({
-        title: this.title(),
-        content: this.content(),
-        media: filteredMedia,
-      })
-      .subscribe({
-        next: () => {
-          this.notify.showSuccess('Post published successfully!');
-          this.title.set('');
-          this.content.set('');
-          this.media = [];
-          this.isSubmitting.set(false);
-        },
-        error: () => this.isSubmitting.set(false),
-      });
+    const request$ = this.isEditMode()
+      ? this.postService.updatePost({
+          id: this.post.id,
+          title: this.title(),
+          content: this.content(),
+          media: filteredMedia,
+        })
+      : this.postService.createPost({
+          title: this.title(),
+          content: this.content(),
+          media: filteredMedia,
+        });
+
+    request$.subscribe({
+      next: () => {
+        this.notify.showSuccess('Post published successfully!');
+        this.title.set('');
+        this.content.set('');
+        this.media = [];
+        this.isSubmitting.set(false);
+      },
+      error: () => this.isSubmitting.set(false),
+    });
   }
 
   cancel() {

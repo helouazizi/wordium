@@ -38,6 +38,10 @@ export class PostService {
   createPost(post: CreatePostRequest): Observable<Post> {
     return this.client.createPost(post);
   }
+  updatePost(post: CreatePostRequest): Observable<Post> {
+    return this.client.updatePost(post);
+  }
+
   getPostById(id: number): Observable<Post> {
     return this.client.getPostById(id);
   }

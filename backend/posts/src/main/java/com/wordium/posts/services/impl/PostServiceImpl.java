@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.wordium.posts.dto.CommentRequest;
 import com.wordium.posts.dto.CommentResponse;
+import com.wordium.posts.dto.NotificationEvent;
 import com.wordium.posts.dto.PostReactionRequest;
 import com.wordium.posts.dto.PostRequest;
 import com.wordium.posts.dto.PostResponse;
@@ -47,6 +48,22 @@ public class PostServiceImpl implements PostService {
         this.cloudinaryService = cloudinaryService;
     }
 
+    @Transactional
+    @Override
+    public void handleUserDeleted(Long userId) {
+
+        System.out.println("User deleted event received for userId=" + userId);
+
+        reactionRepository.deleteAllByUserId(userId);
+
+        commentRepository.deleteAllByUserId(userId);
+
+        postRepository.deleteAllByUserId(userId);
+
+        System.out.println("All data deleted for userId=" + userId);
+
+    }
+
     @Override
     public PostResponse createPost(Long userId, PostRequest request) {
 
@@ -54,6 +71,33 @@ public class PostServiceImpl implements PostService {
         post.setUserId(userId);
         post.setTitle(request.title());
         post.setContent(request.content());
+
+        Post saved = postRepository.save(post);
+
+        if (request.media() != null) {
+            for (var media : request.media()) {
+                this.cloudinaryService.finalizeUpload(media);
+            }
+        }
+
+        return mapToResponse(saved, new UserProfile(userId, null, null, "null", null, "null", null, null, null, null,
+                null, null, null, null, null, null, null, null), false);
+    }
+
+    public PostResponse updatePost(Long userId, PostRequest request) {
+        Post post = postRepository.findById(request.id()).orElseThrow(() -> new NotFoundException("Post Not Found"));
+
+        if (!post.getUserId().equals(userId)) {
+            throw new AccessDeniedException("You cannot update this post");
+        }
+
+        if (request.title() != null) {
+            post.setTitle(request.title());
+        }
+
+        if (request.content() != null) {
+            post.setContent(request.content());
+        }
 
         Post saved = postRepository.save(post);
 
@@ -83,6 +127,10 @@ public class PostServiceImpl implements PostService {
     public Page<PostResponse> getFeed(Pageable pageable, Long userId) {
         Page<Post> page = postRepository.findByFlaggedFalse(pageable);
         return enrichWithLikes(page, userId);
+    }
+
+    public Long postsCount() {
+        return postRepository.count();
     }
 
     @Override

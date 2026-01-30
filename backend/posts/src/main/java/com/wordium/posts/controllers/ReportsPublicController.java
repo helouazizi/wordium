@@ -21,48 +21,31 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
-@Tag(
-        name = "Reports",
-        description = "Public endpoints for reporting posts"
-)
+@Tag(name = "Reports", description = "Public endpoints for reporting posts")
 @RestController
 @RequestMapping("posts/{id}/reports")
 public class ReportsPublicController {
 
-    private final ReportService reportService;
+        private final ReportService reportService;
 
-    public ReportsPublicController(ReportService reportService) {
-        this.reportService = reportService;
-    }
+        public ReportsPublicController(ReportService reportService) {
+                this.reportService = reportService;
+        }
 
-    @Operation(
-            summary = "Create a report",
-            description = "Allows a  to report a post or another . Duplicate reports with the same reason are not allowed."
-    )
-    @ApiResponses({
-        @ApiResponse(
-                responseCode = "200",
-                description = "Report created successfully",
-                content = @Content(schema = @Schema(implementation = ReportPostResponse.class))
-        ),
-        @ApiResponse(
-                responseCode = "400",
-                description = "Invalid request or duplicate report",
-                content = @Content(schema = @Schema(implementation = ProblemDetail.class))
-        ),
-        @ApiResponse(
-                responseCode = "401",
-                description = "Unauthorized",
-                content = @Content(schema = @Schema(implementation = ProblemDetail.class))
-        )
-    })
-    @PostMapping
-    public ResponseEntity<Void> createReport(
-            @RequestHeader("User-Id") Long userId,
-            @PathVariable Long id,
-            @Valid @RequestBody ReportRequest request
-    ) {
-        reportService.createReport(userId,id, request);
-        return ResponseEntity.ok().build();
-    }
+        @Operation(summary = "Create a report", description = "Allows a  to report a post or another . Duplicate reports with the same reason are not allowed.")
+        @ApiResponses({
+                        @ApiResponse(responseCode = "200", description = "Report created successfully", content = @Content(schema = @Schema(implementation = ReportPostResponse.class))),
+                        @ApiResponse(responseCode = "400", description = "Invalid request or duplicate report", content = @Content(schema = @Schema(implementation = ProblemDetail.class))),
+                        @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(implementation = ProblemDetail.class)))
+        })
+        @PostMapping
+        public ResponseEntity<Void> createReport(
+                        @RequestHeader("User-Id") Long userId,
+                        @PathVariable Long id,
+                        @Valid @RequestBody ReportRequest request) {
+                reportService.createReport(userId, id, request);
+                return ResponseEntity.ok().build();
+        }
+
+    
 }
