@@ -1,4 +1,5 @@
 <div class="profile-page" [class.is-mobile]="isMobile()" [class.is-admin]="isAdmin()">
+  <h1>Profile</h1>
   @if (err()) {
     <app-not-found [resource]="err()!" [linkText]="'Go Back'"></app-not-found>
   } @else {

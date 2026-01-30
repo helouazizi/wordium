@@ -1,0 +1,9 @@
+<h1>Notifications</h1>
+
+<ul>
+  @for (n of notifications(); track $index) {
+    <li>{{ n.message }} - {{ n.date | date: 'short' }}</li>
+  } @empty {
+    <p>No Notifications found</p>
+  }
+</ul>

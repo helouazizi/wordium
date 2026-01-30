@@ -22,6 +22,10 @@ export const routes: Routes = [
         loadComponent: () => import('./pages/feed/feed').then((m) => m.Feed),
       },
       {
+        path: 'notifications',
+        loadComponent: () => import('./pages/notifications/notifications').then((m) => m.Notifications),
+      },
+      {
         path: 'write', //  whrite blog
         loadComponent: () => import('./pages/post-editor/post-editor').then((c) => c.PostEditor),
       },

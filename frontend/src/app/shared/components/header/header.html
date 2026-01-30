@@ -12,13 +12,9 @@
     </div>
 
     <div class="right-section">
-      <button mat-icon-button class="nav-icon">
+      <button mat-icon-button class="nav-icon" [routerLink]="'notifications'">
         <mat-icon>notifications_none</mat-icon>
       </button>
-<!-- 
-      <button mat-icon-button class="nav-icon">
-        <mat-icon>chat_bubble_outline</mat-icon>
-      </button> -->
 
       <div class="profile-trigger">
         <app-user-avatar [user]="user" size="sm" action="menu" [matMenuTriggerFor]="profileMenu" />
