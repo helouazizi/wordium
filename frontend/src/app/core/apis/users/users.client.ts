@@ -26,6 +26,10 @@ export class UsersClient {
     return this.http.get<CountResponse>(`${this.config.usersBaseUrl}/admin/accounts/count`);
   }
 
+  getPostCount(): Observable<CountResponse> {
+    return this.http.get<CountResponse>(`${this.config.usersBaseUrl}/admin/posts/count`);
+  }
+
   getUserById(targetId: number): Observable<User> {
     return this.http.get<User>(`${this.config.usersBaseUrl}/${targetId}`);
   }

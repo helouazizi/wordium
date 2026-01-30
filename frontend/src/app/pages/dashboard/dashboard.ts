@@ -23,8 +23,6 @@ interface DashboardStat {
   color: 'primary' | 'accent' | 'warn';
 }
 
-
-
 @Component({
   selector: 'app-dashboard-home',
   standalone: true,
@@ -62,8 +60,9 @@ export class Dashboard implements OnInit {
     forkJoin({
       users: this.usersService.getUsersCount(),
       reports: this.usersService.getUsersReportsCount(),
+      posts: this.usersService.getPostCount(),
     }).subscribe({
-      next: ({ users, reports }) => {
+      next: ({ users, reports,posts }) => {
         console.log(users, reports);
 
         this.stats.set([
@@ -80,6 +79,13 @@ export class Dashboard implements OnInit {
             value: reports.total.toLocaleString(),
             icon: 'report_problem',
             color: 'warn',
+          },
+          {
+            id: 'posts',
+            label: 'Total Posts',
+            value: posts.total.toLocaleString(),
+            icon: 'article',
+            color: 'accent',
           },
         ]);
 

@@ -23,6 +23,9 @@ export class UsersService {
   getUsersCount(): Observable<CountResponse> {
     return this.client.getUsersCount();
   }
+  getPostCount(): Observable<CountResponse> {
+    return this.client.getPostCount();
+  }
 
   getUserProfile(userId: number): Observable<User> {
     return this.client.getUserById(userId);
