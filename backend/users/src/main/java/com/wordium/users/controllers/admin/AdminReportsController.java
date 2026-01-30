@@ -77,8 +77,9 @@ public class AdminReportsController {
 
         @Operation(summary = "Get user report details", description = "Retrieve full details of a user report by ID.")
         @GetMapping("/users/{id}")
-        public ResponseEntity<UserReportResponse> getUserReportById(@PathVariable Long id, @RequestHeader("User-Id") Long idd) {
-                return ResponseEntity.ok(adminReportsService.getUserReportById(id,idd));
+        public ResponseEntity<UserReportResponse> getUserReportById(@PathVariable Long id,
+                        @RequestHeader("User-Id") Long idd) {
+                return ResponseEntity.ok(adminReportsService.getUserReportById(id, idd));
         }
 
         @Operation(summary = "Resolve a user report", description = "Resolve a user report by an admin/moderator.")
@@ -98,8 +99,14 @@ public class AdminReportsController {
                 return ResponseEntity.noContent().build();
         }
 
-        @GetMapping("/count")
-        public ResponseEntity<CountResponse> getTotalUsers() {
+        @GetMapping("/users/count")
+        public ResponseEntity<CountResponse> getTotalUserReports() {
+                return ResponseEntity.ok(
+                                new CountResponse(adminReportsService.getTotalUserReports()));
+        }
+
+        @GetMapping("/posts/count")
+        public ResponseEntity<CountResponse> getTotalPostsReports() {
                 return ResponseEntity.ok(
                                 new CountResponse(adminReportsService.getTotalUserReports()));
         }

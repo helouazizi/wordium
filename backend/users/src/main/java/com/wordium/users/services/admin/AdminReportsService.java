@@ -26,6 +26,7 @@ public interface AdminReportsService {
     void resolveUserReport(Long reportId, Long adminId);
 
     Long getTotalUserReports();
+      Long getTotalPostsReports();
 
     void deleteUserReport(Long reportId);
 }

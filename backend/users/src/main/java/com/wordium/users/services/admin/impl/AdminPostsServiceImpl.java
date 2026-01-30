@@ -44,6 +44,6 @@ public class AdminPostsServiceImpl implements AdminPostsService {
 
     @Override
     public Long getTotalPostsReports() {
-        return postServiceClient.count();
+        return postServiceClient.postsCount();
     }
 }

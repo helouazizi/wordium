@@ -14,6 +14,8 @@ import com.wordium.users.models.Users;
 public interface UsersRepo extends JpaRepository<Users, Long>, JpaSpecificationExecutor<Users> {
     Optional<Users> findByEmail(String email);
 
+    boolean existsByEmail(String email);
+
     Optional<Users> findByUsername(String username);
 
     @Override

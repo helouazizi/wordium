@@ -59,12 +59,11 @@ export class Dashboard implements OnInit {
 
     forkJoin({
       users: this.usersService.getUsersCount(),
-      reports: this.usersService.getUsersReportsCount(),
+      usersReports: this.usersService.getUsersReportsCount(),
       posts: this.usersService.getPostCount(),
+      postsReports: this.usersService.getPostReporstCount(),
     }).subscribe({
-      next: ({ users, reports,posts }) => {
-        console.log(users, reports);
-
+      next: ({ users, usersReports, posts ,postsReports}) => {
         this.stats.set([
           {
             id: 'users',
@@ -74,9 +73,9 @@ export class Dashboard implements OnInit {
             color: 'primary',
           },
           {
-            id: 'reports',
+            id: 'usersReports',
             label: 'Total Users Reports',
-            value: reports.total.toLocaleString(),
+            value: usersReports.total.toLocaleString(),
             icon: 'report_problem',
             color: 'warn',
           },
@@ -86,6 +85,13 @@ export class Dashboard implements OnInit {
             value: posts.total.toLocaleString(),
             icon: 'article',
             color: 'accent',
+          },
+          {
+            id: 'postsReports',
+            label: 'Total Posts Reports',
+            value: postsReports.total.toLocaleString(),
+            icon: 'report_problem',
+            color: 'warn',
           },
         ]);
 

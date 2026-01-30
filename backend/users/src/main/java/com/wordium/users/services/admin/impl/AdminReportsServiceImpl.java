@@ -99,17 +99,10 @@ public class AdminReportsServiceImpl implements AdminReportsService {
         return userReportRepo.count();
     }
 
-    // private UserReportResponse toResponse(UserReport r) {
-    // return new UserReportResponse(
-    // r.getId(),
-    // r.getReportedUser().getId(),
-    // r.getReportedBy().getId(),
-    // r.getReason(),
-    // r.getStatus().name(),
-    // "user",
-    // r.getCreatedAt(),
-    // r.getResolvedAt());
-    // }
+    @Override
+    public Long getTotalPostsReports() {
+        return postServiceClient.postsReportsCount();
+    }
 
     private UserReportResponse toResponse(UserReport r, Long viewerId) {
         UserProfile reportedByProfile = toUserProfile(r.getReportedBy(), viewerId);

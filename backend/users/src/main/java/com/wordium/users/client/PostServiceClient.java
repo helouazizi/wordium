@@ -50,6 +50,9 @@ public interface PostServiceClient {
         ReportPostResponse getUserStats(@PathVariable("userId") Long userId);
 
         @GetMapping("/internal/posts/count")
-        Long count();
+        Long postsCount();
+
+        @GetMapping("/internal/reports/count")
+        Long postsReportsCount();
 
 }

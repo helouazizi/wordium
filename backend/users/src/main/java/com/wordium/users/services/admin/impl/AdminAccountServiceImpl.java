@@ -14,6 +14,7 @@ import com.wordium.users.events.FollowEventProducer;
 import com.wordium.users.exceptions.NotFoundException;
 import com.wordium.users.models.Users;
 import com.wordium.users.repo.FollowersRepo;
+import com.wordium.users.repo.UserReportRepo;
 import com.wordium.users.repo.UsersRepo;
 import com.wordium.users.services.admin.AdminAccountService;
 
@@ -26,11 +27,14 @@ public class AdminAccountServiceImpl implements AdminAccountService {
     private final UsersRepo usersRepo;
     private final FollowersRepo followersRepo;
     private final FollowEventProducer producer;
+    private final UserReportRepo userReportRepo;
 
-    public AdminAccountServiceImpl(UsersRepo usersRepo, FollowersRepo followersRepo, FollowEventProducer producer) {
+    public AdminAccountServiceImpl(UsersRepo usersRepo, FollowersRepo followersRepo, FollowEventProducer producer,
+            UserReportRepo userReportRepo) {
         this.usersRepo = usersRepo;
         this.followersRepo = followersRepo;
         this.producer = producer;
+        this.userReportRepo = userReportRepo;
     }
 
     public long getTotalUsers() {
@@ -76,10 +80,21 @@ public class AdminAccountServiceImpl implements AdminAccountService {
     }
 
     @Override
+    @Transactional
     public void deleteAccount(Long id) {
         Users account = usersRepo.findById(id)
                 .orElseThrow(() -> new NotFoundException("User  not found"));
 
+        // 1️⃣ Remove report references FIRST
+        userReportRepo.clearResolvedBy(id);
+
+        // 2️⃣ Delete reports CREATED by this user
+        userReportRepo.deleteByReportedBy_Id(id);
+
+        // 3️⃣ Delete reports AGAINST this user
+        userReportRepo.deleteByReportedUser_Id(id);
+
+        // 4️⃣ Now delete the user safely
         usersRepo.delete(account);
 
         NotificationEvent deleteUserEvent = new NotificationEvent(

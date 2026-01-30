@@ -20,6 +20,11 @@ export class UsersService {
     return this.client.getUsersReportsCount();
   }
 
+  getPostReporstCount(): Observable<CountResponse> {
+    return this.client.getPostReporstCount();
+  }
+  
+
   getUsersCount(): Observable<CountResponse> {
     return this.client.getUsersCount();
   }

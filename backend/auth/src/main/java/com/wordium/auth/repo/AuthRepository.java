@@ -10,4 +10,7 @@ import com.wordium.auth.model.AuthUser;
 @Repository
 public interface AuthRepository extends JpaRepository<AuthUser, Long> {
     Optional<AuthUser> findByUserId(Long id);
+
+    boolean existsByUserId(Long userId);
+
 }
