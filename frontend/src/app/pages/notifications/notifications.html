@@ -1,9 +1,16 @@
-<h1>Notifications</h1>
+<section class="notifications-page">
+  <h1>Notifications</h1>
 
-<ul>
-  @for (n of notifications(); track $index) {
-    <li>{{ n.message }} - {{ n.date | date: 'short' }}</li>
-  } @empty {
-    <p>No Notifications found</p>
-  }
-</ul>
+  <ul class="notifications-list">
+    @for (n of notifications(); track $index) {
+      <li>
+        <app-notification [notification]="n"></app-notification>
+      </li>
+    } @empty {
+      <li class="empty-state">
+        <mat-icon>notifications_off</mat-icon>
+        <p>No notifications found</p>
+      </li>
+    }
+  </ul>
+</section>

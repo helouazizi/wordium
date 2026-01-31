@@ -1,18 +1,30 @@
-import { DatePipe } from '@angular/common';
-import { Component, signal } from '@angular/core';
-interface Notification {
-  message: string;
-  date: Date;
-}
+import { Component, inject, signal } from '@angular/core';
+import { NotificationsService } from '../../core/services/notifications.service';
+import { NotificationInter } from '../../core/apis/notifications/notification.model';
+import { Notification  } from '../../shared/components/notification/notification';
+import { MatIcon } from '@angular/material/icon';
+
 @Component({
   selector: 'app-notifications',
-  imports: [DatePipe],
+  imports: [Notification,MatIcon],
   templateUrl: './notifications.html',
   styleUrl: './notifications.scss',
 })
 export class Notifications {
-  notifications = signal<Notification[]>([
-    { message: 'Welcome to Wordium!', date: new Date() },
-    { message: 'Your post was liked', date: new Date() },
-  ]);
+  private notificationService = inject(NotificationsService);
+
+  notifications = signal<NotificationInter[]>([]);
+
+  constructor() {
+    this.loadNotifications();
+  }
+
+  private loadNotifications() {
+    this.notificationService.getNotifications().subscribe({
+      next: (data: any) => {
+        console.log(data);
+        this.notifications.set(data.notifications);
+      },
+    });
+  }
 }

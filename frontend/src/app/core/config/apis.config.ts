@@ -1,10 +1,11 @@
-import { InjectionToken } from "@angular/core";
-import { environment } from "../../../environments/environment";
+import { InjectionToken } from '@angular/core';
+import { environment } from '../../../environments/environment';
 
 export interface ApiConfig {
   authBaseUrl: string;
   usersBaseUrl: string;
   postsBaseUrl: string;
+  wsBaseUrl: string;
 }
 
 export const API_CONFIG = new InjectionToken<ApiConfig>('API_CONFIG', {
@@ -12,6 +13,8 @@ export const API_CONFIG = new InjectionToken<ApiConfig>('API_CONFIG', {
   factory: () => ({
     authBaseUrl: environment.apiAuth,
     usersBaseUrl: environment.apiUsers,
+
     postsBaseUrl: environment.apiPosts,
+    wsBaseUrl: environment.apiWs,
   }),
 });

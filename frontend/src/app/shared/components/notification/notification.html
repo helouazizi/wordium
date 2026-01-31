@@ -1,0 +1,50 @@
+<div
+  class="notification-card"
+  [class.unread]="!notification.read"
+  [class.read]="notification.read"
+  role="listitem"
+  tabindex="0"
+>
+  <!-- Left accent + icons -->
+  <div class="accent-bar"></div>
+
+  <div class="content-wrapper">
+    <!-- Icons column (desktop) / row (mobile) -->
+    <div class="icon-stack">
+      <mat-icon class="status-icon" aria-hidden="true">
+        {{ notification.read ? 'check_circle' : 'circle' }}
+      </mat-icon>
+
+      <mat-icon class="type-icon" aria-hidden="true">{{ icon }}</mat-icon>
+    </div>
+
+    <!-- Main content area -->
+    <div class="main-content">
+      <div class="header-line">
+        <app-user-avatar
+          [user]="notification.actor"
+          [showName]="true"
+          [time]="notification.createdAt"
+          size="sm"
+        ></app-user-avatar>
+      </div>
+
+      <p class="message-text">{{ message }}</p>
+    </div>
+
+    <!-- Actions – only shown when unread -->
+    @if (!notification.read) {
+      <div class="actions">
+        <button
+          mat-flat-button
+          color="primary"
+          class="mark-read-btn"
+          (click)="markAsRead(); $event.stopPropagation()"
+          type="button"
+        >
+          Mark read
+        </button>
+      </div>
+    }
+  </div>
+</div>
