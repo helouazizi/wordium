@@ -14,6 +14,36 @@
       </div>
     </div>
   }
+
+  @if (isConfirmingBan()) {
+    <div class="card-overlay confirm-delete" (click)="$event.stopPropagation()">
+      <div class="overlay-content">
+        <mat-icon color="warn">block</mat-icon>
+        <h3>Baning this user?</h3>
+        <!-- <p>This action cannot be undone.</p> -->
+        <div class="overlay-actions">
+          <button mat-button (click)="cancelBan()">Cancel</button>
+          <button mat-flat-button color="warn" class="danger" (click)="executeBan()">block</button>
+        </div>
+      </div>
+    </div>
+  }
+
+  @if (isConfirmingUnBan()) {
+    <div class="card-overlay confirm-delete" (click)="$event.stopPropagation()">
+      <div class="overlay-content">
+        <mat-icon color="warn">restore_from_trash</mat-icon>
+        <h3>UnBaning this user?</h3>
+        <!-- <p>This action cannot be undone.</p> -->
+        <div class="overlay-actions">
+          <button mat-button (click)="cancelUnBan()">Cancel</button>
+          <button mat-flat-button color="warn" class="danger" (click)="executeUnBan()">
+            Unban
+          </button>
+        </div>
+      </div>
+    </div>
+  }
   <div class="card-content">
     <div class="header-row">
       <div class="avatar-container">
@@ -57,25 +87,38 @@
       </div>
     </div>
 
-    <!-- Actions -->
     <div class="action-row">
       @if (mode() === 'dashboard') {
         <div class="admin-actions">
-          @if (!user().isBanned) {
-            <button mat-stroked-button color="warn" class="action-btn ban-btn" (click)="ban()">
+          @if (!user().isBanned && !isOwner()) {
+            <button
+              mat-stroked-button
+              color="warn"
+              class="action-btn ban-btn"
+              (click)="confirmBan()"
+            >
               <mat-icon>block</mat-icon>
               <span>Ban</span>
             </button>
           } @else {
-            <button mat-flat-button color="primary" class="action-btn unban-btn" (click)="unban()">
-              <mat-icon>restore_from_trash</mat-icon>
-              <span>Unban</span>
-            </button>
+            @if (!isOwner()) {
+              <button
+                mat-flat-button
+                color="primary"
+                class="action-btn unban-btn"
+                (click)="confirmUnBan()"
+              >
+                <mat-icon>restore_from_trash</mat-icon>
+                <span>Unban</span>
+              </button>
+            }
           }
 
-          <button mat-icon-button color="warn" class="delete-btn" (click)="confirmDelete()">
-            <mat-icon>delete_outline</mat-icon>
-          </button>
+          @if (!isOwner()) {
+            <button mat-icon-button color="warn" class="delete-btn" (click)="confirmDelete()">
+              <mat-icon>delete_outline</mat-icon>
+            </button>
+          }
         </div>
       } @else {
         <button

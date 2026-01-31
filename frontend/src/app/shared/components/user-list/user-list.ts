@@ -2,9 +2,11 @@ import {
   AfterViewInit,
   Component,
   ElementRef,
+  EventEmitter,
   inject,
   input,
   OnInit,
+  Output,
   signal,
   ViewChild,
 } from '@angular/core';
@@ -40,6 +42,7 @@ export class UserList implements OnInit, AfterViewInit {
 
   emptyMessage = input<string>('No users found here yet.');
   user = this.auth.user();
+  @Output() userDeleted = new EventEmitter<void>();
 
   currentPage = signal(0);
   isLastPage = signal(false);
@@ -140,6 +143,7 @@ export class UserList implements OnInit, AfterViewInit {
       next: () => {
         this.users.update((list) => list.filter((u) => u.id !== id));
         this.notify.showSuccess(`The user has been deleted.`);
+        this.userDeleted.emit();
       },
       error: () => {
         this.notify.showError(`Failed to delete this user`);

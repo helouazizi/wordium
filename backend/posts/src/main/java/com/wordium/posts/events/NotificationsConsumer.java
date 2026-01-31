@@ -15,7 +15,7 @@ public class NotificationsConsumer {
         this.postService = postService;
     }
 
-    @KafkaListener(topics = "notifications.events", groupId = "ws-gateway")
+    @KafkaListener(topics = "posts.events", groupId = "posts-service")
     public void consume(NotificationEvent event) {
         postService.handleUserDeleted(event.actorId());
         System.out.println("event recived seccefully " + event.type());

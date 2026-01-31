@@ -10,7 +10,7 @@ import com.wordium.users.dto.Role;
 import com.wordium.users.dto.Stats;
 import com.wordium.users.dto.notification.NotificationEvent;
 import com.wordium.users.dto.users.UserProfile;
-import com.wordium.users.events.FollowEventProducer;
+import com.wordium.users.events.DeleteUserEventProducer;
 import com.wordium.users.exceptions.NotFoundException;
 import com.wordium.users.models.Users;
 import com.wordium.users.repo.FollowersRepo;
@@ -26,10 +26,10 @@ public class AdminAccountServiceImpl implements AdminAccountService {
 
     private final UsersRepo usersRepo;
     private final FollowersRepo followersRepo;
-    private final FollowEventProducer producer;
+    private final DeleteUserEventProducer producer;
     private final UserReportRepo userReportRepo;
 
-    public AdminAccountServiceImpl(UsersRepo usersRepo, FollowersRepo followersRepo, FollowEventProducer producer,
+    public AdminAccountServiceImpl(UsersRepo usersRepo, FollowersRepo followersRepo, DeleteUserEventProducer producer,
             UserReportRepo userReportRepo) {
         this.usersRepo = usersRepo;
         this.followersRepo = followersRepo;
@@ -103,7 +103,7 @@ public class AdminAccountServiceImpl implements AdminAccountService {
                 null,
                 null);
 
-        producer.sendFollowEvent(deleteUserEvent);
+        producer.sendDeleteEvent(deleteUserEvent);
 
     }
 

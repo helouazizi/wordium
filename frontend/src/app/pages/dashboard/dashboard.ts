@@ -63,7 +63,9 @@ export class Dashboard implements OnInit {
       posts: this.usersService.getPostCount(),
       postsReports: this.usersService.getPostReporstCount(),
     }).subscribe({
-      next: ({ users, usersReports, posts ,postsReports}) => {
+      next: ({ users, usersReports, posts, postsReports }) => {
+        console.log(postsReports, 'posts reports ');
+
         this.stats.set([
           {
             id: 'users',
@@ -102,6 +104,34 @@ export class Dashboard implements OnInit {
         this.loading.set(false);
       },
     });
+  }
+
+  private decrementStat(id: DashboardStat['id'], by = 1) {
+    this.stats.update((stats) =>
+      stats.map((stat) =>
+        stat.id === id
+          ? {
+              ...stat,
+              value: Math.max(0, Number(stat.value.replace(/,/g, '')) - by).toLocaleString(),
+            }
+          : stat,
+      ),
+    );
+  }
+  decrementUsers(by = 1) {
+    this.decrementStat('users', by);
+  }
+
+  decrementPosts(by = 1) {
+    this.decrementStat('posts', by);
+  }
+
+  decrementReports(type: 'user' | 'post', by = 1) {
+    if (type === 'user') {
+      this.decrementStat('usersReports', by);
+    } else {
+      this.decrementStat('postsReports', by);
+    }
   }
 
   protected readonly trackByStat: TrackByFunction<DashboardStat> = (_, stat) => stat.id;

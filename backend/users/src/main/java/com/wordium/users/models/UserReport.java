@@ -4,12 +4,8 @@ import java.time.LocalDateTime;
 
 import org.hibernate.annotations.CreationTimestamp;
 
-import com.wordium.users.dto.report.ReportStatus;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -39,12 +35,7 @@ public class UserReport {
     @Column(nullable = false)
     private String reason;
 
-    @Column(length = 1000)
-    private String description;
-
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private ReportStatus status = ReportStatus.OPEN;
+    private boolean resolved = false;
 
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
@@ -58,7 +49,6 @@ public class UserReport {
 
     private String resolutionNote;
 
-
     public Long getId() {
         return id;
     }
@@ -67,7 +57,6 @@ public class UserReport {
         this.id = id;
     }
 
-  
     public Users getReportedUser() {
         return reportedUser;
     }
@@ -94,22 +83,13 @@ public class UserReport {
         this.reason = reason;
     }
 
-    // Description
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
     // Status
-    public ReportStatus getStatus() {
-        return status;
+    public boolean getResolved() {
+        return resolved;
     }
 
-    public void setStatus(ReportStatus status) {
-        this.status = status;
+    public void setStatus(boolean status) {
+        this.resolved = status;
     }
 
     // Created At

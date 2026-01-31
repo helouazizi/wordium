@@ -108,6 +108,6 @@ public class AdminReportsController {
         @GetMapping("/posts/count")
         public ResponseEntity<CountResponse> getTotalPostsReports() {
                 return ResponseEntity.ok(
-                                new CountResponse(adminReportsService.getTotalUserReports()));
+                                new CountResponse(adminReportsService.getTotalPostsReports()));
         }
 }

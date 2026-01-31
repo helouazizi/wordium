@@ -10,7 +10,6 @@ import { UserAvatar } from '../user-avatar/user-avatar';
 import { User } from '../../models/user.model';
 import { UserListSource } from '../user-list/user-list';
 
-
 @Component({
   selector: 'app-user-card',
   standalone: true,
@@ -30,6 +29,7 @@ import { UserListSource } from '../user-list/user-list';
 export class UserCard {
   user = input.required<User>();
   mode = input<UserListSource>('dashboard');
+  isOwner = input<boolean>();
 
   onBan = output<number>();
   onUnban = output<number>();
@@ -38,7 +38,8 @@ export class UserCard {
   onViewProfile = output<number>();
 
   isConfirmingDelete = signal(false);
-
+  isConfirmingBan = signal(false);
+  isConfirmingUnBan = signal(false);
   confirmDelete() {
     this.isConfirmingDelete.set(true);
   }
@@ -50,16 +51,32 @@ export class UserCard {
     this.onDelete.emit(this.user().id);
     this.isConfirmingDelete.set(false);
   }
+
+  confirmBan() {
+    this.isConfirmingBan.set(true);
+  }
+  cancelBan() {
+    this.isConfirmingBan.set(false);
+  }
+
+   confirmUnBan() {
+    this.isConfirmingUnBan.set(true);
+  }
+  cancelUnBan() {
+    this.isConfirmingUnBan.set(false);
+  }
+
+  executeBan() {
+    if (this.user()?.id) this.onBan.emit(this.user().id);
+    this.isConfirmingBan.set(false);
+  }
+  executeUnBan() {
+    if (this.user()?.id) this.onUnban.emit(this.user().id);
+    this.isConfirmingUnBan.set(false);
+  }
+
   get avatarText(): string {
     return this.user().username ? this.user().username[0].toUpperCase() : '?';
-  }
-
-  ban() {
-    if (this.user()?.id) this.onBan.emit(this.user().id);
-  }
-
-  unban() {
-    if (this.user()?.id) this.onUnban.emit(this.user().id);
   }
 
 

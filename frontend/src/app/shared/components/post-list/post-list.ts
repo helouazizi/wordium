@@ -2,9 +2,11 @@ import {
   AfterViewInit,
   Component,
   ElementRef,
+  EventEmitter,
   inject,
   input,
   OnInit,
+  Output,
   signal,
   ViewChild,
 } from '@angular/core';
@@ -39,6 +41,7 @@ export class PostList implements OnInit, AfterViewInit {
   private route = inject(ActivatedRoute);
 
   source = input.required<PostListSource>();
+  @Output() postDeleted = new EventEmitter<void>();
 
   emptyMessage = input<string>('No posts found here yet.');
   user = this.auth.user();
@@ -115,6 +118,7 @@ export class PostList implements OnInit, AfterViewInit {
             ? Array.from(new Map([...existing, ...res.data].map((p) => [p.id, p])).values())
             : res.data,
         );
+        console.log(this.posts(), 'postsss');
 
         this.isLastPage.set(res.isLast);
         this.initialLoading.set(false);
@@ -250,8 +254,9 @@ export class PostList implements OnInit, AfterViewInit {
   deletePost(postId: number) {
     this.postService.deletePost(postId).subscribe({
       next: () => {
-        this.notify.showSuccess('Post removed');
         this.posts.update((prev) => prev.filter((p) => p.id !== postId));
+        this.notify.showSuccess('Post removed');
+        this.postDeleted.emit();
       },
       error: () => this.notify.showError('Could not delete post'),
     });

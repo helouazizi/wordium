@@ -8,15 +8,16 @@
         <p>Loading users...</p>
       </div>
     }
-    @for (user of users(); track user.id) {
+    @for (userItem of users(); track userItem.id) {
       <app-user-card
-        [user]="user"
+        [user]="userItem"
+        [isOwner]="userItem.id === user?.id"
         [mode]="source()"
-        (onBan)="banUser(user.id)"
-        (onUnban)="unbanUser(user.id)"
-        (onDelete)="deleteUser(user.id)"
-        (onFollow)="togleFollow(user.id)"
-        (onViewProfile)="viewProfile(user.id)"
+        (onBan)="banUser(userItem.id)"
+        (onUnban)="unbanUser(userItem.id)"
+        (onDelete)="deleteUser(userItem.id)"
+        (onFollow)="togleFollow(userItem.id)"
+        (onViewProfile)="viewProfile(userItem.id)"
       ></app-user-card>
     }
     @if (isEmpty()) {

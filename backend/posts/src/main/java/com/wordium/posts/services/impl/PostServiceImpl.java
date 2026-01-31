@@ -11,7 +11,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.wordium.posts.dto.CommentRequest;
 import com.wordium.posts.dto.CommentResponse;
-import com.wordium.posts.dto.NotificationEvent;
 import com.wordium.posts.dto.PostReactionRequest;
 import com.wordium.posts.dto.PostRequest;
 import com.wordium.posts.dto.PostResponse;
@@ -25,6 +24,7 @@ import com.wordium.posts.models.PostReaction;
 import com.wordium.posts.repo.CommentRepository;
 import com.wordium.posts.repo.PostRepository;
 import com.wordium.posts.repo.ReactionRepository;
+import com.wordium.posts.repo.ReportRepository;
 import com.wordium.posts.services.CloudinaryService;
 import com.wordium.posts.services.PostService;
 import com.wordium.posts.utils.UserEnrichmentHelper;
@@ -37,15 +37,17 @@ public class PostServiceImpl implements PostService {
     private final CommentRepository commentRepository;
     private final UserEnrichmentHelper userEnrichmentHelper;
     private final CloudinaryService cloudinaryService;
+    private final ReportRepository reportRepository;
 
     public PostServiceImpl(PostRepository postRepository, UserEnrichmentHelper userEnrichmentHelper,
             ReactionRepository reactionRepository, CommentRepository commentRepository,
-            CloudinaryService cloudinaryService) {
+            CloudinaryService cloudinaryService, ReportRepository reportRepository) {
         this.postRepository = postRepository;
         this.userEnrichmentHelper = userEnrichmentHelper;
         this.reactionRepository = reactionRepository;
         this.commentRepository = commentRepository;
         this.cloudinaryService = cloudinaryService;
+        this.reportRepository = reportRepository;
     }
 
     @Transactional
@@ -59,6 +61,7 @@ public class PostServiceImpl implements PostService {
         commentRepository.deleteAllByUserId(userId);
 
         postRepository.deleteAllByUserId(userId);
+        reportRepository.deleteAllByReporterId(userId);
 
         System.out.println("All data deleted for userId=" + userId);
 
@@ -136,6 +139,9 @@ public class PostServiceImpl implements PostService {
     @Override
     public Page<PostResponse> getAllposts(Long userId, Pageable pageable) {
         Page<Post> page = postRepository.findAll(pageable);
+        System.out.println("Total Posts in page: " + page.getTotalElements());
+        page.getContent().forEach(post -> System.out.println("Post ID: " + post.getId()));
+
         return enrichWithLikes(page, userId);
     }
 
@@ -260,12 +266,14 @@ public class PostServiceImpl implements PostService {
         Set<Long> likedPostIds = (currentUserId != null)
                 ? reactionRepository.findLikedPostIdsByUserIdAndPostIdIn(currentUserId, postIds)
                 : Set.of();
+        System.out.println("Liked Post IDs: " + likedPostIds);
 
         return userEnrichmentHelper.enrichPage(
                 page,
                 Post::getUserId,
                 (post, userProfile) -> {
                     boolean isLiked = likedPostIds.contains(post.getId());
+                    System.out.println("Post ID: " + post.getId() + " | isLiked: " + isLiked);
                     return mapToResponse(post, userProfile, isLiked);
                 });
     }

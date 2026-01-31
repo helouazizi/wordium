@@ -10,7 +10,6 @@ import com.wordium.users.client.PostServiceClient;
 import com.wordium.users.dto.PaginatedResponse;
 import com.wordium.users.dto.Stats;
 import com.wordium.users.dto.report.ReportPostResponse;
-import com.wordium.users.dto.report.ReportStatus;
 import com.wordium.users.dto.report.UserReportResponse;
 import com.wordium.users.dto.users.UserProfile;
 import com.wordium.users.exceptions.NotFoundException;
@@ -70,7 +69,6 @@ public class AdminReportsServiceImpl implements AdminReportsService {
         UserReport report = userReportRepo.findById(id)
                 .orElseThrow(() -> new NotFoundException("User report not found"));
 
-        // Pass viewerId to resolve full UserProfile
         return toResponse(report, viewerId);
     }
 
@@ -82,7 +80,7 @@ public class AdminReportsServiceImpl implements AdminReportsService {
         Users admin = usersRepo.findById(adminId)
                 .orElseThrow(() -> new NotFoundException("Admin user not found"));
 
-        report.setStatus(ReportStatus.RESOLVED);
+        report.setStatus(true);
         report.setResolvedAt(LocalDateTime.now());
         report.setResolvedBy(admin);
 
@@ -112,7 +110,7 @@ public class AdminReportsServiceImpl implements AdminReportsService {
                 r.getReportedUser().getId(),
                 reportedByProfile,
                 r.getReason(),
-                r.getStatus().name(),
+                r.getResolved(),
                 "user",
                 r.getCreatedAt(),
                 r.getResolvedAt());

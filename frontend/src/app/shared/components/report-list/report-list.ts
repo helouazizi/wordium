@@ -2,9 +2,11 @@ import {
   AfterViewInit,
   Component,
   ElementRef,
+  EventEmitter,
   inject,
   input,
   OnInit,
+  Output,
   signal,
   ViewChild,
 } from '@angular/core';
@@ -37,7 +39,8 @@ export class ReportList implements OnInit, AfterViewInit {
   private auth = inject(AuthService);
   private notify = inject(NotificationService);
   private router = inject(Router);
-  private route = inject(ActivatedRoute);
+
+  @Output() ondeleted = new EventEmitter<'user' | 'post'>();
 
   emptyMessage = input<string>('No reports found here yet.');
   user = this.auth.user();
@@ -95,7 +98,6 @@ export class ReportList implements OnInit, AfterViewInit {
       users: this.userService.getUserReports(params),
     }).subscribe({
       next: ({ posts, users }) => {
-        // merge both arrays
         const merged = [...posts.data, ...users.data].sort(
           (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
         );
@@ -108,7 +110,8 @@ export class ReportList implements OnInit, AfterViewInit {
             : merged,
         );
 
-        // determine isLastPage (if either posts or users page is last)
+        console.log(this.reports(), 'reports ');
+
         this.isLastPage.set(posts.isLast && users.isLast);
 
         this.initialLoading.set(false);
@@ -142,7 +145,9 @@ export class ReportList implements OnInit, AfterViewInit {
       next: () => {
         this.reports.update((list) =>
           list.map((r) =>
-            r.id === report.id ? { ...r, resolved: true, resolvedAt: new Date().toISOString() } : r,
+            r.id === report.id && r.type === report.type
+              ? { ...r, resolved: true, resolvedAt: new Date().toISOString() }
+              : r,
           ),
         );
         this.notify.showSuccess('Report resolved');
@@ -159,7 +164,10 @@ export class ReportList implements OnInit, AfterViewInit {
 
     call.subscribe({
       next: () => {
-        this.reports.update((list) => list.filter((r) => r.id !== report.id));
+        this.reports.update((list) =>
+          list.filter((r) => r.id !== report.id || r.type !== report.type),
+        );
+        this.ondeleted.emit(report.type)
         this.notify.showSuccess('Report deleted');
       },
       error: () => this.notify.showError('Failed to delete report'),

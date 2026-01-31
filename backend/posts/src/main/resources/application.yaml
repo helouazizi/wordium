@@ -21,7 +21,7 @@ spring:
   kafka:
     bootstrap-servers: ${KAFKA_HOST}:${KAFKA_PORT}
     consumer:
-      group-id: ws-gateway
+      group-id: posts-service
       auto-offset-reset: earliest
       enable-auto-commit: true
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
