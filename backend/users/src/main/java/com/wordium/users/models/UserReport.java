@@ -65,7 +65,6 @@ public class UserReport {
         this.reportedUser = reportedUser;
     }
 
-    // Reported By
     public Users getReportedBy() {
         return reportedBy;
     }

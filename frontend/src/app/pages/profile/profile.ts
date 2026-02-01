@@ -22,6 +22,8 @@ import { PostList } from '../../shared/components/post-list/post-list';
 import { NotFound } from '../../shared/components/not-found/not-found';
 import { NotificationService } from '../../core/services/notification.service';
 import { UserList } from '../../shared/components/user-list/user-list';
+import { ConfirmDialog } from '../../shared/components/confirm-dialog/confirm-dialog';
+import { PostService } from '../../core/services/post.service';
 
 @Component({
   selector: 'app-profile',
@@ -39,7 +41,7 @@ import { UserList } from '../../shared/components/user-list/user-list';
     MatRippleModule,
     PostList,
     NotFound,
-    UserList
+    UserList,
   ],
   templateUrl: './profile.html',
   styleUrls: ['./profile.scss'],
@@ -47,10 +49,34 @@ import { UserList } from '../../shared/components/user-list/user-list';
 export class Profile {
   private auth = inject(AuthService);
   private usersService = inject(UsersService);
+  private postsService = inject(PostService);
   private route = inject(ActivatedRoute);
   private dialog = inject(MatDialog);
   private device = inject(DeviceService);
   private notif = inject(NotificationService);
+
+  confirmReport(userId: number) {
+    this.dialog
+      .open(ConfirmDialog, {
+        width: '450px',
+        disableClose: true,
+        data: {
+          title: 'Report User',
+          message: 'Please provide a reason for reporting this user.',
+          confirmText: 'Report User',
+          requireReason: true,
+          reasonLabel: 'Report reason',
+          minReasonLength: 10,
+          color: 'warn',
+        },
+      })
+      .afterClosed()
+      .subscribe((result) => {
+        if (result?.confirmed) {
+          this.postsService.reportUser(userId, result.reason).subscribe();
+        }
+      });
+  }
 
   isMobile = this.device.isHandset;
 
@@ -120,7 +146,7 @@ export class Profile {
       : this.usersService.followUser(user.id);
 
     action$.subscribe({
-      next: (res) => {        
+      next: (res) => {
         this.targetUser.update((current) => {
           if (!current) return current;
 
@@ -134,13 +160,12 @@ export class Profile {
               followers: wasFollowing ? Math.max(0, stats.followers - 1) : stats.followers + 1,
             },
           };
-
         });
 
-        this.notif.showSuccess(res.message)
+        this.notif.showSuccess(res.message);
       },
       error: (err) => {
-         this.notif.showError(err.message)
+        this.notif.showError(err.message);
       },
     });
   }

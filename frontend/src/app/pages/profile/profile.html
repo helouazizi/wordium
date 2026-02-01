@@ -49,7 +49,11 @@
             <button mat-flat-button color="primary" (click)="toggleFollow()">
               {{ targetUser()?.isFollowing ? 'Unfollow' : 'Follow' }}
             </button>
-            <button mat-stroked-button>Message</button>
+            @if (!isAdmin()) {
+              <button mat-flat-button class="danger" (click)="confirmReport(targetUser()?.id!)">
+                <mat-icon>flag</mat-icon>
+              </button>
+            }
           </ng-container>
         </div>
       </div>

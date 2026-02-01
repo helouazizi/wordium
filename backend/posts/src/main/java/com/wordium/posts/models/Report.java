@@ -1,4 +1,3 @@
-// src/main/java/com/wordium/posts/models/Report.java
 package com.wordium.posts.models;
 
 import java.time.LocalDateTime;
@@ -10,19 +9,12 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
-import jakarta.persistence.UniqueConstraint;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 @Entity
-@Table(name = "reports",
-        uniqueConstraints = {
-            @UniqueConstraint(
-                    columnNames = {"reporter_id", "reported_post_id", "reason"},
-                    name = "uk_reporter_target_reason"
-            )
-        })
+@Table(name = "reports")
 public class Report {
 
     @Id
@@ -35,8 +27,6 @@ public class Report {
 
     @Column(name = "reported_post_id")
     private Long reportedPostId;
-
-
 
     @NotBlank(message = "Reason is required")
     @Size(max = 50, message = "Reason cannot exceed 500 characters")
@@ -62,8 +52,6 @@ public class Report {
     public boolean isPostReport() {
         return reportedPostId != null;
     }
-
-
 
     public Long getId() {
         return id;

@@ -40,9 +40,9 @@ public class UsersService {
     }
 
     public void reportUser(Long reporterId, Long reportedUserId, CreateUserReportRequest request) {
-        if (userReportRepo.existsByReportedBy_IdAndReportedUser_Id(reporterId, reportedUserId)) {
-            throw new IllegalStateException("You already reported this user");
-        }
+        // if (userReportRepo.existsByReportedBy_IdAndReportedUser_Id(reporterId, reportedUserId)) {
+        //     throw new IllegalStateException("You already reported this user");
+        // }
 
         Users reporter = usersRepo.findById(reporterId)
                 .orElseThrow(() -> new NotFoundException("Reporter not found"));

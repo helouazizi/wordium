@@ -1,0 +1,43 @@
+<h2 mat-dialog-title>{{ data.title }}</h2>
+
+<mat-dialog-content>
+  <p>{{ data.message }}</p>
+
+  @if (data.requireReason) {
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>{{ data.reasonLabel || 'Reason' }}</mat-label>
+
+      <textarea
+        matInput
+        rows="4"
+        [formControl]="reasonControl"
+        placeholder="Enter reason..."
+      ></textarea>
+
+      @if (reasonControl.hasError('required')) {
+        <mat-error>Reason is required</mat-error>
+      }
+
+      @if (reasonControl.hasError('minlength')) {
+        <mat-error>
+          Minimum {{ data.minReasonLength || 5 }} characters required
+        </mat-error>
+      }
+    </mat-form-field>
+  }
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="cancel()">
+    {{ data.cancelText || 'Cancel' }}
+  </button>
+
+  <button
+    mat-raised-button
+    [color]="data.color || 'warn'"
+    [disabled]="data.requireReason && reasonControl.invalid"
+    (click)="confirm()"
+  >
+    {{ data.confirmText || 'Confirm' }}
+  </button>
+</mat-dialog-actions>

@@ -10,7 +10,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.wordium.posts.dto.ReportPostResponse;
 import com.wordium.posts.dto.ReportRequest;
 import com.wordium.posts.dto.UserProfile;
-import com.wordium.posts.exeptions.ConflictException;
 import com.wordium.posts.exeptions.NotFoundException;
 import com.wordium.posts.models.Report;
 import com.wordium.posts.repo.PostRepository;
@@ -37,11 +36,6 @@ public class ReportServiceImpl implements ReportService {
     public ReportPostResponse createReport(Long userId, Long posId, ReportRequest report) {
         if (!postRepository.existsById(posId)) {
             throw new NotFoundException("Report not found");
-        }
-        boolean exists = reportRepository.existsByReporterIdAndReportedPostId(userId, posId);
-
-        if (exists) {
-            throw new ConflictException("You have already reported this post");
         }
 
         Report data = new Report();
