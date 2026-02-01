@@ -26,6 +26,8 @@ import { SafeHtmlPipe } from '../../pipes/safe-html.pipe';
 import { User } from '../../models/user.model';
 import { Router } from '@angular/router';
 import { PostListSource } from '../post-list/post-list';
+import { MatDialog } from '@angular/material/dialog';
+import { ConfirmDialog } from '../confirm-dialog/confirm-dialog';
 
 @Component({
   selector: 'app-post-card',
@@ -49,6 +51,7 @@ import { PostListSource } from '../post-list/post-list';
   styleUrl: './post-card.scss',
 })
 export class PostCard {
+  private dialog = inject(MatDialog);
   private router = inject(Router);
   post = input.required<Post>();
   user = input.required<User>();
@@ -73,43 +76,8 @@ export class PostCard {
   isLoadingComments = signal(false);
   hasMoreComments = signal(true);
 
-  isConfirmingDelete = signal(false);
-  isConfirmingCommentDelete = signal(false);
-  commentId = signal<number | null>(null);
   newCommentText = signal('');
-  isReporting = signal(false);
-  isConfirmingReport = signal(false);
-  reportReason = signal('');
-  reportingTarget = signal<{ id: number; type: ReportType } | null>(null);
 
-  reportOptions = computed(() => [
-    { label: 'The Post', id: this.post().id, type: 'post' as ReportType },
-    { label: 'The Author', id: this.post().actor.id as number, type: 'user' as ReportType },
-  ]);
-
-  confirmDelete() {
-    this.isConfirmingDelete.set(true);
-  }
-
-  confirmCommentDelete(id: number) {
-    this.isConfirmingCommentDelete.set(true);
-    this.commentId.set(id);
-  }
-  confirmReport() {
-    this.isConfirmingReport.set(true);
-    this.isReporting.set(false);
-  }
-  cancelDelete() {
-    this.isConfirmingDelete.set(false);
-  }
-  cancelCommentDelete() {
-    this.isConfirmingCommentDelete.set(false);
-    this.commentId.set(null);
-  }
-  DeleteComment() {
-    this.onDeleteComment.emit(this.commentId()!);
-    this.isConfirmingCommentDelete.set(false);
-  }
   readonly canDelete = computed(() => {
     const user = this.user();
     const post = this.post();
@@ -143,39 +111,11 @@ export class PostCard {
     this.onVisible.emit(this.post().id);
   }
 
-  selectReportTarget(id: number, type: ReportType) {
-    this.reportingTarget.set({ id, type });
-  }
-
-  submitReport() {
-    const target = this.reportingTarget();
-    if (target && this.reportReason().trim()) {
-      this.onReport.emit({
-        id: target.id,
-        type: target.type,
-        reason: this.reportReason(),
-      });
-      this.cancelReport();
-    }
-  }
-
-  cancelReport() {
-    this.isReporting.set(false);
-    this.reportReason.set('');
-    this.reportingTarget.set(null);
-    this.isConfirmingReport.set(false);
-  }
-
   submitComment() {
     if (this.newCommentText().trim()) {
       this.onComment.emit(this.newCommentText());
       this.newCommentText.set('');
     }
-  }
-
-  executeDelete() {
-    this.onDelete.emit(this.post().id);
-    this.isConfirmingDelete.set(false);
   }
 
   handleNavigate() {
@@ -184,5 +124,99 @@ export class PostCard {
 
   loadMoreComments() {
     this.onLoadMoreComments.emit();
+  }
+
+  confirmDeletePost() {
+    this.dialog
+      .open(ConfirmDialog, {
+        width: '420px',
+        disableClose: true,
+        data: {
+          title: 'Delete Post',
+          message: 'This post will be permanently deleted.',
+          confirmText: 'Delete',
+          color: 'warn',
+        },
+      })
+      .afterClosed()
+      .subscribe((res) => {
+        if (res?.confirmed) {
+          this.onDelete.emit(this.post().id);
+        }
+      });
+  }
+
+  confirmDeleteComment(commentId: number) {
+    this.dialog
+      .open(ConfirmDialog, {
+        width: '420px',
+        disableClose: true,
+        data: {
+          title: 'Delete Comment',
+          message: 'This comment will be permanently deleted.',
+          confirmText: 'Delete',
+          color: 'warn',
+        },
+      })
+      .afterClosed()
+      .subscribe((res) => {
+        if (res?.confirmed) {
+          this.onDeleteComment.emit(commentId);
+        }
+      });
+  }
+
+  confirmReportPost() {
+    this.dialog
+      .open(ConfirmDialog, {
+        width: '450px',
+        disableClose: true,
+        data: {
+          title: 'Report Post',
+          message: 'Please provide a reason for reporting this post.',
+          confirmText: 'Report',
+          requireReason: true,
+          reasonLabel: 'Report reason',
+          minReasonLength: 10,
+          color: 'warn',
+        },
+      })
+      .afterClosed()
+      .subscribe((res) => {
+        if (res?.confirmed) {
+          this.onReport.emit({
+            id: this.post().id,
+            type: 'post',
+            reason: res.reason,
+          });
+        }
+      });
+  }
+
+  confirmReportAuthor() {
+    this.dialog
+      .open(ConfirmDialog, {
+        width: '450px',
+        disableClose: true,
+        data: {
+          title: 'Report User',
+          message: 'Please provide a reason for reporting this user.',
+          confirmText: 'Report User',
+          requireReason: true,
+          reasonLabel: 'Report reason',
+          minReasonLength: 10,
+          color: 'warn',
+        },
+      })
+      .afterClosed()
+      .subscribe((res) => {
+        if (res?.confirmed) {
+          this.onReport.emit({
+            id: this.post().actor.id,
+            type: 'user',
+            reason: res.reason,
+          });
+        }
+      });
   }
 }

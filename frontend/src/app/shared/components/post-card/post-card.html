@@ -1,92 +1,4 @@
 <mat-card class="post-card" [class.detail-mode]="mode() === 'detail'" (click)="handleNavigate()">
-  @if (isConfirmingDelete()) {
-    <div class="card-overlay confirm-delete" (click)="$event.stopPropagation()">
-      <div class="overlay-content">
-        <mat-icon color="warn">delete_forever</mat-icon>
-        <h3>Delete this post?</h3>
-        <p>This action cannot be undone.</p>
-        <div class="overlay-actions">
-          <button mat-button (click)="cancelDelete()">Cancel</button>
-          <button mat-flat-button color="warn" class="danger" (click)="executeDelete()">
-            Delete
-          </button>
-        </div>
-      </div>
-    </div>
-  }
-
-  @if (isConfirmingCommentDelete()) {
-    <div class="card-overlay confirm-delete" (click)="$event.stopPropagation()">
-      <div class="overlay-content">
-        <mat-icon color="warn">delete_forever</mat-icon>
-        <h3>Delete this comment?</h3>
-        <p>This action cannot be undone.</p>
-        <div class="overlay-actions">
-          <button mat-button (click)="cancelCommentDelete()">Cancel</button>
-          <button mat-flat-button color="warn" class="danger" (click)="DeleteComment()">
-            Delete
-          </button>
-        </div>
-      </div>
-    </div>
-  }
-
-  @if (isConfirmingReport()) {
-    <div class="card-overlay confirm-delete" (click)="$event.stopPropagation()">
-      <div class="overlay-content">
-        <h3>Reporting.. this post?</h3>
-        <p>This action cannot be undone.</p>
-        <div class="overlay-actions">
-          <button mat-button (click)="cancelReport()">Cancel</button>
-          <button mat-flat-button class="danger" (click)="submitReport()">Report</button>
-        </div>
-      </div>
-    </div>
-  }
-
-  @if (isReporting()) {
-    <div class="card-overlay report-flow" (click)="$event.stopPropagation()">
-      <div class="overlay-content">
-        @if (!reportingTarget()) {
-          <p>What would you like to report?</p>
-          <div class="target-selector">
-            @for (opt of reportOptions(); track opt.id) {
-              <button mat-stroked-button (click)="selectReportTarget(opt.id, opt.type)">
-                {{ opt.label }}
-              </button>
-            }
-            <button mat-flat-button (click)="cancelReport()">Cancel</button>
-          </div>
-        } @else {
-          <p>
-            Reporting <strong>{{ reportingTarget()?.type }}</strong
-            >. Why?
-          </p>
-          <mat-form-field appearance="outline" class="full-width">
-            <textarea
-              matInput
-              [(ngModel)]="reportReason"
-              placeholder="Describe the issue..."
-              rows="1"
-            ></textarea>
-          </mat-form-field>
-          <div class="overlay-actions">
-            <button mat-flat-button (click)="cancelReport()">Cancel</button>
-
-            <button
-              mat-button
-              [disabled]="!reportReason().trim()"
-              class="danger"
-              (click)="confirmReport()"
-            >
-              Report
-            </button>
-          </div>
-        }
-      </div>
-    </div>
-  }
-
   <mat-card-header>
     <app-user-avatar
       [user]="post().actor"
@@ -143,11 +55,7 @@
     }
 
     @if (isAdmin()) {
-      <button
-        mat-icon-button
-        (click)="isReporting.set(true); $event.stopPropagation()"
-        matTooltip="Quick Report"
-      >
+      <button mat-icon-button matTooltip="Quick Report">
         <mat-icon>outlined_flag</mat-icon>
       </button>
       <span>{{ post().reportsCount }}</span>
@@ -162,8 +70,9 @@
         <mat-form-field appearance="outline" class="full-width">
           <textarea
             matInput
+            [value]="newCommentText()"
+            (input)="newCommentText.set($any($event.target).value)"
             placeholder="Write a comment..."
-            [(ngModel)]="newCommentText"
             rows="1"
             (keydown.enter)="submitComment(); $event.preventDefault()"
           ></textarea>
@@ -199,7 +108,7 @@
                 <button
                   mat-menu-item
                   class="danger-item"
-                  (click)="confirmCommentDelete(comment.id)"
+                  (click)="confirmDeleteComment(comment.id)"
                 >
                   <mat-icon color="warn">delete_outline</mat-icon>
                 </button>
@@ -229,9 +138,13 @@
 
 <mat-menu #postMenu="matMenu" xPosition="before">
   @if (!canDelete() || (isAdmin() && !isOwn())) {
-    <button mat-menu-item (click)="isReporting.set(true)">
+    <button mat-menu-item (click)="confirmReportPost()">
       <mat-icon>flag</mat-icon>
       <span>Report Post</span>
+    </button>
+    <button mat-menu-item (click)="confirmReportAuthor()">
+      <mat-icon>flag</mat-icon>
+      <span>Report Author</span>
     </button>
   }
 
@@ -252,7 +165,7 @@
   }
 
   @if (canDelete()) {
-    <button mat-menu-item class="danger-item" (click)="confirmDelete()">
+    <button mat-menu-item class="danger-item" (click)="confirmDeletePost()">
       <mat-icon color="warn">delete_outline</mat-icon>
       <span>Delete Post</span>
     </button>
