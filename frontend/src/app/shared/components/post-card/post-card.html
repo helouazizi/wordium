@@ -156,7 +156,7 @@
   }
 
   @if (isAdmin()) {
-    <button mat-menu-item (click)="handleVisibility()">
+    <button mat-menu-item (click)="confirmVisibility()">
       <mat-icon>
         {{ post().isFlagged ? 'visibility_off' : 'visibility' }}
       </mat-icon>

@@ -107,9 +107,7 @@ export class PostCard {
     this.onUpdate.emit(this.post());
   }
 
-  handleVisibility() {
-    this.onVisible.emit(this.post().id);
-  }
+ 
 
   submitComment() {
     if (this.newCommentText().trim()) {
@@ -124,6 +122,26 @@ export class PostCard {
 
   loadMoreComments() {
     this.onLoadMoreComments.emit();
+  }
+
+  confirmVisibility() {
+    this.dialog
+      .open(ConfirmDialog, {
+        width: '420px',
+        disableClose: true,
+        data: {
+          title: 'Hide Post',
+          message: 'This post will be permanently hiden.',
+          confirmText: 'Hide',
+          color: 'warn',
+        },
+      })
+      .afterClosed()
+      .subscribe((res) => {
+        if (res?.confirmed) {
+          this.onVisible.emit(this.post().id);
+        }
+      });
   }
 
   confirmDeletePost() {

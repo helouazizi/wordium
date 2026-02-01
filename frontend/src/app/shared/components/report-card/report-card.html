@@ -1,19 +1,4 @@
 <mat-card class="report-card" [class.resolved]="report().resolved">
-  @if (isConfirmingDelete()) {
-    <div class="card-overlay confirm-delete" (click)="$event.stopPropagation()">
-      <div class="overlay-content">
-        <mat-icon color="warn">delete_forever</mat-icon>
-        <h3>Delete this user?</h3>
-        <p>This action cannot be undone.</p>
-        <div class="overlay-actions">
-          <button mat-button (click)="cancelDelete()">Cancel</button>
-          <button mat-flat-button color="warn" class="danger" (click)="executeDelete()">
-            Delete
-          </button>
-        </div>
-      </div>
-    </div>
-  }
   <div class="header">
     <app-user-avatar [user]="report().reporter" [showName]="true" [time]="report().createdAt">
     </app-user-avatar>
@@ -49,13 +34,13 @@
     </button>
 
     @if (!report().resolved) {
-      <button mat-flat-button color="primary" (click)="onResolve.emit(report().id)">
+      <button mat-flat-button color="primary" (click)="confirmResolveReport()">
         <mat-icon>check</mat-icon>
         Resolve
       </button>
     }
 
-    <button mat-icon-button color="warn" class="danger" (click)="confirmDelete()">
+    <button mat-icon-button color="warn" class="danger" (click)="confirmDeleteReport()">
       <mat-icon>delete_outline</mat-icon>
     </button>
   </div>
