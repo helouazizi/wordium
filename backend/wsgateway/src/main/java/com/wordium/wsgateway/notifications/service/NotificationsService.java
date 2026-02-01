@@ -99,7 +99,6 @@ public class NotificationsService {
         long unread = repository.countByReceiverUserIdAndIsReadFalse(userId);
         long total = repository.countByReceiverUserId(userId);
 
-        // save to cach i f neded
 
         return new NotificationsResponse(responses, unread, total);
     }

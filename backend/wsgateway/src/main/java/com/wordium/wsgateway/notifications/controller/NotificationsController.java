@@ -63,10 +63,10 @@ public class NotificationsController {
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = ProblemDetail.class)))
     })
-    public ResponseEntity<NotificationsResponse> unreadCount(
+    public ResponseEntity<Long> unreadCount(
             @RequestHeader("User-Id") Long userId) {
-        long unread = service.unreadCount(userId);
-        return ResponseEntity.ok(new NotificationsResponse(null, unread, 0));
+        Long unread = service.unreadCount(userId);
+        return ResponseEntity.ok(unread);
     }
 
 

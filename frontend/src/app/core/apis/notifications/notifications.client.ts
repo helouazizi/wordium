@@ -32,4 +32,8 @@ export class NotificationsClient {
   markAsRead(id: number): Observable<void> {
     return this.http.post<void>(`${this.config.wsBaseUrl}/${id}/read`, null);
   }
+
+  unReadCount(): Observable<number> {
+    return this.http.get<number>(`${this.config.wsBaseUrl}/unread-count`);
+  }
 }

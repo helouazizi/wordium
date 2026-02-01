@@ -1,7 +1,7 @@
 <mat-toolbar class="header-toolbar">
   <div class="header-container">
     <div class="left-section">
-      <span class="logo" [routerLink]="'/fed'" style="cursor:pointer;">
+      <span class="logo" [routerLink]="'/fed'" style="cursor: pointer">
         <mat-icon class="logo-icon">edit_note</mat-icon>
         <span class="logo-text">Wordium</span>
       </span>
@@ -14,6 +14,11 @@
     <div class="right-section">
       <button mat-icon-button class="nav-icon" [routerLink]="'notifications'">
         <mat-icon>notifications_none</mat-icon>
+        @if (notifCount() > 0 && notifCount()< 10) {
+          <span class="badge">{{ notifCount() }}</span>
+        } @else if (notifCount() > 9) {
+          <span class="badge">9+</span>
+        }
       </button>
 
       <div class="profile-trigger">

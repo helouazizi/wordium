@@ -30,12 +30,12 @@ export class Notifications {
 
   markAsRead(notificationId: number) {
     // Update local signal immediately
+    this.notificationService.notifCount.update((c) => c - 1);
     this.notifications.update((current) =>
       current.map((n) => (n.id === notificationId ? { ...n, read: true } : n)),
     );
 
     // Optional: send update to backend
-    this.notificationService.markAsRead(notificationId).subscribe()
+    this.notificationService.markAsRead(notificationId).subscribe();
   }
-
 }
