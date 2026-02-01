@@ -1,21 +1,21 @@
-package com.wordium.users.events;
+package com.wordium.posts.events;
 
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 
-import com.wordium.users.dto.notification.NotificationEvent;
+import com.wordium.posts.dto.NotificationEvent;
 
 @Component
-public class DeleteUserEventProducer {
-    private static final String TOPIC = "users.events";
+public class PostEventProducer {
+    private static final String TOPIC = "postCreation.events";
 
     private final KafkaTemplate<String, NotificationEvent> kafkaTemplate;
 
-    public DeleteUserEventProducer(KafkaTemplate<String, NotificationEvent> kafkaTemplate) {
+    public PostEventProducer(KafkaTemplate<String, NotificationEvent> kafkaTemplate) {
         this.kafkaTemplate = kafkaTemplate;
     }
 
-    public void sendDeleteEvent(NotificationEvent event) {
+    public void sendPostEvent(NotificationEvent event) {
         kafkaTemplate.send(
                 TOPIC,
                 new NotificationEvent(

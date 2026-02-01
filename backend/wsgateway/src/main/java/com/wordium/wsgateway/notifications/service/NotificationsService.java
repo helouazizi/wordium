@@ -7,6 +7,7 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import com.wordium.wsgateway.common.client.UsersClientImpl;
@@ -17,6 +18,8 @@ import com.wordium.wsgateway.common.exceptions.NotFoundException;
 import com.wordium.wsgateway.notifications.dto.NotificationEvent;
 import com.wordium.wsgateway.notifications.model.Notification;
 import com.wordium.wsgateway.notifications.repo.NotificationsRepo;
+
+import jakarta.transaction.Transactional;
 
 @Service
 public class NotificationsService {
@@ -30,7 +33,25 @@ public class NotificationsService {
         this.usersClientImpl = usersClientImpl;
     }
 
+    @Transactional
     public Notification createFromEvent(NotificationEvent event) {
+
+        return switch (event.type()) {
+
+            case "FOLLOW", "UNFOLLOW", "POST_CREATED" ->
+                createNotification(event);
+
+            case "USER_DELETED" -> {
+                deleteUserNotifications(event.actorId());
+                yield null;
+            }
+
+            default -> throw new IllegalArgumentException(
+                    "Unsupported notification event type: " + event.type());
+        };
+    }
+
+    private Notification createNotification(NotificationEvent event) {
 
         Notification notification = new Notification(
                 event.receiverId(),
@@ -38,10 +59,22 @@ public class NotificationsService {
                 event.type(),
                 event.referenceId());
 
-        Notification saved = repository.save(notification);
-        // later use redis and ws if needded
-        System.out.println("even recived "+event.receiverId() + "++++++++++++++++");
-        return saved;
+        try {
+            Notification saved = repository.save(notification);
+            System.out.println("notification created for " + event.receiverId());
+            return saved;
+        } catch (DataIntegrityViolationException e) {
+            return null;
+        }
+    }
+
+    @Transactional
+    private void deleteUserNotifications(Long userId) {
+
+        repository.deleteByActorUserId(userId);
+        repository.deleteByReceiverUserId(userId);
+
+        System.out.println("Deleted notifications for user " + userId);
     }
 
     public NotificationsResponse getUserNotifications(Long userId) {
@@ -50,7 +83,6 @@ public class NotificationsService {
                 .map(Notification::getActorUserId)
                 .filter(Objects::nonNull)
                 .collect(Collectors.toSet());
-        // now need to get users profile from users
         List<UserProfile> profiles = usersClientImpl.getUsersByIds(actorIds);
 
         Map<Long, UserProfile> userProfileMap = profiles.stream()

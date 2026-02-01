@@ -1,19 +1,20 @@
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { NotificationInter } from '../../../core/apis/notifications/notification.model';
 import { UserAvatar } from '../user-avatar/user-avatar';
 import { MatIcon } from '@angular/material/icon';
 
 @Component({
   selector: 'app-notification',
-  imports: [UserAvatar,MatIcon],
+  imports: [UserAvatar, MatIcon],
   templateUrl: './notification.html',
   styleUrl: './notification.scss',
 })
 export class Notification {
   @Input() notification!: NotificationInter;
+  @Output() read = new EventEmitter<number>();
 
   markAsRead() {
-    this.notification.read = true;
+    this.read.emit(this.notification.id);
   }
 
   get message(): string {
@@ -22,7 +23,7 @@ export class Notification {
         return 'started following you';
       case 'UNFOLLOW':
         return 'stopped following you';
-      case 'POST':
+      case 'POST_CREATED':
         return 'created a new post';
       default:
         return '';
@@ -35,7 +36,7 @@ export class Notification {
         return 'person_add';
       case 'UNFOLLOW':
         return 'person_remove';
-      case 'POST':
+      case 'POST_CREATED':
         return 'post_add';
       default:
         return 'notifications';

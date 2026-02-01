@@ -4,7 +4,7 @@
   <ul class="notifications-list">
     @for (n of notifications(); track $index) {
       <li>
-        <app-notification [notification]="n"></app-notification>
+        <app-notification [notification]="n" (read)="markAsRead(n.id)"></app-notification>
       </li>
     } @empty {
       <li class="empty-state">

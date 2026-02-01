@@ -98,7 +98,7 @@ public class AdminAccountServiceImpl implements AdminAccountService {
         usersRepo.delete(account);
 
         NotificationEvent deleteUserEvent = new NotificationEvent(
-                "DELETE_USER",
+                "USER_DELETED",
                 account.getId(),
                 null,
                 null);

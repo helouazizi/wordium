@@ -11,10 +11,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.wordium.posts.dto.CommentRequest;
 import com.wordium.posts.dto.CommentResponse;
+import com.wordium.posts.dto.NotificationEvent;
 import com.wordium.posts.dto.PostReactionRequest;
 import com.wordium.posts.dto.PostRequest;
 import com.wordium.posts.dto.PostResponse;
 import com.wordium.posts.dto.UserProfile;
+import com.wordium.posts.events.PostEventProducer;
 import com.wordium.posts.exeptions.AccessDeniedException;
 import com.wordium.posts.exeptions.BadRequestException;
 import com.wordium.posts.exeptions.NotFoundException;
@@ -38,16 +40,18 @@ public class PostServiceImpl implements PostService {
     private final UserEnrichmentHelper userEnrichmentHelper;
     private final CloudinaryService cloudinaryService;
     private final ReportRepository reportRepository;
+    private final PostEventProducer producer;
 
     public PostServiceImpl(PostRepository postRepository, UserEnrichmentHelper userEnrichmentHelper,
             ReactionRepository reactionRepository, CommentRepository commentRepository,
-            CloudinaryService cloudinaryService, ReportRepository reportRepository) {
+            CloudinaryService cloudinaryService, ReportRepository reportRepository, PostEventProducer producer) {
         this.postRepository = postRepository;
         this.userEnrichmentHelper = userEnrichmentHelper;
         this.reactionRepository = reactionRepository;
         this.commentRepository = commentRepository;
         this.cloudinaryService = cloudinaryService;
         this.reportRepository = reportRepository;
+        this.producer = producer;
     }
 
     @Transactional
@@ -82,6 +86,11 @@ public class PostServiceImpl implements PostService {
                 this.cloudinaryService.finalizeUpload(media);
             }
         }
+
+        // notify using kafka
+        producer.sendPostEvent(
+                new NotificationEvent("POST_CREATED", userId, null,
+                        null));
 
         return mapToResponse(saved, new UserProfile(userId, null, null, "null", null, "null", null, null, null, null,
                 null, null, null, null, null, null, null, null), false);

@@ -29,4 +29,7 @@ export class NotificationsClient {
       params: httpParams,
     });
   }
+  markAsRead(id: number): Observable<void> {
+    return this.http.post<void>(`${this.config.wsBaseUrl}/${id}/read`, null);
+  }
 }

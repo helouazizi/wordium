@@ -10,4 +10,9 @@ export class NotificationsService {
   getNotifications(params?: PageRequest) {
     return this.client.getNotifications(params);
   }
-}
+
+  markAsRead(id: number) {
+    return this.client.markAsRead(id);
+  }
+
+}   

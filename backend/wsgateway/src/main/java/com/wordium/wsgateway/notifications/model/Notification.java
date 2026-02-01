@@ -8,27 +8,32 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 
 @Entity
-@Table(name = "notifications")
+@Table(name = "notifications", uniqueConstraints = @UniqueConstraint(columnNames = {
+        "receiver_user_id",
+        "actor_user_id",
+        "type",
+        "reference_id"
+}))
 public class Notification {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(name = "receiver_user_id", nullable = false)
     private Long receiverUserId;
 
-    @Column(nullable = false)
+    @Column(name = "actor_user_id", nullable = false)
     private Long actorUserId;
 
-    // FOLLOW, UNFOLLOW, LIKE, COMMENT
+    // FOLLOW, UNFOLLOW, POST_CREATED
     @Column(nullable = false, length = 50)
     private String type;
 
-    // Optional: postId, commentId, etc.
-    @Column
+    @Column(name = "reference_id")
     private Long referenceId;
 
     @Column(nullable = false)
@@ -45,8 +50,7 @@ public class Notification {
             Long receiverUserId,
             Long actorUserId,
             String type,
-            Long referenceId
-    ) {
+            Long referenceId) {
         this.receiverUserId = receiverUserId;
         this.actorUserId = actorUserId;
         this.type = type;

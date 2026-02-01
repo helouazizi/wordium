@@ -14,12 +14,21 @@ import jakarta.transaction.Transactional;
 public interface NotificationsRepo extends JpaRepository<Notification, Long> {
 
     List<Notification> findByReceiverUserIdOrderByCreatedAtDesc(Long receiverId);
-    long countByReceiverUserIdAndIsReadFalse(Long receiverUserId);
-    long countByReceiverUserId(Long receiverUserId);
 
+    long countByReceiverUserIdAndIsReadFalse(Long receiverUserId);
+
+    long countByReceiverUserId(Long receiverUserId);
 
     @Modifying
     @Transactional
     @Query("UPDATE Notification n SET n.isRead = true WHERE n.id = :id AND n.receiverUserId = :userId")
     int markAsRead(@Param("id") Long id, @Param("userId") Long userId);
+
+    @Modifying
+    @Query("delete from Notification n where n.actorUserId = :userId")
+    void deleteByActorUserId(Long userId);
+
+    @Modifying
+    @Query("delete from Notification n where n.receiverUserId = :userId")
+    void deleteByReceiverUserId(Long userId);
 }

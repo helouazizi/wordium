@@ -1,9 +1,7 @@
 package com.wordium.users.services.followers;
 
-import java.util.List;
-import java.util.Objects;
-
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -31,6 +29,30 @@ public class FollowersService {
                 this.followersRepo = followersRepo;
                 this.usersRepo = usersRepo;
                 this.producer = producer;
+        }
+
+        public void notifyFollowers(NotificationEvent event) {
+
+                int page = 0;
+                int size = 500;
+                Page<Long> followerPage;
+
+                do {
+                        followerPage = followersRepo.findFollowerIdsByFollowedId(
+                                        event.actorId(),
+                                        PageRequest.of(page, size));
+
+                        for (Long followerId : followerPage.getContent()) {
+                                producer.sendFollowEvent(
+                                                new NotificationEvent(
+                                                                "POST_CREATED",
+                                                                event.actorId(), // actor
+                                                                followerId, // receiver
+                                                                null));
+                        }
+
+                        page++;
+                } while (followerPage.hasNext());
         }
 
         @Transactional
