@@ -118,7 +118,6 @@ export class PostList implements OnInit, AfterViewInit {
             ? Array.from(new Map([...existing, ...res.data].map((p) => [p.id, p])).values())
             : res.data,
         );
-        console.log(this.posts(), 'postsss');
 
         this.isLastPage.set(res.isLast);
         this.initialLoading.set(false);

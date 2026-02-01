@@ -1,5 +1,6 @@
 package com.wordium.posts.services.impl;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -9,6 +10,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.wordium.posts.clients.UsersServiceClient;
 import com.wordium.posts.dto.CommentRequest;
 import com.wordium.posts.dto.CommentResponse;
 import com.wordium.posts.dto.NotificationEvent;
@@ -41,10 +43,12 @@ public class PostServiceImpl implements PostService {
     private final CloudinaryService cloudinaryService;
     private final ReportRepository reportRepository;
     private final PostEventProducer producer;
+    private final UsersServiceClient usersServiceClient;
 
     public PostServiceImpl(PostRepository postRepository, UserEnrichmentHelper userEnrichmentHelper,
             ReactionRepository reactionRepository, CommentRepository commentRepository,
-            CloudinaryService cloudinaryService, ReportRepository reportRepository, PostEventProducer producer) {
+            CloudinaryService cloudinaryService, ReportRepository reportRepository, PostEventProducer producer,
+            UsersServiceClient usersServiceClient) {
         this.postRepository = postRepository;
         this.userEnrichmentHelper = userEnrichmentHelper;
         this.reactionRepository = reactionRepository;
@@ -52,6 +56,7 @@ public class PostServiceImpl implements PostService {
         this.cloudinaryService = cloudinaryService;
         this.reportRepository = reportRepository;
         this.producer = producer;
+        this.usersServiceClient = usersServiceClient;
     }
 
     @Transactional
@@ -137,7 +142,15 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public Page<PostResponse> getFeed(Pageable pageable, Long userId) {
-        Page<Post> page = postRepository.findByFlaggedFalse(pageable);
+
+        List<Long> followingIds = usersServiceClient.getFollowingIds(userId);
+        followingIds.add(userId);
+
+        if (followingIds.isEmpty()) {
+            return Page.empty(pageable);
+        }
+
+        Page<Post> page = postRepository.findByUserIdInAndFlaggedFalse(followingIds, pageable);
         return enrichWithLikes(page, userId);
     }
 

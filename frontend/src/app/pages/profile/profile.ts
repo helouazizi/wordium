@@ -94,12 +94,10 @@ export class Profile {
       if (id) {
         this.usersService.getUserProfile(id).subscribe({
           next: (user) => {
-            (this.targetUser.set(user), console.log(user, 'profile'));
+            (this.targetUser.set(user));
           },
           error: (err) => {
             this.err.set(err.error.detail);
-            console.log(err);
-            console.log(this.err());
           },
         });
       }

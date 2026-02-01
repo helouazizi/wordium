@@ -42,7 +42,6 @@ export class UsersClient {
   }
 
   follow(targetUserId: number): Observable<FollowResponse> {
-    console.log(targetUserId, 'user id');
 
     return this.http.post<FollowResponse>(
       `${this.config.usersBaseUrl}/${targetUserId}/follow`,

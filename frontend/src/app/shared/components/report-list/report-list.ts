@@ -110,7 +110,6 @@ export class ReportList implements OnInit, AfterViewInit {
             : merged,
         );
 
-        console.log(this.reports(), 'reports ');
 
         this.isLastPage.set(posts.isLast && users.isLast);
 

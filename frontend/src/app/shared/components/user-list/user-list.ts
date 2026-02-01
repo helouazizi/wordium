@@ -99,7 +99,6 @@ export class UserList implements OnInit, AfterViewInit {
 
     result$.subscribe({
       next: (res: PageResponse<User>) => {
-        console.log(res.data, 'users');
 
         this.users.update((existing) =>
           append

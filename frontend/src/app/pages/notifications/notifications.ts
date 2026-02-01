@@ -22,7 +22,6 @@ export class Notifications {
   private loadNotifications() {
     this.notificationService.getNotifications().subscribe({
       next: (data: any) => {
-        console.log(data);
         this.notifications.set(data.notifications);
       },
     });

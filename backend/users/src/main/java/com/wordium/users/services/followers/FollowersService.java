@@ -1,5 +1,7 @@
 package com.wordium.users.services.followers;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -153,6 +155,10 @@ public class FollowersService {
                                 followsMe,
                                 stats,
                                 u.getSocial());
+        }
+
+        public List<Long> getFollowingIds(Long userId) {
+                return followersRepo.findFollowingIdsByFollowerId(userId);
         }
 
 }

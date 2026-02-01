@@ -1,6 +1,5 @@
 package com.wordium.posts.clients;
 
-// src/main/java/com/wordium/users/client/InternalServiceInterceptor.java
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;

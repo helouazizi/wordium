@@ -14,7 +14,6 @@ export class App {
   auth = inject(AuthService)
 
   ngOnInit(){
-    console.log(this.auth.user());
     
   }
 }

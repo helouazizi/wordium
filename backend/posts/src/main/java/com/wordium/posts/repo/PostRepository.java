@@ -18,8 +18,11 @@ public interface PostRepository extends JpaRepository<Post, Long>, JpaSpecificat
 
     Page<Post> findByUserId(Long userId, Pageable pageable);
 
+    Page<Post> findByUserIdInAndFlaggedFalse(
+            List<Long> userIds,
+            Pageable pageable);
+
     Page<Post> findByFlaggedFalse(Pageable pageable);
-    // Page<Post> findAllByOrderByCreatedAtDesc();
 
     @Modifying
     @Transactional

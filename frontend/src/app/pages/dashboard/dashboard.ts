@@ -64,7 +64,6 @@ export class Dashboard implements OnInit {
       postsReports: this.usersService.getPostReporstCount(),
     }).subscribe({
       next: ({ users, usersReports, posts, postsReports }) => {
-        console.log(postsReports, 'posts reports ');
 
         this.stats.set([
           {
