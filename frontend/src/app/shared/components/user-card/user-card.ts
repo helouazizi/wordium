@@ -99,11 +99,11 @@ export class UserCard {
       });
   }
 
-  follow() {
-    this.onFollow.emit(this.user().id);
-  }
-
   viewProfile() {
     this.onViewProfile.emit(this.user().id);
+  }
+
+  toggleFollow() {
+    this.onFollow.emit(this.user().id);
   }
 }

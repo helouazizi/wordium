@@ -18,10 +18,12 @@
         <mat-error>Reason is required</mat-error>
       }
 
+      @if (reasonControl.hasError('whitespace')) {
+        <mat-error>Reason cannot be empty</mat-error>
+      }
+
       @if (reasonControl.hasError('minlength')) {
-        <mat-error>
-          Minimum {{ data.minReasonLength || 5 }} characters required
-        </mat-error>
+        <mat-error> Minimum {{ minLength }} characters required </mat-error>
       }
     </mat-form-field>
   }

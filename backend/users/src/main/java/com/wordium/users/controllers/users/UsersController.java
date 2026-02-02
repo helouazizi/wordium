@@ -4,6 +4,8 @@ import java.util.List;
 
 import org.apache.hc.core5.http.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,6 +18,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.wordium.users.dto.PaginatedResponse;
+import com.wordium.users.dto.PaginationRequest;
 import com.wordium.users.dto.auth.SignUpRequest;
 import com.wordium.users.dto.auth.SignUpResponse;
 import com.wordium.users.dto.report.CreateUserReportRequest;
@@ -24,6 +28,7 @@ import com.wordium.users.dto.users.UpdateProfileRequest;
 import com.wordium.users.dto.users.UserProfile;
 import com.wordium.users.dto.users.UsersResponse;
 import com.wordium.users.dto.users.UsersSegnatureResponse;
+import com.wordium.users.services.admin.AdminAccountService;
 import com.wordium.users.services.cloudinary.CloudinaryService;
 import com.wordium.users.services.users.UsersService;
 
@@ -44,10 +49,13 @@ public class UsersController {
     @Autowired
     private final UsersService userService;
     private final CloudinaryService CloudinaryService;
+    private final AdminAccountService adminAccountService;
 
-    public UsersController(UsersService userService, CloudinaryService CloudinaryService) {
+    public UsersController(UsersService userService, CloudinaryService CloudinaryService,
+            AdminAccountService adminAccountService) {
         this.userService = userService;
         this.CloudinaryService = CloudinaryService;
+        this.adminAccountService = adminAccountService;
     }
 
     @Hidden
@@ -127,6 +135,14 @@ public class UsersController {
 
         userService.reportUser(reporterId, userId, request);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<PaginatedResponse<UserProfile>> getSearchUsers(@RequestHeader("User-Id") Long id,
+            @Valid PaginationRequest paginationRequest) {
+        Pageable pageable = paginationRequest.toPageable();
+        Page<UserProfile> accounts = this.adminAccountService.getSearchUsers(id, pageable);
+        return ResponseEntity.ok(PaginatedResponse.fromPage(accounts));
     }
 
 }

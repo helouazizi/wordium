@@ -107,8 +107,6 @@ export class PostCard {
     this.onUpdate.emit(this.post());
   }
 
- 
-
   submitComment() {
     if (this.newCommentText().trim()) {
       this.onComment.emit(this.newCommentText());
@@ -202,11 +200,29 @@ export class PostCard {
       .afterClosed()
       .subscribe((res) => {
         if (res?.confirmed) {
-          this.onReport.emit({
-            id: this.post().id,
-            type: 'post',
-            reason: res.reason,
-          });
+          const reason = res.reason;
+          this.dialog
+            .open(ConfirmDialog, {
+              width: '400px',
+              disableClose: true,
+              data: {
+                title: 'Confirm Report',
+                message: 'Are you sure you want to report this post?',
+                confirmText: 'Yes, Report',
+                cancelText: 'Cancel',
+                color: 'warn',
+              },
+            })
+            .afterClosed()
+            .subscribe((confirmed) => {
+              if (confirmed) {
+                this.onReport.emit({
+                  id: this.post().id,
+                  type: 'post',
+                  reason,
+                });
+              }
+            });
         }
       });
   }
@@ -229,11 +245,30 @@ export class PostCard {
       .afterClosed()
       .subscribe((res) => {
         if (res?.confirmed) {
-          this.onReport.emit({
-            id: this.post().actor.id,
-            type: 'user',
-            reason: res.reason,
-          });
+          const reason = res.reason;
+   
+          this.dialog
+            .open(ConfirmDialog, {
+              width: '400px',
+              disableClose: true,
+              data: {
+                title: 'Confirm Report',
+                message: 'Are you sure you want to report this post author?',
+                confirmText: 'Yes, Report',
+                cancelText: 'Cancel',
+                color: 'warn',
+              },
+            })
+            .afterClosed()
+            .subscribe((confirmed) => {
+              if (confirmed) {
+                this.onReport.emit({
+                  id: this.post().id,
+                  type: 'user',
+                  reason,
+                });
+              }
+            });
         }
       });
   }

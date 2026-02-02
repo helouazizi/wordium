@@ -99,7 +99,6 @@ export class UserList implements OnInit, AfterViewInit {
 
     result$.subscribe({
       next: (res: PageResponse<User>) => {
-
         this.users.update((existing) =>
           append
             ? Array.from(new Map([...existing, ...res.data].map((p) => [p.id, p])).values())
@@ -132,6 +131,10 @@ export class UserList implements OnInit, AfterViewInit {
           switchMap((id) => this.userService.getUserFollowers(id, params)),
         );
 
+      case 'search':
+        return this.userId$.pipe(
+          switchMap((id) => this.userService.getSearchUsers(params)),
+        );
       default:
         return this.userService.getAllUsers(params);
     }

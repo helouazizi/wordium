@@ -1,5 +1,11 @@
 import { Component, Inject } from '@angular/core';
-import { FormControl, Validators, ReactiveFormsModule } from '@angular/forms';
+import {
+  FormControl,
+  Validators,
+  ReactiveFormsModule,
+  AbstractControl,
+  ValidationErrors,
+} from '@angular/forms';
 import {
   MAT_DIALOG_DATA,
   MatDialogActions,
@@ -10,6 +16,11 @@ import {
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
+
+export interface ConfirmDialogResult {
+  confirmed: boolean;
+  reason?: string;
+}
 
 export interface ConfirmDialogData {
   title: string;
@@ -38,32 +49,53 @@ export interface ConfirmDialogData {
   styleUrl: './confirm-dialog.scss',
 })
 export class ConfirmDialog {
-  reasonControl = new FormControl('');
+  readonly minLength: number;
+
+  reasonControl = new FormControl('', {
+    nonNullable: true,
+  });
 
   constructor(
-    private dialogRef: MatDialogRef<ConfirmDialog>,
+    private dialogRef: MatDialogRef<ConfirmDialog, ConfirmDialogResult>,
     @Inject(MAT_DIALOG_DATA) public data: ConfirmDialogData,
   ) {
-    if (data.requireReason) {
-      this.reasonControl.setValidators([
-        Validators.required,
-        Validators.minLength(data.minReasonLength || 5),
-      ]);
+    this.minLength = data.minReasonLength ?? 5;
 
-      this.reasonControl.updateValueAndValidity({ emitEvent: false });
+    if (data.requireReason) {
+      this.reasonControl.addValidators([
+        Validators.required,
+        Validators.minLength(this.minLength),
+        this.noWhitespaceValidator,
+      ]);
     }
+
+    this.reasonControl.updateValueAndValidity({ emitEvent: false });
   }
 
-  confirm() {
-    if (this.data.requireReason && this.reasonControl.invalid) return;
+  confirm(): void {
+    this.reasonControl.markAsTouched();
+
+    if (this.data.requireReason && this.reasonControl.invalid) {
+      return;
+    }
+
+    const reason = this.reasonControl.value.trim();
 
     this.dialogRef.close({
       confirmed: true,
-      reason: this.reasonControl.value,
+      reason,
     });
   }
 
-  cancel() {
+  cancel(): void {
     this.dialogRef.close({ confirmed: false });
+  }
+
+  private noWhitespaceValidator(control: AbstractControl): ValidationErrors | null {
+    const value = control.value as string;
+
+    if (!value) return null;
+
+    return value.trim().length === 0 ? { whitespace: true } : null;
   }
 }

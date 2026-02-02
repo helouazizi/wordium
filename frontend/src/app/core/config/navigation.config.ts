@@ -6,7 +6,6 @@ export interface NavItem {
 
 export const NAV_LINKS: NavItem[] = [
   { label: 'Feed', icon: 'home', route: '/feed' },
-  { label: 'Explore', icon: 'explore', route: '/explore' },
+  { label: 'Discover', icon: 'explore', route: '/discover' },
   { label: 'write', icon: 'edit_note', route: '/write' },
-  
 ];

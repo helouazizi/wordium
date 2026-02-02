@@ -10,7 +10,6 @@
     position: absolute;
     inset: 0;
     z-index: 10;
-    // background: var(--mat-sys-on-surface-variant);
     backdrop-filter: blur(50px);
     -webkit-backdrop-filter: blur(50px);
     display: flex;
@@ -249,7 +248,7 @@
       font-size: 14px;
     }
 
-  
+
 
     .action-btn mat-icon {
       margin: 0;
@@ -260,3 +259,4 @@
     }
   }
 }
+

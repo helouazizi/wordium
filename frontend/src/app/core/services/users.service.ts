@@ -23,7 +23,6 @@ export class UsersService {
   getPostReporstCount(): Observable<CountResponse> {
     return this.client.getPostReporstCount();
   }
-  
 
   getUsersCount(): Observable<CountResponse> {
     return this.client.getUsersCount();
@@ -51,7 +50,9 @@ export class UsersService {
   getUserFollowers(userId: number, params: PageRequest): Observable<PageResponse<User>> {
     return this.client.getFollowers(userId, params);
   }
-
+  getSearchUsers(params: PageRequest): Observable<PageResponse<User>> {
+    return this.client.getSearchUsers( params);
+  }
   getUserFollowing(userId: number, params: PageRequest): Observable<PageResponse<User>> {
     return this.client.getFollowing(userId, params);
   }

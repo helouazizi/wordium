@@ -73,7 +73,32 @@ export class Profile {
       .afterClosed()
       .subscribe((result) => {
         if (result?.confirmed) {
-          this.postsService.reportUser(userId, result.reason).subscribe();
+          const reason = result.reason;
+          this.dialog
+            .open(ConfirmDialog, {
+              width: '400px',
+              disableClose: true,
+              data: {
+                title: 'Confirm Report',
+                message: 'Are you sure you want to report this user?',
+                confirmText: 'Yes, Report',
+                cancelText: 'Cancel',
+                color: 'warn',
+              },
+            })
+            .afterClosed()
+            .subscribe((confirmed) => {
+              if (confirmed) {
+                this.postsService.reportUser(userId, reason).subscribe({
+                  next: () => {
+                    this.notif.showSuccess('User reported');
+                  },
+                  error: () => {
+                    this.notif.showError('Cant  reporte this user');
+                  },
+                });
+              }
+            });
         }
       });
   }
@@ -94,7 +119,7 @@ export class Profile {
       if (id) {
         this.usersService.getUserProfile(id).subscribe({
           next: (user) => {
-            (this.targetUser.set(user));
+            this.targetUser.set(user);
           },
           error: (err) => {
             this.err.set(err.error.detail);

@@ -32,7 +32,8 @@ public class UsersService {
     private final CloudinaryService cloudinaryService;
     private final UserReportRepo userReportRepo;
 
-    public UsersService(UsersRepo usersRepo, FollowersRepo followersRepo, CloudinaryService cloudinaryService,UserReportRepo userReportRepo) {
+    public UsersService(UsersRepo usersRepo, FollowersRepo followersRepo, CloudinaryService cloudinaryService,
+            UserReportRepo userReportRepo) {
         this.usersRepo = usersRepo;
         this.followersRepo = followersRepo;
         this.cloudinaryService = cloudinaryService;
@@ -40,9 +41,6 @@ public class UsersService {
     }
 
     public void reportUser(Long reporterId, Long reportedUserId, CreateUserReportRequest request) {
-        // if (userReportRepo.existsByReportedBy_IdAndReportedUser_Id(reporterId, reportedUserId)) {
-        //     throw new IllegalStateException("You already reported this user");
-        // }
 
         Users reporter = usersRepo.findById(reporterId)
                 .orElseThrow(() -> new NotFoundException("Reporter not found"));
@@ -57,6 +55,8 @@ public class UsersService {
 
         userReportRepo.save(report);
     }
+
+  
 
     public SignUpResponse createUser(SignUpRequest req) {
         if (usersRepo.findByEmail(req.email()).isPresent()) {

@@ -23,11 +23,16 @@ export const routes: Routes = [
       },
       {
         path: 'notifications',
-        loadComponent: () => import('./pages/notifications/notifications').then((m) => m.Notifications),
+        loadComponent: () =>
+          import('./pages/notifications/notifications').then((m) => m.Notifications),
       },
       {
         path: 'write', //  whrite blog
         loadComponent: () => import('./pages/post-editor/post-editor').then((c) => c.PostEditor),
+      },
+      {
+        path: 'discover', //  whrite blog
+        loadComponent: () => import('./pages/discover/discover').then((c) => c.Discover),
       },
       {
         path: 'posts/:id',

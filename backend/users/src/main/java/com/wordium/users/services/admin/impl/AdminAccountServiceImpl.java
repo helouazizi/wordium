@@ -50,6 +50,15 @@ public class AdminAccountServiceImpl implements AdminAccountService {
     }
 
     @Override
+    public Page<UserProfile> getSearchUsers(
+            Long viewerId,
+            Pageable pageable) {
+
+        return usersRepo.findByIdNot(viewerId, pageable)
+                .map(u -> toUserProfile(u, viewerId));
+    }
+
+    @Override
     public Users getAccountById(Long id) {
         return usersRepo.findById(id)
                 .orElseThrow(() -> new RuntimeException("Account not found with id: " + id));
@@ -85,16 +94,12 @@ public class AdminAccountServiceImpl implements AdminAccountService {
         Users account = usersRepo.findById(id)
                 .orElseThrow(() -> new NotFoundException("User  not found"));
 
-        // 1️⃣ Remove report references FIRST
         userReportRepo.clearResolvedBy(id);
 
-        // 2️⃣ Delete reports CREATED by this user
         userReportRepo.deleteByReportedBy_Id(id);
 
-        // 3️⃣ Delete reports AGAINST this user
         userReportRepo.deleteByReportedUser_Id(id);
 
-        // 4️⃣ Now delete the user safely
         usersRepo.delete(account);
 
         NotificationEvent deleteUserEvent = new NotificationEvent(

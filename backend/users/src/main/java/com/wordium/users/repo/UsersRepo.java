@@ -14,6 +14,8 @@ import com.wordium.users.models.Users;
 public interface UsersRepo extends JpaRepository<Users, Long>, JpaSpecificationExecutor<Users> {
     Optional<Users> findByEmail(String email);
 
+    org.springframework.data.domain.Page<Users> findByIdNot(Long id, org.springframework.data.domain.Pageable pageable);
+
     boolean existsByEmail(String email);
 
     Optional<Users> findByUsername(String username);

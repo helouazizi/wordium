@@ -42,7 +42,6 @@ export class UsersClient {
   }
 
   follow(targetUserId: number): Observable<FollowResponse> {
-
     return this.http.post<FollowResponse>(
       `${this.config.usersBaseUrl}/${targetUserId}/follow`,
       null,
@@ -66,6 +65,22 @@ export class UsersClient {
       httpParams = httpParams.set('sort', params.sort);
     }
     return this.http.get<PageResponse<User>>(`${this.config.usersBaseUrl}/${userId}/followers`, {
+      params: httpParams,
+    });
+  }
+  getSearchUsers(params: PageRequest): Observable<PageResponse<User>> {
+    let httpParams = new HttpParams();
+
+    if (params?.page !== undefined) {
+      httpParams = httpParams.set('page', params.page);
+    }
+    if (params?.size !== undefined) {
+      httpParams = httpParams.set('size', params.size);
+    }
+    if (params?.sort) {
+      httpParams = httpParams.set('sort', params.sort);
+    }
+    return this.http.get<PageResponse<User>>(`${this.config.usersBaseUrl}/search`, {
       params: httpParams,
     });
   }
