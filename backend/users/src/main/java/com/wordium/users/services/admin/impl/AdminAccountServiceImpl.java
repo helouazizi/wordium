@@ -16,6 +16,7 @@ import com.wordium.users.models.Users;
 import com.wordium.users.repo.FollowersRepo;
 import com.wordium.users.repo.UserReportRepo;
 import com.wordium.users.repo.UsersRepo;
+import com.wordium.users.services.RedisBanService;
 import com.wordium.users.services.admin.AdminAccountService;
 
 import jakarta.transaction.Transactional;
@@ -28,13 +29,15 @@ public class AdminAccountServiceImpl implements AdminAccountService {
     private final FollowersRepo followersRepo;
     private final DeleteUserEventProducer producer;
     private final UserReportRepo userReportRepo;
+    private final RedisBanService redisBanService;
 
     public AdminAccountServiceImpl(UsersRepo usersRepo, FollowersRepo followersRepo, DeleteUserEventProducer producer,
-            UserReportRepo userReportRepo) {
+            UserReportRepo userReportRepo, RedisBanService redisBanService) {
         this.usersRepo = usersRepo;
         this.followersRepo = followersRepo;
         this.producer = producer;
         this.userReportRepo = userReportRepo;
+        this.redisBanService = redisBanService;
     }
 
     public long getTotalUsers() {
@@ -69,6 +72,7 @@ public class AdminAccountServiceImpl implements AdminAccountService {
         Users account = getAccountById(id);
         account.setBanned(true);
         account.setUpdatedAt(LocalDateTime.now());
+        redisBanService.banUser(id);
         return usersRepo.save(account);
     }
 
@@ -77,6 +81,7 @@ public class AdminAccountServiceImpl implements AdminAccountService {
         Users account = getAccountById(id);
         account.setBanned(false);
         account.setUpdatedAt(LocalDateTime.now());
+        redisBanService.unbanUser(id);
         return usersRepo.save(account);
     }
 
@@ -101,6 +106,7 @@ public class AdminAccountServiceImpl implements AdminAccountService {
         userReportRepo.deleteByReportedUser_Id(id);
 
         usersRepo.delete(account);
+        redisBanService.banUser(id);
 
         NotificationEvent deleteUserEvent = new NotificationEvent(
                 "USER_DELETED",

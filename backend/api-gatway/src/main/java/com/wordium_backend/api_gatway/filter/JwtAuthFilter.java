@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
 
+import com.wordium_backend.api_gatway.services.RedisBanService;
 import com.wordium_backend.api_gatway.util.JwtUtil;
 
 import reactor.core.publisher.Mono;
@@ -17,6 +18,8 @@ public class JwtAuthFilter implements GlobalFilter, Ordered {
 
     @Autowired
     private JwtUtil jwtUtil;
+    @Autowired
+    private RedisBanService redisBanService;
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
@@ -59,7 +62,12 @@ public class JwtAuthFilter implements GlobalFilter, Ordered {
         }
 
         JwtUtil.UserInfo userinfo = jwtUtil.extractUserInfo(token);
-        
+        // request id from reis and check baned
+        if (redisBanService.isBanned(userinfo.userId())) {
+            exchange.getResponse().setStatusCode(HttpStatus.FORBIDDEN);
+            return exchange.getResponse().setComplete();
+        }
+
         // protect admin routes
         if (path.contains("admin") && !userinfo.role().equals("ADMIN")) {
             return unauthorized(exchange);

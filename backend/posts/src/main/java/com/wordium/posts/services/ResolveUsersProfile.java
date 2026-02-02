@@ -7,8 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.springframework.cache.Cache;
-import org.springframework.cache.CacheManager;
 import org.springframework.stereotype.Service;
 
 import com.wordium.posts.clients.UsersServiceClient;
@@ -18,17 +16,14 @@ import com.wordium.posts.dto.UserProfile;
 @Service
 public class ResolveUsersProfile {
 
-    private static final String USER_CACHE = "user-profile";
-
     private final UsersServiceClient usersServiceClient;
-    private final Cache cache;
+    private final RedisUserProfileService redisUserProfileService;
 
     public ResolveUsersProfile(
-        UsersServiceClient usersServiceClient,
-        CacheManager cacheManager
-    ) {
+            UsersServiceClient usersServiceClient,
+            RedisUserProfileService redisUserProfileService) {
         this.usersServiceClient = usersServiceClient;
-        this.cache = cacheManager.getCache(USER_CACHE);
+        this.redisUserProfileService = redisUserProfileService;
     }
 
     public Map<Long, UserProfile> getUserProfiles(Set<Long> userIds) {
@@ -39,9 +34,8 @@ public class ResolveUsersProfile {
         Map<Long, UserProfile> result = new HashMap<>();
         Set<Long> missingIds = new HashSet<>();
 
-        // Cache lookup
         for (Long id : userIds) {
-            UserProfile cached = cache.get(id, UserProfile.class);
+            UserProfile cached = redisUserProfileService.getUserProfile(id);
             if (cached != null) {
                 result.put(id, cached);
             } else {
@@ -49,16 +43,12 @@ public class ResolveUsersProfile {
             }
         }
 
-        //Batch fetch missing
         if (!missingIds.isEmpty()) {
-            BatchUsersRequest request =
-                new BatchUsersRequest(new ArrayList<>(missingIds));
-
-            List<UserProfile> fetched =
-                usersServiceClient.getUsersByIds(request);
+            BatchUsersRequest request = new BatchUsersRequest(new ArrayList<>(missingIds));
+            List<UserProfile> fetched = usersServiceClient.getUsersByIds(request);
 
             for (UserProfile profile : fetched) {
-                cache.put(profile.id(), profile);
+                redisUserProfileService.cacheUserProfile(profile);
                 result.put(profile.id(), profile);
             }
         }
@@ -67,9 +57,14 @@ public class ResolveUsersProfile {
     }
 
     public UserProfile getUserProfile(Long userId) {
-        if (userId == null) {
+        if (userId == null)
             return null;
-        }
         return getUserProfiles(Set.of(userId)).get(userId);
+    }
+
+    public void invalidateUserProfile(Long userId) {
+        if (userId != null) {
+            redisUserProfileService.deleteUserProfile(userId);
+        }
     }
 }

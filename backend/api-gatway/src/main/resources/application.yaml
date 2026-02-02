@@ -4,7 +4,12 @@ server:
 spring:
   application:
     name: api-gateway
-
+  cache:
+    type: redis
+  data:
+    redis:
+      host: ${REDIS_HOST:redis}
+      port: ${REDIS_PORT:6379}
   cloud:
     gateway:
       globalcors:

@@ -44,6 +44,7 @@ public class PostServiceImpl implements PostService {
     private final ReportRepository reportRepository;
     private final PostEventProducer producer;
     private final UsersServiceClient usersServiceClient;
+    
 
     public PostServiceImpl(PostRepository postRepository, UserEnrichmentHelper userEnrichmentHelper,
             ReactionRepository reactionRepository, CommentRepository commentRepository,
