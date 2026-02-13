@@ -161,3 +161,14 @@ services:
       - 8.8.4.4
 
 
+# frontend 
+  frontend:
+    build: ./frontend
+    container_name: wordium-frontend
+    ports:
+      - "4200:80"
+    depends_on:
+      - api-gateway
+    environment:
+      - API_URL=http://api-gateway:8080 # Points to the Gateway
+
