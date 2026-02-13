@@ -48,11 +48,11 @@
 
     <span class="spacer"></span>
 
-    @if (isAdmin() && mode() === 'admin') {
+    <!-- @if (isAdmin() && mode() === 'admin') {
       <mat-icon>
         {{ post().isFlagged ? 'visibility_off' : 'visibility' }}
       </mat-icon>
-    }
+    } -->
 
     @if (isAdmin()) {
       <button mat-icon-button matTooltip="Quick Report">
@@ -155,14 +155,14 @@
     </button>
   }
 
-  @if (isAdmin()) {
+  <!-- @if (isAdmin()) {
     <button mat-menu-item (click)="confirmVisibility()">
       <mat-icon>
         {{ post().isFlagged ? 'visibility_off' : 'visibility' }}
       </mat-icon>
       <span>{{ post().isFlagged ? 'Unhide Post' : 'Hide Post' }}</span>
     </button>
-  }
+  } -->
 
   @if (canDelete()) {
     <button mat-menu-item class="danger-item" (click)="confirmDeletePost()">

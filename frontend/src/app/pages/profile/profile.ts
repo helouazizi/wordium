@@ -55,6 +55,32 @@ export class Profile {
   private device = inject(DeviceService);
   private notif = inject(NotificationService);
 
+  isMobile = this.device.isHandset;
+
+  readonly sessionUser = this.auth.user;
+
+  readonly targetUser = signal<User | null>(null);
+
+  isOwn = computed(() => this.targetUser()?.id === this.sessionUser()?.id);
+  isAdmin = computed(() => this.targetUser()?.role === 'ADMIN');
+  err = signal<string | null>(null);
+
+  ngOnInit() {
+    this.route.paramMap.subscribe((pm) => {
+      const id = Number(pm.get('id')) ? Number(pm.get('id')) : this.sessionUser()?.id;
+      if (id) {
+        this.usersService.getUserProfile(id).subscribe({
+          next: (user) => {
+            this.targetUser.set(user);
+          },
+          error: (err) => {
+            this.err.set(err.error.detail);
+          },
+        });
+      }
+    });
+  }
+
   confirmReport(userId: number) {
     this.dialog
       .open(ConfirmDialog, {
@@ -101,32 +127,6 @@ export class Profile {
             });
         }
       });
-  }
-
-  isMobile = this.device.isHandset;
-
-  readonly sessionUser = this.auth.user;
-
-  readonly targetUser = signal<User | null>(null);
-
-  isOwn = computed(() => this.targetUser()?.id === this.sessionUser()?.id);
-  isAdmin = computed(() => this.targetUser()?.role === 'ADMIN');
-  err = signal<string | null>(null);
-
-  ngOnInit() {
-    this.route.paramMap.subscribe((pm) => {
-      const id = Number(pm.get('id')) ? Number(pm.get('id')) : this.sessionUser()?.id;
-      if (id) {
-        this.usersService.getUserProfile(id).subscribe({
-          next: (user) => {
-            this.targetUser.set(user);
-          },
-          error: (err) => {
-            this.err.set(err.error.detail);
-          },
-        });
-      }
-    });
   }
 
   isSocialEmpty(social: User['social'] | undefined): boolean {
@@ -192,4 +192,6 @@ export class Profile {
       },
     });
   }
+
+
 }

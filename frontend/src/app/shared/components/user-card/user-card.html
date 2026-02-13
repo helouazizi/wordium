@@ -75,19 +75,21 @@
           }
         </div>
       } @else {
-        <button
-          mat-flat-button
-          class="action-btn follow-btn"
-          [class.active]="user().isFollowing"
-          (click)="toggleFollow()"
-        >
-          <mat-icon>
-            {{ user().isFollowing ? 'person_remove_alt_1' : 'person_add_alt_1' }}
-          </mat-icon>
-          <span>
-            {{ user().isFollowing ? 'Unfollow' : 'Follow' }}
-          </span>
-        </button>
+        @if (!isOwner()) {
+          <button
+            mat-flat-button
+            class="action-btn follow-btn"
+            [class.active]="user().isFollowing"
+            (click)="toggleFollow()"
+          >
+            <mat-icon>
+              {{ user().isFollowing ? 'person_remove_alt_1' : 'person_add_alt_1' }}
+            </mat-icon>
+            <span>
+              {{ user().isFollowing ? 'Unfollow' : 'Follow' }}
+            </span>
+          </button>
+        }
 
         <button mat-stroked-button class="action-btn view-btn" (click)="viewProfile()">
           <span>View Profile</span>

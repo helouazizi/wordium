@@ -99,7 +99,7 @@ docker-compose up -d --build
 
 #### ✅ Health Check
 
-After the startup process completes, verify that the ecosystem is fully operational. Wordium is a complex system consisting of **14 active containers** (Infrastructure + Services + Databases).
+After the startup process completes, verify that the ecosystem is fully operational. Wordium is a complex system consisting of **15 active containers** (Infrastructure + Services + Databases).
 
 Run the following command to check the status:
 

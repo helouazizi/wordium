@@ -37,6 +37,7 @@ import { MatSpinner } from '@angular/material/progress-spinner';
 export class EditProfileDialogComponent {
   private usersService = inject(UsersService);
   private notification = inject(NotificationService);
+
   isLoadingAvatar = signal(false);
   private dialogRef = inject(MatDialogRef<EditProfileDialogComponent>);
   public data = inject<{ type: 'profile' | 'cover' | 'avatar' | 'about' | 'social'; user: User }>(
@@ -91,14 +92,20 @@ export class EditProfileDialogComponent {
     return this.editForm.get('social') as FormGroup;
   }
 
-  onFileSelected(event: Event): void {
+  async onFileSelected(event: Event) {
     const input = event.target as HTMLInputElement;
 
     if (input.files && input.files[0]) {
       const file = input.files[0];
 
+      const valid = await this.isValidMedia(file);
+      if (!valid) {
+        this.notification.showError('Only PNG, JPG, and WEBP images are allowed.');
+        return;
+      }
+
       if (file.size > 2 * 1024 * 1024) {
-        alert('File is too large. Please choose an image under 2MB.');
+        this.notification.showError('File is too large. Please choose an image under 2MB.');
         return;
       }
 
@@ -120,7 +127,28 @@ export class EditProfileDialogComponent {
       });
     }
   }
+  private async isValidMedia(file: File): Promise<boolean> {
+    const allowedImageHeaders: Record<string, string[]> = {
+      png: ['89504e47'], // PNG
+      jpg: ['ffd8ff'], // JPEG
+      jpeg: ['ffd8ff'], // JPEG
+      webp: ['52494646'], // WEBP (RIFF)
+    };
 
+    // Read first 12 bytes of the file
+    const buffer = await file.arrayBuffer();
+    const arr = new Uint8Array(buffer.slice(0, 12));
+    const header = Array.from(arr)
+      .map((b) => b.toString(16).padStart(2, '0'))
+      .join('');
+
+    // Check against allowed images only
+    for (const headers of Object.values(allowedImageHeaders)) {
+      if (headers.some((h) => header.startsWith(h))) return true;
+    }
+
+    return false;
+  }
   getIcon(): string {
     switch (this.data.type) {
       case 'profile':

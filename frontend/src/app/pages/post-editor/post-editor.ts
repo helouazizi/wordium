@@ -64,9 +64,19 @@ export class PostEditor {
     }
   }
 
-  onMediaUpload(event: Event) {
+ async  onMediaUpload(event: Event) {
     const file = (event.target as HTMLInputElement).files?.[0];
     if (!file) return;
+    this.isUploading.set(true);
+
+    // Strict body check
+    const valid = await this.isValidMedia(file);
+    if (!valid) {
+      this.isUploading.set(false);
+      this.notify.showError('File content does not match an image or video');
+      return;
+    }
+
     const isImage = file.type.startsWith('image/');
     const isVideo = file.type.startsWith('video/');
 
@@ -202,5 +212,36 @@ export class PostEditor {
     }
 
     return used;
+  }
+
+  private async isValidMedia(file: File): Promise<boolean> {
+    const allowedImageHeaders: Record<string, string[]> = {
+      png: ['89504e47'],
+      jpg: ['ffd8ff'],
+      gif: ['47494638'],
+    };
+    const allowedVideoHeaders: Record<string, string[]> = {
+      mp4: ['00000018', '00000020'], // common MP4 start bytes
+      webm: ['1a45dfa3'],
+    };
+
+    // Read first 12 bytes of the file
+    const buffer = await file.arrayBuffer();
+    const arr = new Uint8Array(buffer.slice(0, 12));
+    const header = Array.from(arr)
+      .map((b) => b.toString(16).padStart(2, '0'))
+      .join('');
+
+    // Check against image headers
+    for (const headers of Object.values(allowedImageHeaders)) {
+      if (headers.some((h) => header.startsWith(h))) return true;
+    }
+
+    // Check against video headers
+    for (const headers of Object.values(allowedVideoHeaders)) {
+      if (headers.some((h) => header.startsWith(h))) return true;
+    }
+
+    return false;
   }
 }

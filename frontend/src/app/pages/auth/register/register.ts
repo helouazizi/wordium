@@ -53,9 +53,14 @@ export class Register {
     { validators: passwordMatchValidator },
   );
 
-  onFileSelected(event: Event) {
+  async onFileSelected(event: Event) {
     const file = (event.target as HTMLInputElement).files?.[0];
     if (file) {
+      const valid = await this.isValidMedia(file);
+      if (!valid) {
+        this.notification.showError('Only PNG, JPG, and WEBP images are allowed.');
+        return;
+      }
       if (file.size > 2 * 1024 * 1024) {
         alert('File is too large. Please choose an image under 2MB.');
         return;
@@ -78,6 +83,29 @@ export class Register {
       reader.onload = () => this.avatarPreview.set(reader.result as string);
       reader.readAsDataURL(file);
     }
+  }
+
+  private async isValidMedia(file: File): Promise<boolean> {
+    const allowedImageHeaders: Record<string, string[]> = {
+      png: ['89504e47'], // PNG
+      jpg: ['ffd8ff'], // JPEG
+      jpeg: ['ffd8ff'], // JPEG
+      webp: ['52494646'], // WEBP (RIFF)
+    };
+
+    // Read first 12 bytes of the file
+    const buffer = await file.arrayBuffer();
+    const arr = new Uint8Array(buffer.slice(0, 12));
+    const header = Array.from(arr)
+      .map((b) => b.toString(16).padStart(2, '0'))
+      .join('');
+
+    // Check against allowed images only
+    for (const headers of Object.values(allowedImageHeaders)) {
+      if (headers.some((h) => header.startsWith(h))) return true;
+    }
+
+    return false;
   }
 
   removeAvatar(event?: Event) {
