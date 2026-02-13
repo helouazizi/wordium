@@ -8,7 +8,7 @@
 ![Kafka](https://img.shields.io/badge/Apache%20Kafka-Messaging-black)
 ![Redis](https://img.shields.io/badge/Redis-Caching-red)
 
-**Wordium** is a high-performance, scalable blogging and social interaction platform built on a modern Microservices architecture. It demonstrates advanced distributed system patterns, real-time communication, and automated infrastructure management.
+**Wordium** is a high-performance, scalable blogging and social interaction platform built on a modern Microservices architecture. It demonstrates advanced distributed system patterns, and automated infrastructure management.
 
 ---
 
