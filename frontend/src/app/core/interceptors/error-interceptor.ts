@@ -25,18 +25,18 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
             break;
           case 403:
             errorMessage = 'You do not have permission to perform this action.';
+            authService.logout(); // Auto logout on forbiden
             break;
           case 404:
             errorMessage = 'The requested resource was not found.';
             break;
           case 500:
-            
             errorMessage = 'Internal Server Error. Please try again later.';
             break;
           default:
             errorMessage = error.error?.message || `Error Code: ${error.status}`;
         }
-      }      
+      }
       notification.showError(errorMessage);
       return throwError(() => error);
     }),

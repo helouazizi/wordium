@@ -126,6 +126,13 @@ docker ps
 | **Swagger UI** | [http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html) | Interactive API Documentation |
 | **Kafka UI** | [http://localhost:9092](http://localhost:9092) | External Kafka Broker access |
 
+## Admin Account
+
+```bash
+password:admin1
+email: admin1@admin1.com
+```
+
 ## 👨‍💻 Key Development Features
 
 - **Automation Scripts:** Custom Shell scripts for environment synchronization and multi-service builds.

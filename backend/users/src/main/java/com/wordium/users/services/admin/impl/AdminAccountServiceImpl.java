@@ -104,6 +104,8 @@ public class AdminAccountServiceImpl implements AdminAccountService {
         userReportRepo.deleteByReportedBy_Id(id);
 
         userReportRepo.deleteByReportedUser_Id(id);
+        followersRepo.deleteByFollowerId(id);
+        followersRepo.deleteByFollowedId(id);
 
         usersRepo.delete(account);
         redisBanService.banUser(id);

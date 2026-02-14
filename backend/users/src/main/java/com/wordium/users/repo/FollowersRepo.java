@@ -16,6 +16,10 @@ import com.wordium.users.models.Followers;
 public interface FollowersRepo extends JpaRepository<Followers, Long> {
     Page<Followers> findByFollowerId(Long followerId, Pageable pageable);
 
+    void deleteByFollowerId(Long followerId);
+
+    void deleteByFollowedId(Long followedId);
+
     @Query("""
                 SELECT f.followedId
                 FROM Followers f
