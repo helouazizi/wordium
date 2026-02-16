@@ -1,0 +1,33 @@
+name: Build and Push Microservices Images Into GHCR
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build-auth:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend/auth
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v3
+        with:
+          java-version: 17
+          distribution: temurin
+
+      - name: Build Jar
+        run: mvn clean package -DskipTests
+
+      - name: Login GHCR
+        run: echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+      - name: Build Image
+        run: docker build -t ghcr.io/${{ github.repository_owner }}/auth-service:latest .
+
+      - name: Push Image
+        run: docker push ghcr.io/${{ github.repository_owner }}/auth-service:latest
