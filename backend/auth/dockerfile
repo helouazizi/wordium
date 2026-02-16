@@ -4,7 +4,7 @@ WORKDIR /app
 
 # Copy the built Spring Boot JAR
 COPY target/*.jar app.jar
-COPY .env ./
+# COPY .env ./
 
 EXPOSE 3000
 
