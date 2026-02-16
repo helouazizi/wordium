@@ -36,10 +36,11 @@ jobs:
         run: echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
       - name: Build Image
-        run: docker build -t ghcr.io/${{ github.repository_owner }}/auth-service:latest .
+        run: docker build -t ghcr.io/${{ github.actor }}/auth-service:latest .
 
       - name: Push Image
-        run: docker push ghcr.io/${{ github.repository_owner }}/auth-service:latest
+        run: docker push ghcr.io/${{ github.actor }}/auth-service:latest
+
 
   # -------------------
   # Payment Service (Placeholder)
