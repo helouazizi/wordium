@@ -5,12 +5,14 @@ on:
     branches: [ main ]
 
 jobs:
+  # -------------------
+  # Auth Service
+  # -------------------
   build-auth:
     runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: backend/auth
-
     steps:
       - uses: actions/checkout@v4
 
@@ -19,6 +21,12 @@ jobs:
         with:
           java-version: 17
           distribution: temurin
+
+      - name: Create auth .env
+        run: |
+          echo POSTGRES_DB=${{ secrets.AUTH_POSTGRES_DB }} >> backend/auth/.env
+          echo POSTGRES_USER=${{ secrets.AUTH_POSTGRES_USER }} >> backend/auth/.env
+          echo POSTGRES_PASSWORD=${{ secrets.AUTH_POSTGRES_PASSWORD }} >> backend/auth/.env
 
       - name: Build Jar
         run: mvn clean package -DskipTests
@@ -31,3 +39,154 @@ jobs:
 
       - name: Push Image
         run: docker push ghcr.io/${{ github.repository_owner }}/auth-service:latest
+
+  # -------------------
+  # Payment Service (Placeholder)
+  # -------------------
+  # build-payment:
+  #   runs-on: ubuntu-latest
+  #   defaults:
+  #     run:
+  #       working-directory: backend/payment
+  #   steps:
+  #     - uses: actions/checkout@v4
+
+  #     - name: Setup Java
+  #       uses: actions/setup-java@v3
+  #       with:
+  #         java-version: 17
+  #         distribution: temurin
+
+  #     - name: Create payment .env
+  #       run: |
+  #         echo POSTGRES_DB=${{ secrets.PAYMENT_POSTGRES_DB }} >> backend/payment/.env
+  #         echo POSTGRES_USER=${{ secrets.PAYMENT_POSTGRES_USER }} >> backend/payment/.env
+  #         echo POSTGRES_PASSWORD=${{ secrets.PAYMENT_POSTGRES_PASSWORD }} >> backend/payment/.env
+
+  #     - name: Build Jar
+  #       run: mvn clean package -DskipTests
+
+  #     - name: Login GHCR
+  #       run: echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+  #     - name: Build Image
+  #       run: docker build -t ghcr.io/${{ github.repository_owner }}/payment-service:latest .
+
+  #     - name: Push Image
+  #       run: docker push ghcr.io/${{ github.repository_owner }}/payment-service:latest
+
+  # -------------------
+  # Order Service (Placeholder)
+  # -------------------
+  # build-order:
+  #   runs-on: ubuntu-latest
+  #   defaults:
+  #     run:
+  #       working-directory: backend/order
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - name: Setup Java
+  #       uses: actions/setup-java@v3
+  #       with:
+  #         java-version: 17
+  #         distribution: temurin
+  #     - name: Create order .env
+  #       run: |
+  #         echo POSTGRES_DB=${{ secrets.ORDER_POSTGRES_DB }} >> backend/order/.env
+  #         echo POSTGRES_USER=${{ secrets.ORDER_POSTGRES_USER }} >> backend/order/.env
+  #         echo POSTGRES_PASSWORD=${{ secrets.ORDER_POSTGRES_PASSWORD }} >> backend/order/.env
+  #     - name: Build Jar
+  #       run: mvn clean package -DskipTests
+  #     - name: Login GHCR
+  #       run: echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+  #     - name: Build Image
+  #       run: docker build -t ghcr.io/${{ github.repository_owner }}/order-service:latest .
+  #     - name: Push Image
+  #       run: docker push ghcr.io/${{ github.repository_owner }}/order-service:latest
+
+  # -------------------
+  # User Service (Placeholder)
+  # -------------------
+  # build-user:
+  #   runs-on: ubuntu-latest
+  #   defaults:
+  #     run:
+  #       working-directory: backend/user
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - name: Setup Java
+  #       uses: actions/setup-java@v3
+  #       with:
+  #         java-version: 17
+  #         distribution: temurin
+  #     - name: Create user .env
+  #       run: |
+  #         echo POSTGRES_DB=${{ secrets.USER_POSTGRES_DB }} >> backend/user/.env
+  #         echo POSTGRES_USER=${{ secrets.USER_POSTGRES_USER }} >> backend/user/.env
+  #         echo POSTGRES_PASSWORD=${{ secrets.USER_POSTGRES_PASSWORD }} >> backend/user/.env
+  #     - name: Build Jar
+  #       run: mvn clean package -DskipTests
+  #     - name: Login GHCR
+  #       run: echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+  #     - name: Build Image
+  #       run: docker build -t ghcr.io/${{ github.repository_owner }}/user-service:latest .
+  #     - name: Push Image
+  #       run: docker push ghcr.io/${{ github.repository_owner }}/user-service:latest
+
+  # -------------------
+  # Notification Service (Placeholder)
+  # -------------------
+  # build-notification:
+  #   runs-on: ubuntu-latest
+  #   defaults:
+  #     run:
+  #       working-directory: backend/notification
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - name: Setup Java
+  #       uses: actions/setup-java@v3
+  #       with:
+  #         java-version: 17
+  #         distribution: temurin
+  #     - name: Create notification .env
+  #       run: |
+  #         echo POSTGRES_DB=${{ secrets.NOTIF_POSTGRES_DB }} >> backend/notification/.env
+  #         echo POSTGRES_USER=${{ secrets.NOTIF_POSTGRES_USER }} >> backend/notification/.env
+  #         echo POSTGRES_PASSWORD=${{ secrets.NOTIF_POSTGRES_PASSWORD }} >> backend/notification/.env
+  #     - name: Build Jar
+  #       run: mvn clean package -DskipTests
+  #     - name: Login GHCR
+  #       run: echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+  #     - name: Build Image
+  #       run: docker build -t ghcr.io/${{ github.repository_owner }}/notification-service:latest .
+  #     - name: Push Image
+  #       run: docker push ghcr.io/${{ github.repository_owner }}/notification-service:latest
+
+  # -------------------
+  # Gateway Service (Placeholder)
+  # -------------------
+  # build-gateway:
+  #   runs-on: ubuntu-latest
+  #   defaults:
+  #     run:
+  #       working-directory: backend/gateway
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - name: Setup Java
+  #       uses: actions/setup-java@v3
+  #       with:
+  #         java-version: 17
+  #         distribution: temurin
+  #     - name: Create gateway .env
+  #       run: |
+  #         echo POSTGRES_DB=${{ secrets.GATEWAY_POSTGRES_DB }} >> backend/gateway/.env
+  #         echo POSTGRES_USER=${{ secrets.GATEWAY_POSTGRES_USER }} >> backend/gateway/.env
+  #         echo POSTGRES_PASSWORD=${{ secrets.GATEWAY_POSTGRES_PASSWORD }} >> backend/gateway/.env
+  #     - name: Build Jar
+  #       run: mvn clean package -DskipTests
+  #     - name: Login GHCR
+  #       run: echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+  #     - name: Build Image
+  #       run: docker build -t ghcr.io/${{ github.repository_owner }}/gateway-service:latest .
+  #     - name: Push Image
+  #       run: docker push ghcr.io/${{ github.repository_owner }}/gateway-service:latest
