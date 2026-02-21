@@ -2,7 +2,7 @@ spring:
   application:
     name: auth-service
   datasource:
-    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5432}/${POSTGRES_DB}
+    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${AUTH_DB_PORT:5432}/${POSTGRES_DB}
     username: ${POSTGRES_USER}
     password: ${POSTGRES_PASSWORD}
     driver-class-name: org.postgresql.Driver
@@ -45,7 +45,7 @@ internal:
 
 services:
   api:
-    url: ${GATEWAY_API}
+    url: ${GATEWAY_API:http://api-gateway:8080}
 
 cloudinary:
   cloud-name: ${CLOUDINARY_CLOUD_NAME}

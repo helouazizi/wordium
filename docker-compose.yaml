@@ -80,6 +80,7 @@ services:
       - ./database/users/.env  
     ports:
       - "${USERS_DB_PORT}:${POSTGRES_PORT}"
+
   wsgateway_db:
     image: postgres:latest
     container_name: psql_wsgateway_db
@@ -106,6 +107,8 @@ services:
   auth-service:
     build: ./backend/auth/
     container_name: auth-service
+    env_file:
+      - ./backend/auth/.env 
     environment:
       - EUREKA_URL=http://eureka-server:${EUREKA_PORT}/eureka
       - POSTGRES_HOST=auth_db
@@ -120,6 +123,8 @@ services:
   wsgateway-service:
     build: ./backend/wsgateway/
     container_name: wsgateway-service
+    env_file:
+      - ./backend/wsgateway/.env 
     environment:
       - EUREKA_URL=http://eureka-server:${EUREKA_PORT}/eureka
       - POSTGRES_HOST=wsgateway_db
@@ -133,6 +138,8 @@ services:
   users-service:
     build: ./backend/users/
     container_name: users-service
+    env_file:
+      - ./backend/users/.env 
     environment:
       - EUREKA_URL=http://eureka-server:${EUREKA_PORT}/eureka
       - POSTGRES_HOST=users_db
@@ -149,6 +156,8 @@ services:
   posts-service:
     build: ./backend/posts/
     container_name: posts-service
+    env_file:
+      - ./backend/posts/.env 
     environment:
       - EUREKA_URL=http://eureka-server:${EUREKA_PORT}/eureka
       - POSTGRES_HOST=posts_db
